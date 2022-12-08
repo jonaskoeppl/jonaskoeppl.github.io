@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+
+    <meta charset=utf8>
+    <meta name=viewport content="width=device-width, initial-scale=1.0">
+    <title>Webpage of Jonas Köppl</title>
+    <meta name=description content="Jonas Köppl is a mathematician at WIAS.">
+    <meta name=author content="Jonas Köppl">
+
+    <style>
+
+        /* spacing */
+        #page           { max-width: 40em; }
+        #header         { max-width: 22em; }
+        #main           { max-width: 38em; }
+        header, section { padding-left: 1em; padding-right: 1em; }
+        #page           { margin-left: auto; margin-right: auto; }
+    
+        @media screen and (min-width: 40em){
+          #header         { max-width: 24em; }
+          #main           { max-width: 40em; }
+          header, section { padding-left: 2em; padding-right: 2em; }
+        }
+    
+        @media screen and (min-width: 64em){
+          #page   { max-width: 64em; }
+          #header { width: 37.5%; }
+          #main   { width: 62.5%; }
+        }
+    
+        /* automatic text zoom */
+        @media screen and (min-width: 42.5em){ html { font-size: 1.0625em; } }
+        @media screen and (min-width: 45em  ){ html { font-size: 1.125em;  } }
+        @media screen and (min-width: 47.5em){ html { font-size: 1.1775em; } }
+        @media screen and (min-width: 50em  ){ html { font-size: 1.25em;   } }
+    
+        @media screen and (min-width: 64em)  { html { font-size: 1em;      } }
+        
+        /* vertical margins */
+        header, section { padding-top: 2em; padding-bottom: 1em; }
+        #page           { margin-bottom: 2em; }
+    
+        @media screen and (min-width: 64em){ #main { padding-top:0.6em; } }
+    
+        /* text elements*/
+        html, .pure-g, .pure-g [class*=pure-u] { font-family: Times, "Times New Roman", serif; }
+        h4, p, #contact dt, #contact dd        { line-height: 1.5em; }
+        p.text                              { text-align: justify; }
+        a                           { color:#1f3777; text-decoration: none; }
+        a.email, #publications dt, .talks_upcoming dt
+                     { font-family: monospace; padding: 0.6em}
+    
+        /* photo */
+        @media screen and (max-width: 30em){
+          #header { max-width: none; }
+          #photo  { margin-left: -1em; margin-right: -1em; }
+        }
+    
+        /* buttons */
+        .navigation { text-align: left; line-height: 2.4em; text-decoration: none; font-family: Times, "Times New Roman", serif; }
+        .navigation a {color: #000000}
+        .navigation .internal { background: #cdd1d3; padding: 0.5em; border-radius: 5%}
+        .navigation .external { background: #e5eeee; padding: 0.5em; border-radius: 5%}
+    
+        /* publications */
+        #publications h4, #publications p { margin: 0; }
+        #publications dd                  { margin-bottom: 1em; }
+    
+        /* talks */
+        .talks_upcoming h4, .talks_upcoming p { margin: 0; }
+        .talks_upcoming dd                    { margin-bottom: 1em; }
+    
+    
+        /* contact details*/
+        #contact dt { clear: both; float:left; width: 8em; }
+        #contact dd { float:left; margin: 0 0 1em 2em; width: 16em; }
+        
+        #credit { clear: both; }
+        </style>
+
+</head>
+
+<body>
+    <div class=pure-g id=page>
+        <div class=pure-u-1 id=header>
+            <header>
+                <h1>Jonas Köppl</h1>
+                <p><a href=mailto:koeppl@wias-berlin.de class=email>koeppl@wias-berlin.de</a></p>
+                <p id=photo><img style=width:100% src=jk_photo.jpg alt="Photo of Jonas Köppl"></p>
+                <p class="navigation">
+                    <a class="internal" href=#about>about</a>
+                    <a class="internal" href=#research>research</a>
+                    <a class="internal" href=#publications>publications</a>
+                    <a class="internal" href=#talks>talks</a>
+                    <a class="internal" href=#contact>contact</a>
+                    <a class="external" href="https://scholar.google.com/citations?user=HMNLW9UAAAAJ&hl=de&oi=ao"> google scholar</a>
+                    <a class="external" href="http://arxiv.org/a/koppl_j_1">arxiv</a>
+                    <a class="external" href="https://orcid.org/0000-0001-9188-1883">orcid</a>
+                </p>
+            </header>
+        </div>
+        <div class=pure-u-1 id=main>
+
+            <section id=about>
+                <h2>About me</h2>
+                <p class=text>
+                    Welcome! I am a PhD Student at the <a href="https://wias-berlin.de">Weierstraß Institute (WIAS)</a>
+                    in the research group <a href="https://www.wias-berlin.de/research/lgs/lg6/index.jsp?lang=1">Probabilistic Methods for Dynamic Communication Networks </a> 
+                    and a Phase II Student at the <a href="https://math-berlin.de">Berlin Mathematical School</a>.
+                </p>
+                <p class=text>
+                    Previously, I was a scholarship holder in the research group Data-driven Modeling of Complex Systems at FU Berlin under the supervision of <a href="http://userpage.fu-berlin.de/peterkoltai/index.html">Péter Koltai</a> and <a href="https://web.maths.unsw.edu.au/~froyland/"> Gary Froyland</a>.
+                </p>
+                <p class=text>
+                    I am co-founder of <a href="https://bliss.berlin">BLISS</a>, a student-run club connecting interested students with ai/ml researchers and practicioners. If you want to know more about it or join one of our weekly meetings, write me an email! 
+                </p>
+            </section>
+
+            <section id=research>
+                <h2>Research interests</h2>
+                <p class=text>
+                    I mainly study the dynamics of large scale interacting random systems, with a focus on interacting particle systems and spatial point processes.
+                </p>
+            </section>
+
+
+            <section id=publications>
+                <h2>Publications</h2>
+                <h3>Preprints</h3>
+                <dl>
+                </dl>
+                <h3>Accepted</h3>
+                <dl>
+                    <dt>
+                        <p>
+                        [2] <a href="https://arxiv.org/abs/2205.02738">arXiv:2211.14365</a> [<a href="https://arxiv.org/pdf/2205.02738.pdf">pdf</a>]
+                        </p>
+                    </dt>
+                    <dd>
+                        <h4>Dynamical Gibbs Variational Principles for Irreversible Interacting
+                        Particle Systems with Applications to Attractor Properties</h4>
+                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a></p>
+                        <p><em>To appear in Annals of Applied Probability</em></p>
+                     </dd>
+                </dl>
+                <h3>Published</h3>
+                <dl>
+                    <dt>
+                        <p>
+                            [1] <a href="https://doi.org/10.3390/e24101352">doi:10.3390/e24101352</a> [<a href="https://arxiv.org/abs/2209.07151">arxiv</a>, <a href="https://arxiv.org/pdf/2209.07151.pdf">pdf</a>]
+                        </p>
+                    </dt>
+                    
+                    <dd>
+                        <h4>Feedback Loops in Opinion Dynamics of Agent-Based Models with Multiplicative Noise</h4>
+                        <p>With <a href="https://www.zib.de/members/natasa.conrad">Natasa Djurdjevac-Conrad </a> and <a href="https://page.mi.fu-berlin.de/adjurdjevac/">Ana Djurdjevac</a></p>
+                        <p>Entropy 24 (10), 1352 (2022)</p>
+                    </dd>
+                </dl>
+            </section>
+
+            <section id=talks>
+                <h2>Talks</h2> 
+                <h3>Upcoming talks</h3>
+                <dl class=talks_upcoming>
+                <dt>
+                Wednesday 18 January 2023, 16:15, Universität Passau, Fakultät für Informatik und Mathematik, Room tba 
+                </dt>
+                <dd>
+                    <p><em>Analysis and Probability seminar</em></p>
+                    <h4>Dynamical Gibbs variational principles and applications to attractor properties</h4>
+                    <p class=text>
+                        Interacting particle systems are countable systems of locally interacting Markov processes and are often used as toy
+                        models for stochastic phenomena with an underlying spatial structure. Even though the definition of an interacting
+                        particle system often looks very simple and the major technical issues of existence and uniqueness have long been
+                        settled, it is in general surprisingly difficult to say anything non-trivial about their behavior. Some of the main
+                        challenges deal with the long-time behavior of the systems. Because of the possible non-uniqueness of the
+                        time-stationary distribution the analysis is very delicate and various techniques have been developed to study limit
+                        theorems or attractor properties. One particular technique that will play a major role in this talk is due to Richard
+                        Holley and involves using the free energy functional with respect to some specification as a Lyapunov
+                        function for the measure-valued differential equation that describes the time evolution of the system in the space of
+                        measures. We first explain the general idea behind the method on the simple example of a continuous time Markov chain on
+                        a finite state space and then discuss how one can extend it to irreversible interacting particle systems in infinite
+                        volumes.
+                    </p>
+                </dd>
+                </dl>
+                <h3>Past talks</h3> 
+                <p>
+                    Dies Mathematicus 2022, TU Berlin (Nov 2022)<br>
+                    Interacting Random Systems seminar, WIAS Berlin (Nov 2022) <br>
+                    DMV Annual meeting, Berlin (Sept 2022) <br> 
+                    BMS-BGSMath Junior Meeting, Barcelona (Sept 2022) <br>
+                    DMV Student Conference, MPI-MIS Leipzig (Aug 2022)
+                </p>
+            </section>
+
+            <section id=contact>
+                <h2>Contact details</h2>
+                <dl>
+                    <dt>
+                        Address
+                    </dt> 
+
+                    <dd>
+                        Room 107 <br>
+                        Weierstraß Institut <br>
+                        Mohrenstraße 39 <br> 
+                        10117 Berlin <br>
+                        Germany 
+                    </dd>
+
+                    <dt>
+                        E-mail address
+                    </dt>
+                    <dd>
+                        <a href=mailto:koeppl@wias-berlin.de class="email">koeppl@wias-berlin.de</a>
+                    </dd>
+                </dl>
+            </section>
+            <section id="credit">
+                <p class=text>Photo credit: <a href="https://www.andreavollmer.de/">Andrea Vollmer</a></p>
+            </section>
+        </div>             
+    </div>
+</section>
+</body>
