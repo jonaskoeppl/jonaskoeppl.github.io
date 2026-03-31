@@ -79,6 +79,25 @@
         #contact dd { float:left; margin: 0 0 1em 2em; width: 16em; }
         
         #credit { clear: both; }
+
+        details {
+  padding: 0.5em 0.5em 0;
+}
+
+summary {
+  font-weight: bold;
+  margin: -0.5em -0.5em 0;
+  padding: 0.5em;
+}
+
+details[open] {
+  padding: 0.5em;
+}
+
+details[open] summary {
+  margin-bottom: 0.5em;
+}
+
         </style>
 
 </head>
@@ -147,10 +166,64 @@
                 </p>
             </section>
 
-
             <section id=publications>
-                <h2>Publications</h2>
-                <h3>Preprints</h3>
+                <h2> Selected publications</h2>
+                <dl>
+                    <dt>
+                        <dt>
+                            <p>
+                                [16] <a href="https://arxiv.org/abs/2603.21817"> arXiv:2603.21817</a> [<a href="https://arxiv.org/pdf/2603.21817">pdf</a>]
+                            </p>
+                        </dt>
+                        <dd>
+                            <h4>Restriction and mixing properties of interacting particle systems with unbounded range.</h4>
+                            <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.</p>
+                        </dd>
+                    <dt>
+                        <dt>
+                            <p>
+                                [15] <a href="http://arxiv.org/abs/2602.22104"> arXiv:2602.22104</a> [<a href="https://arxiv.org/pdf/2602.22104.pdf">pdf</a>]
+                            </p>
+                        </dt>
+                        <dd>
+                            <h4>On the absence of time-translation symmetry breaking in some non-reversible interacting particle systems.</h4>
+                        </dd>
+                <dt>
+                        <p>
+                            [9] <a href="https://arxiv.org/abs/2412.20781">arXiv:2412.20781</a> [<a href="https://arxiv.org/pdf/2412.20781">pdf</a>,<a href="https://bennhenry.github.io/NeighPerc/">simulations</a>]
+                        </p>
+                    </dt>
+                    <dd>
+                        <h4>The planar lattice two-neighbor graph percolates </h4>
+                        <p>With <a href="https://sites.google.com/view/pageprodedavidcoupier/"> David Coupier</a>, <a href="https://www.bhenry.fr/research.html"> Benoît Henry</a>, and <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>. 
+                        <p> Accepted for publication in: <i> <a href="https://imstat.org/journals-and-publications/annals-of-probability/annals-of-probability-future-papers/">Annals of Probability</a></i></p>
+                    </dd>
+                <dt>
+                        <p>
+                            [4] <a href="https://doi.org/10.2140/pmp.2025.6.479">doi:10.2140/pmp.2025.6.479
+                            </a> [<a href="https://arxiv.org/pdf/2303.10640.pdf">arxiv</a>]
+                        </p>
+                    </dt>
+                    <dd>
+                        <h4>On the long-time behaviour of reversible interacting particle systems in one and two dimensions</h4>
+                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.</p>
+                        <p> Probability and Mathematical Physics 6-2 (2025), 479--503.</p>
+                    </dd>
+                <dt>
+                        <p>
+                        [3] <a href="http://dx.doi.org/10.1214/22-AAP1926">doi:10.1214/22-AAP1926</a> [<a href="https://arxiv.org/abs/2205.02738">arxiv</a>,<a href="https://jonaskoeppl.github.io/pub/dgvp.pdf">pdf</a>]
+                        </p>
+                    </dt>
+                    <dd>
+                        <h4>Dynamical Gibbs Variational Principles for Irreversible Interacting
+                        Particle Systems with Applications to Attractor Properties</h4>
+                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.</p>
+                        <p>Annals of Applied Probability, Vol. 33, No. 6A, 4570-4607 (2023).</p>
+                     </dd>
+                </dl>
+                <h2> Publication list</h2>
+                <details>
+                    <summary> Preprints</summary>
                 <dl>
                     <dt>
                         <dt>
@@ -211,16 +284,7 @@
                     </dd>
                     <dt>
                         <p>
-                            [10] <a href="https://arxiv.org/abs/2412.20781">arXiv:2412.20781</a> [<a href="https://arxiv.org/pdf/2412.20781">pdf</a>,<a href="https://bennhenry.github.io/NeighPerc/">simulations</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>The planar lattice two-neighbor graph percolates </h4>
-                        <p>With <a href="https://sites.google.com/view/pageprodedavidcoupier/"> David Coupier</a>, <a href="https://www.bhenry.fr/research.html"> Benoît Henry</a>, and <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>. 
-                    </dd>
-                    <dt>
-                        <p>
-                            [9] <a href="https://arxiv.org/abs/2412.19957">arXiv:2412.19957</a> [<a href="https://arxiv.org/pdf/2412.19957">pdf</a>]
+                            [10] <a href="https://arxiv.org/abs/2412.19957">arXiv:2412.19957</a> [<a href="https://arxiv.org/pdf/2412.19957">pdf</a>]
                         </p>
                     </dt>
                     <dd>
@@ -228,11 +292,24 @@
                         <p>With <a href="https://math.la.asu.edu/~lanchier/">Nicolas Lanchier</a> and <a href="https://sites.google.com/view/maxmercer/main-page?authuser=1"> Max Mercer</a>.</p>
                     </dd>
                 </dl>
-                <!-- <h3>Accepted</h3>
+                </details>
+                <details>
+                <summary>Accepted</summary>
                 <dl>
-                    
-                </dl>-->
-                <h3>Published</h3>
+                    <dt>
+                        <p>
+                            [9] <a href="https://arxiv.org/abs/2412.20781">arXiv:2412.20781</a> [<a href="https://arxiv.org/pdf/2412.20781">pdf</a>,<a href="https://bennhenry.github.io/NeighPerc/">simulations</a>]
+                        </p>
+                    </dt>
+                    <dd>
+                        <h4>The planar lattice two-neighbor graph percolates </h4>
+                        <p>With <a href="https://sites.google.com/view/pageprodedavidcoupier/"> David Coupier</a>, <a href="https://www.bhenry.fr/research.html"> Benoît Henry</a>, and <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>. 
+                        <p> Accepted for publication in: <i>Annals of Probability </i> </p>
+                    </dd>
+                </dl>
+                </details>
+                <details>
+                <summary>Published</summary>
                 <dl>
                     <dt>
                         <p>
@@ -321,6 +398,7 @@
                         <p>Entropy 24 (10), 1352 (2022).</p>
                     </dd>
                 </dl>
+            </details>
             </section>
 
             <section id=talks>
