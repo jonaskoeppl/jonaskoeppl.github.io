@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulations – Jonas Köppl</title>
+<meta name="description" content="Live simulations of the driven clock and XY models of Maes and Shlosman in two and three dimensions.">
+<meta name="author" content="Jonas Köppl">
+<style>
+/* Layout: instrument panel. Controls rail on the left, live readouts on top, lattice views and traces in a grid. */
+:root {
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --ink: #000000;
+  --muted: #555b61;
+  --line: #d5d9db;
+  --accent: #1f3777;          /* link colour of the main site */
+  --ma: #1f2fd6;              /* M_A trace, as in Avni et al. */
+  --mb: #e3262b;              /* M_B trace */
+  --traj: #d23fd2;            /* phase-plane trajectory */
+  --plot-bg: #ffffff;
+  --grid: #eceff1;
+  --chip: #e5eeee;
+  --f-display: Times, "Times New Roman", serif;
+  --f-body: Times, "Times New Roman", serif;
+  --f-mono: ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.45; margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 18px 32px; }
+.wrap { max-width: 76em; margin: 0 auto; display: grid; gap: 16px; }
+header { display: grid; gap: 10px; }
+h1 { font-family: var(--f-display); font-weight: bold; font-size: 2em; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 0; max-width: 75ch; line-height: 1.35; text-align: justify; }
+.back { font-family: var(--f-body); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.layout { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-width: 0; }
+.controls { display: grid; gap: 14px; }
+.group { display: grid; gap: 8px; }
+.group h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0; font-weight: 600; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { flex: 1; border: 0; background: transparent; color: var(--ink); padding: 6px 4px; font: inherit; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--panel); }
+.row { display: grid; grid-template-columns: 74px minmax(0, 1fr) 58px; gap: 8px; align-items: center; }
+.row label { color: var(--muted); font-size: 15px; }
+.row output, .row input[type=number] { font-family: var(--f-mono); font-size: 12.5px; text-align: right; font-variant-numeric: tabular-nums; }
+.row input[type=number] { width: 100%; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 3px 4px; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+select { font: inherit; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 6px; width: 100%; }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { font: inherit; border: 1px solid var(--line); background: #cdd1d3; color: var(--ink); padding: 7px 12px; border-radius: 6px; cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); min-width: 84px; }
+.btn:focus-visible, .seg button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.check { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 13px; }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+.stat { display: grid; gap: 2px; }
+.stat > span { font-size: 12px; color: var(--muted); letter-spacing: 0.02em; }
+.stat b { font-family: var(--f-mono); font-weight: 500; font-size: 17px; font-variant-numeric: tabular-nums; }
+.state-pill { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--chip); color: var(--ink); white-space: nowrap; }
+.views { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.views.three-d { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 820px; }
+@media (max-width: 640px) { .views, .views.three-d { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+figure { margin: 0; display: grid; gap: 6px; min-width: 0; }
+figcaption { font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+figcaption i { font-family: var(--f-display); font-size: 16px; color: var(--ink); }
+.lattice { width: 100%; max-width: 100%; aspect-ratio: 1; image-rendering: pixelated; border: 1px solid var(--line); background: #000; display: block; }
+.vol { width: 100%; max-width: 100%; display: block; background: #fff; border-radius: 4px; }
+.plots { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; }
+@media (max-width: 640px) { .plots { grid-template-columns: minmax(0, 1fr); } }
+.plot { width: 100%; max-width: 100%; display: block; }
+.legend { display: flex; gap: 14px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.legend em { font-style: normal; font-family: var(--f-display); font-size: 15px; color: var(--ink); }
+.sw { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+.keybar { display: flex; height: 10px; border-radius: 2px; overflow: hidden; width: 120px; }
+.keybar div { flex: 1; }
+.about { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.about h2 { font-family: var(--f-display); font-weight: 600; font-size: 19px; margin: 0 0 6px; }
+.about p { margin: 0 0 8px; max-width: 68ch; }
+.refs h2 { font-family: var(--f-display); font-size: 1.3em; margin: 0 0 6px; }
+.refs ol { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; }
+.formula { font-family: var(--f-mono); font-size: 12.5px; background: var(--chip); padding: 8px 10px; border-radius: 6px; overflow-x: auto; white-space: pre; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="back"><a href="../">&larr; Jonas Köppl</a></p>
+    <h1>Simulations</h1>
+    <p>Interacting particle systems are easiest to get a feeling for by watching them. This page runs
+    the <a href="https://doi.org/10.1007/s10955-011-0325-5">driven clock and driven XY models of
+    C. Maes and S. Shlosman, <i>Rotating states in driven clock- and XY-models</i>, J. Stat. Phys. 144 (2011)</a>
+    live in your browser. Every spin is a clock hand that interacts with its neighbours like an XY spin and is pushed
+    to rotate by a constant drift. In two dimensions the collective rotation is destroyed by spiral defects; in three
+    dimensions the whole system rotates coherently. The pictures follow the conventions of
+    <a href="https://arxiv.org/abs/2409.07481">Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli,
+    <i>Dynamical phase transitions in the nonreciprocal Ising model</i> (arXiv:2409.07481)</a>, whose nonreciprocal
+    Ising model is closely related to the four-state clock.</p>
+    <p>Pick a preset or change the parameters yourself; β and d take effect immediately.</p>
+  </header>
+
+  <div class="layout">
+    <aside class="card controls" aria-label="Simulation controls">
+      <div class="group">
+        <h2>Preset</h2>
+        <select id="preset">
+          <option value="fig8">2D spirals: q=4, β=1.5, d=0.85, L=150</option>
+          <option value="fig10">3D rotating phase: q=4, β=0.5, d=0.2, L=48</option>
+          <option value="swap2d">2D swap: q=4, β=1.4, d=0.6, L=120</option>
+          <option value="clock8">3D clock: q=8, β=1.05, d=0.65, L=40</option>
+          <option value="xy2d">2D XY, random start: β=2, d=0.5, L=96</option>
+          <option value="xy3d">3D XY: β=1, d=0.5, L=32</option>
+          <option value="eq">2D equilibrium, random start: q=4, β=1.6, d=0, L=128</option>
+        </select>
+        <p class="note">Sets the controls below and restarts. Unless noted, the start is ordered.</p>
+      </div>
+      <div class="group">
+        <h2>Model</h2>
+        <div class="seg" role="group" aria-label="Model">
+          <button id="m-clock" aria-pressed="true">Clock</button>
+          <button id="m-xy" aria-pressed="false">XY</button>
+        </div>
+        <div class="seg" role="group" aria-label="Dimension">
+          <button id="d-2" aria-pressed="true">2D</button>
+          <button id="d-3" aria-pressed="false">3D</button>
+        </div>
+        <div class="row"><label for="q">states q</label><input id="q" type="range" min="3" max="16" step="1" value="4"><output id="q-out">4</output></div>
+        <div class="row"><label for="L">size L</label><input id="L" type="range" min="16" max="256" step="2" value="150"><output id="L-out">150</output></div>
+        <div class="seg" role="group" aria-label="Initial state">
+          <button id="i-ord" aria-pressed="true">Ordered start</button>
+          <button id="i-rand" aria-pressed="false">Random start</button>
+        </div>
+      </div>
+      <div class="group">
+        <h2>Parameters (live)</h2>
+        <div class="row"><label for="beta">β</label><input id="beta" type="range" min="0" max="4" step="0.01" value="1.5"><input id="beta-n" type="number" min="0" max="10" step="0.01" value="1.5" aria-label="β value"></div>
+        <div class="row"><label for="drift">drift d</label><input id="drift" type="range" min="0" max="3" step="0.01" value="0.85"><input id="drift-n" type="number" min="0" max="10" step="0.01" value="0.85" aria-label="drift value"></div>
+        <div class="row"><label for="speed">speed</label><input id="speed" type="range" min="-1" max="2.5" step="0.05" value="1.3"><output id="speed-out">20</output></div>
+        <p class="note" id="speed-note">Simulated time per second of wall clock.</p>
+      </div>
+      <div class="btns">
+        <button class="btn primary" id="play">Pause</button>
+        <button class="btn" id="reset">Restart</button>
+        <button class="btn" id="clear">Clear traces</button>
+      </div>
+      <label class="check"><input type="checkbox" id="showdef" checked> Mark ±1 vortices (2D)</label>
+      <p class="note" id="equiv"></p>
+    </aside>
+
+    <main class="card" style="display:grid; gap:14px;">
+      <div class="stats" aria-live="off">
+        <div class="stat"><span>time <i>t</i></span><b id="s-t">0</b></div>
+        <div class="stat"><span>|M| = s</span><b id="s-m">1.000</b></div>
+        <div class="stat"><span>ω = d arg M / dt</span><b id="s-w">–</b></div>
+        <div class="stat" id="def-stat"><span>vortices N₊ / N₋</span><b id="s-def">0 / 0</b></div>
+        <div class="stat"><span>phase</span><b><span class="state-pill" id="s-phase">starting</span></b></div>
+        <div class="stat"><span>rate</span><b id="s-rate">–</b></div>
+      </div>
+
+      <div class="views" id="views2d">
+        <figure><figcaption><span><i>σ<sup>A</sup></i> = sgn cos θ</span></figcaption><canvas class="lattice" id="cA"></canvas></figure>
+        <figure><figcaption><span><i>σ<sup>B</sup></i> = sgn sin θ</span></figcaption><canvas class="lattice" id="cB"></canvas></figure>
+        <figure><figcaption><span><i>θ</i></span><span class="keybar" id="key2d" aria-hidden="true"></span></figcaption><canvas class="lattice" id="cT"></canvas></figure>
+      </div>
+      <div class="views three-d" id="views3d" hidden>
+        <figure><figcaption><span>A-spins, up only</span></figcaption><canvas class="vol" id="vA"></canvas></figure>
+        <figure><figcaption><span>B-spins, up only</span></figcaption><canvas class="vol" id="vB"></canvas></figure>
+      </div>
+
+      <div>
+        <div class="legend">
+          <span><span class="sw" style="background:var(--ma)"></span><em>M<sub>A</sub></em></span>
+          <span><span class="sw" style="background:var(--mb)"></span><em>M<sub>B</sub></em></span>
+          <span><span class="sw" style="background:var(--ink)"></span><em>s</em> = ((M<sub>A</sub>²+M<sub>B</sub>²)/2)<sup>½</sup></span>
+          <span id="leg-def"><span class="sw" style="background:var(--muted)"></span>N₊+N₋ (scaled)</span>
+        </div>
+        <div class="plots">
+          <canvas class="plot" id="trace" height="220"></canvas>
+          <canvas class="plot" id="phase" height="220"></canvas>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <section class="card about">
+    <div>
+      <h2>The model</h2>
+      <p>Each site of the periodic lattice carries a clock spin k ∈ {0,…,q−1} with angle φ = 2πk/q. It advances or retreats by one step at the rates of <a href="https://doi.org/10.1007/s10955-011-0325-5">Maes &amp; Shlosman</a> (J. Stat. Phys. 144, 2011, Eq. 4), simulated exactly in continuous time:</p>
+      <div class="formula">c±(x) = p± · exp{ (β/2) Σ_y~x [ cos(φx − φy ± 2π/q) − cos(φx − φy) ] }
+d = log(p+/p−),   p+ + p− = 1</div>
+      <p>The XY option integrates Eq. 7: dφ = d·dt − Σ sin(φx − φy) dt + (2/β)<sup>½</sup> dW.</p>
+    </div>
+    <div>
+      <h2>Reading the views</h2>
+      <p>Pictures use θ = 2π(k + ½)/q, a global half-step rotation. For q = 4 the four states then sit on the diagonals, so σ<sup>A</sup> = sgn cos θ and σ<sup>B</sup> = sgn sin θ are two Ising spins whose cycle (++) → (−+) → (−−) → (+−) is the swap order of the nonreciprocal Ising model of <a href="https://arxiv.org/abs/2409.07481">Avni et al.</a>; then J̃ = dim·β and K̃ = d/2.</p>
+      <p>A vortex is a plaquette whose four corners wind once around the clock. In 3D, voxels are drawn semi-transparent with grey encoding depth (dark = front).</p>
+    </div>
+  </section>
+  <section class="card refs">
+    <h2>References</h2>
+    <ol>
+      <li>C. Maes and S. Shlosman, <a href="https://doi.org/10.1007/s10955-011-0325-5"><i>Rotating states in driven clock- and XY-models</i></a>, J. Stat. Phys. 144 (2011), 1238–1246.</li>
+      <li>Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli, <a href="https://arxiv.org/abs/2409.07481"><i>Dynamical phase transitions in the nonreciprocal Ising model</i></a>, arXiv:2409.07481.</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+"use strict";
+(() => {
+  // ---------------------------------------------------------------- colours
+  const STATE4 = [[0x7a,0x2a,0x7f],[0xd9,0x7a,0x1e],[0xec,0xd3,0x9a],[0x2b,0x8d,0xe0]];
+  function cyclic(f) {                    // f in [0,1): interpolate through the 4 state colours
+    f = ((f % 1) + 1) % 1;
+    const x = f * 4, i = Math.floor(x), u = x - i, a = STATE4[i % 4], b = STATE4[(i + 1) % 4];
+    return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u].map(Math.round);
+  }
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  // ---------------------------------------------------------------- RNG
+  let rs = (Math.random() * 4294967296) >>> 0 || 1;
+  function rnd() { rs ^= rs << 13; rs ^= rs >>> 17; rs ^= rs << 5; return (rs >>> 0) / 4294967296; }
+  function gauss() { let u = 0; while (u === 0) u = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.283185307179586 * rnd()); }
+  function poisson(mu) {
+    if (mu < 30) { let L = Math.exp(-mu), k = 0, p = 1; do { k++; p *= rnd(); } while (p > L); return k - 1; }
+    return Math.max(0, Math.round(mu + Math.sqrt(mu) * gauss()));
+  }
+
+  // ---------------------------------------------------------------- models
+  class Clock {
+    constructor(L, dim, q, beta, d, init) {
+      this.L = L; this.dim = dim; this.q = q; this.N = dim === 2 ? L * L : L * L * L;
+      this.s = new Uint8Array(this.N);
+      if (init === "random") for (let i = 0; i < this.N; i++) this.s[i] = (rnd() * q) | 0;
+      this.counts = new Float64Array(q);
+      for (let i = 0; i < this.N; i++) this.counts[this.s[i]]++;
+      this.th = new Float64Array(q); for (let k = 0; k < q; k++) this.th[k] = 2 * Math.PI * (k + 0.5) / q;
+      this.t = 0; this.set(beta, d);
+    }
+    set(beta, d) {
+      const q = this.q, b = beta / 2; this.beta = beta; this.d = d;
+      const incF = [], incB = []; let D = -Infinity;
+      for (let m = 0; m < q; m++) {
+        const ph = 2 * Math.PI * m / q;
+        incF[m] = Math.cos(ph + 2 * Math.PI / q) - Math.cos(ph);
+        incB[m] = Math.cos(ph - 2 * Math.PI / q) - Math.cos(ph);
+        D = Math.max(D, incF[m], incB[m]);
+      }
+      this.fwd = new Float64Array(q); this.bwd = new Float64Array(q);
+      for (let m = 0; m < q; m++) { this.fwd[m] = Math.exp(b * (incF[m] - D)); this.bwd[m] = Math.exp(b * (incB[m] - D)); }
+      this.B = Math.exp(b * D * 2 * this.dim);
+      this.pp = 1 / (1 + Math.exp(-d)); this.pm = 1 - this.pp;
+    }
+    // cost of advancing by dt, in proposals
+    cost(dt) { return this.N * this.B * dt; }
+    advance(dt) {
+      const n = poisson(this.N * this.B * dt);
+      const s = this.s, L = this.L, L2 = L * L, N = this.N, q = this.q, fwd = this.fwd, bwd = this.bwd, cnt = this.counts;
+      const pp = this.pp, pm = this.pm, three = this.dim === 3;
+      let r = rs;
+      for (let c = 0; c < n; c++) {
+        r ^= r << 13; r ^= r >>> 17; r ^= r << 5;
+        const i = ((r >>> 0) / 4294967296 * N) | 0;
+        const k = s[i], x = i % L, y = ((i / L) | 0) % L;
+        let af = pp, ab = pm, m;
+        m = k - s[x + 1 < L ? i + 1 : i + 1 - L]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+        m = k - s[x > 0 ? i - 1 : i + L - 1]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+        m = k - s[y + 1 < L ? i + L : i + L - L2]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+        m = k - s[y > 0 ? i - L : i + L2 - L]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+        if (three) {
+          const z = (i / L2) | 0;
+          m = k - s[z + 1 < L ? i + L2 : i + L2 - N]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+          m = k - s[z > 0 ? i - L2 : i + N - L2]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+        }
+        r ^= r << 13; r ^= r >>> 17; r ^= r << 5;
+        const u = (r >>> 0) / 4294967296;
+        let kn;
+        if (u < af) kn = k + 1 === q ? 0 : k + 1;
+        else if (u < af + ab) kn = k === 0 ? q - 1 : k - 1;
+        else continue;
+        s[i] = kn; cnt[k]--; cnt[kn]++;
+      }
+      rs = r || 1;
+      this.t += dt;
+    }
+    theta(i) { return this.th[this.s[i]]; }
+    mags() {
+      let ma = 0, mb = 0, mx = 0, my = 0;
+      for (let k = 0; k < this.q; k++) {
+        const c = Math.cos(this.th[k]), sn = Math.sin(this.th[k]), w = this.counts[k];
+        mx += w * c; my += w * sn;
+        ma += w * (Math.abs(c) < 1e-9 ? 0 : Math.sign(c)); mb += w * (Math.abs(sn) < 1e-9 ? 0 : Math.sign(sn));
+      }
+      return [ma / this.N, mb / this.N, mx / this.N, my / this.N];
+    }
+    colorIndex(i) { return this.s[i]; }
+  }
+
+  class XY {
+    constructor(L, dim, beta, d, init) {
+      this.L = L; this.dim = dim; this.N = dim === 2 ? L * L : L * L * L; this.q = 0;
+      this.phi = new Float64Array(this.N); this.f = new Float64Array(this.N);
+      if (init === "random") for (let i = 0; i < this.N; i++) this.phi[i] = 2 * Math.PI * rnd();
+      else this.phi.fill(Math.PI / 4);
+      this.t = 0; this.h = 0.04; this.set(beta, d);
+    }
+    set(beta, d) { this.beta = Math.max(beta, 1e-3); this.d = d; }
+    cost(dt) { return this.N * (dt / this.h) * 8; }
+    advance(dt) {
+      const n = Math.max(1, Math.round(dt / this.h)), h = dt / n, amp = Math.sqrt(2 * h / this.beta);
+      const L = this.L, L2 = L * L, N = this.N, p = this.phi, f = this.f, three = this.dim === 3;
+      for (let st = 0; st < n; st++) {
+        for (let i = 0; i < N; i++) {
+          const x = i % L, y = ((i / L) | 0) % L, a = p[i];
+          let s = Math.sin(a - p[x + 1 < L ? i + 1 : i + 1 - L]) + Math.sin(a - p[x > 0 ? i - 1 : i + L - 1])
+                + Math.sin(a - p[y + 1 < L ? i + L : i + L - L2]) + Math.sin(a - p[y > 0 ? i - L : i + L2 - L]);
+          if (three) { const z = (i / L2) | 0; s += Math.sin(a - p[z + 1 < L ? i + L2 : i + L2 - N]) + Math.sin(a - p[z > 0 ? i - L2 : i + N - L2]); }
+          f[i] = s;
+        }
+        for (let i = 0; i < N; i++) p[i] += (this.d - f[i]) * h + amp * gauss();
+      }
+      for (let i = 0; i < N; i++) { p[i] %= 2 * Math.PI; if (p[i] < 0) p[i] += 2 * Math.PI; }
+      this.t += dt;
+    }
+    theta(i) { return this.phi[i]; }
+    mags() {
+      let ma = 0, mb = 0, mx = 0, my = 0;
+      for (let i = 0; i < this.N; i++) { const c = Math.cos(this.phi[i]), s = Math.sin(this.phi[i]); mx += c; my += s; ma += Math.sign(c); mb += Math.sign(s); }
+      return [ma / this.N, mb / this.N, mx / this.N, my / this.N];
+    }
+  }
+
+  // ---------------------------------------------------------------- state
+  const PRESETS = {
+    fig8:   { model: "clock", dim: 2, q: 4, L: 150, beta: 1.5, d: 0.85, init: "ordered", speed: 1.9 },
+    fig10:  { model: "clock", dim: 3, q: 4, L: 48,  beta: 0.5, d: 0.2,  init: "ordered", speed: 1.3 },
+    swap2d: { model: "clock", dim: 2, q: 4, L: 120, beta: 1.4, d: 0.6,  init: "ordered", speed: 1.9 },
+    clock8: { model: "clock", dim: 3, q: 8, L: 40,  beta: 1.05, d: 0.65, init: "ordered", speed: 1.1 },
+    xy2d:   { model: "xy",    dim: 2, q: 4, L: 96,  beta: 2.0, d: 0.5,  init: "random",  speed: 0.7 },
+    xy3d:   { model: "xy",    dim: 3, q: 4, L: 32,  beta: 1.0, d: 0.5,  init: "ordered", speed: 0.6 },
+    eq:     { model: "clock", dim: 2, q: 4, L: 128, beta: 1.6, d: 0.0,  init: "random",  speed: 1.6 },
+  };
+  const S = { model: "clock", dim: 2, q: 4, L: 150, beta: 1.5, d: 0.85, init: "ordered", speed: 1.3, running: true, showdef: true };
+  const WIN = 1000;                       // width of the M(t) time window
+  let sim = null, hist = [], lastArg = null, omegaEst = null, rateEst = 0, defs = [0, 0];
+
+  const $ = (id) => document.getElementById(id);
+  function setPressed(a, b, on) { $(a).setAttribute("aria-pressed", on); $(b).setAttribute("aria-pressed", !on); }
+  function syncUI() {
+    setPressed("m-clock", "m-xy", S.model === "clock");
+    setPressed("d-2", "d-3", S.dim === 2);
+    setPressed("i-ord", "i-rand", S.init === "ordered");
+    $("q").value = S.q; $("q-out").textContent = S.model === "xy" ? "∞" : S.q; $("q").disabled = S.model === "xy";
+    const maxL = S.dim === 2 ? 256 : 80, minL = S.dim === 2 ? 16 : 12;
+    $("L").max = maxL; $("L").min = minL; S.L = Math.min(Math.max(S.L, minL), maxL);
+    $("L").value = S.L; $("L-out").textContent = S.L;
+    $("beta").value = S.beta; $("beta-n").value = S.beta; $("drift").value = S.d; $("drift-n").value = S.d;
+    $("speed").value = S.speed; $("speed-out").textContent = fmtSpeed();
+    $("views2d").hidden = S.dim !== 2; $("views3d").hidden = S.dim !== 3;
+    $("def-stat").style.visibility = S.dim === 2 ? "visible" : "hidden";
+    $("leg-def").hidden = S.dim !== 2;
+    $("equiv").textContent = (S.model === "clock" && S.q === 4)
+      ? `Nonreciprocal Ising equivalent (exponential rates): J̃ = ${(S.dim * S.beta).toFixed(2)}, K̃ = ${(S.d / 2).toFixed(2)}.`
+      : (S.model === "xy" ? "Driven XY: rotation decouples exactly, θ(t) − d·t follows equilibrium XY dynamics (Maes–Shlosman, Sec. 4)." : "");
+    drawKeys();
+  }
+  const speedVal = () => Math.pow(10, S.speed);
+  function fmtSpeed() { const v = speedVal(); return v >= 10 ? v.toFixed(0) : v.toFixed(v >= 1 ? 1 : 2); }
+
+  function restart() {
+    rs = (Math.random() * 4294967296) >>> 0 || 1;
+    sim = S.model === "clock" ? new Clock(S.L, S.dim, S.q, S.beta, S.d, S.init) : new XY(S.L, S.dim, S.beta, S.d, S.init);
+    hist = []; lastArg = null; omegaEst = null; defs = [0, 0];
+    setupCanvases(); sample(); draw();
+  }
+
+  // ---------------------------------------------------------------- canvases
+  let off2d = null, vol = null;
+  function setupCanvases() {
+    const L = S.L;
+    if (S.dim === 2) {
+      const sz = Math.min(600, Math.max(300, L * 3));
+      for (const id of ["cA", "cB", "cT"]) { const c = $(id); c.width = sz; c.height = sz; }
+      off2d = { A: new ImageData(L, L), B: new ImageData(L, L), T: new ImageData(L, L), cv: document.createElement("canvas") };
+      off2d.cv.width = L; off2d.cv.height = L;
+    } else {
+      const px = Math.max(2, Math.round(220 / L)), side = L * px, step = 0.55 * px, ang = 35 * Math.PI / 180;
+      const ox = [], oy = [];
+      for (let z = 0; z < L; z++) { ox.push(Math.round(z * step * Math.cos(ang))); oy.push(Math.round(z * step * Math.sin(ang))); }
+      const W = side + ox[L - 1] + 1, H = side + oy[L - 1] + 1, pad = 6;
+      vol = { px, side, ox, oy, W, H, pad, alpha: Math.min(0.25, 4 / L), col: new Float32Array(W * H), T: new Float32Array(W * H), img: new ImageData(W, H) };
+      for (const id of ["vA", "vB"]) { const c = $(id); c.width = W + 2 * pad; c.height = H + 2 * pad; }
+    }
+  }
+
+  function rgbOf(i) {
+    if (sim.q) return QCOL[sim.s[i]];
+    return cyclic(sim.phi[i] / (2 * Math.PI) - 0.125);
+  }
+  let QCOL = [];
+  function buildQCol() { QCOL = []; for (let k = 0; k < S.q; k++) QCOL.push(cyclic(k / S.q)); }
+
+  function draw2d() {
+    const L = sim.L, A = off2d.A.data, B = off2d.B.data, T = off2d.T.data;
+    for (let y = 0; y < L; y++) for (let x = 0; x < L; x++) {
+      const i = y * L + x, j = ((L - 1 - y) * L + x) * 4, th = sim.theta(i);
+      const c = Math.cos(th), s = Math.sin(th);
+      const a = Math.abs(c) < 1e-9 ? 128 : (c > 0 ? 255 : 0), b = Math.abs(s) < 1e-9 ? 128 : (s > 0 ? 255 : 0);
+      A[j] = A[j + 1] = A[j + 2] = a; A[j + 3] = 255;
+      B[j] = B[j + 1] = B[j + 2] = b; B[j + 3] = 255;
+      const col = rgbOf(i); T[j] = col[0]; T[j + 1] = col[1]; T[j + 2] = col[2]; T[j + 3] = 255;
+    }
+    const blit = (id, img, marks) => {
+      const c = $(id), ctx = c.getContext("2d");
+      off2d.cv.getContext("2d").putImageData(img, 0, 0);
+      ctx.imageSmoothingEnabled = false; ctx.drawImage(off2d.cv, 0, 0, c.width, c.height);
+      if (marks) {
+        const sc = c.width / L;
+        ctx.lineWidth = Math.max(1.5, sc * 0.6);
+        for (const [x, y, ch] of marks) {
+          ctx.strokeStyle = ch > 0 ? "#ffffff" : "#000000";
+          ctx.beginPath(); ctx.arc((x + 1) * sc, (L - 1 - y) * sc, Math.max(4, sc * 2.2), 0, 2 * Math.PI); ctx.stroke();
+        }
+      }
+    };
+    const marks = S.showdef ? vortexList() : null;
+    blit("cA", off2d.A, null); blit("cB", off2d.B, null); blit("cT", off2d.T, marks);
+  }
+
+  // plaquette charges ----------------------------------------------------------
+  let vlist = [];
+  function computeVortices() {
+    if (S.dim !== 2) return;
+    const L = sim.L; let np = 0, nm = 0; vlist = [];
+    const q = sim.q;
+    for (let y = 0; y < L; y++) for (let x = 0; x < L; x++) {
+      const x1 = (x + 1) % L, y1 = (y + 1) % L;
+      const id = [y * L + x, y * L + x1, y1 * L + x1, y1 * L + x, y * L + x];
+      let tot = 0, amb = false;
+      if (q) {
+        for (let e = 0; e < 4; e++) {
+          let w = sim.s[id[e + 1]] - sim.s[id[e]];
+          w = ((w + (q >> 1)) % q + q) % q - (q >> 1);
+          if (q % 2 === 0 && w === -(q >> 1)) amb = true;
+          tot += w;
+        }
+        if (amb) continue;
+        tot = Math.round(tot / q);
+      } else {
+        for (let e = 0; e < 4; e++) { let w = sim.phi[id[e + 1]] - sim.phi[id[e]]; w -= 2 * Math.PI * Math.round(w / (2 * Math.PI)); tot += w; }
+        tot = Math.round(tot / (2 * Math.PI));
+      }
+      if (tot > 0) { np++; vlist.push([x, y, 1]); } else if (tot < 0) { nm++; vlist.push([x, y, -1]); }
+    }
+    defs = [np, nm];
+  }
+  function vortexList() { return vlist; }
+
+  // 3D volume rendering ---------------------------------------------------------
+  function drawVolume(id, which) {
+    const L = sim.L, v = vol, col = v.col, T = v.T, W = v.W, H = v.H, side = v.side, px = v.px, a = v.alpha;
+    col.fill(0); T.fill(1);
+    const L2 = L * L;
+    for (let z = 0; z < L; z++) {
+      const shade = 0.93 * z / (L - 1), x0 = v.ox[z], y0 = H - side - v.oy[z];
+      for (let y = 0; y < L; y++) {
+        const rowY = y0 + (L - 1 - y) * px;
+        for (let x = 0; x < L; x++) {
+          const th = sim.theta(z * L2 + y * L + x);
+          const up = which === 0 ? Math.cos(th) > 1e-9 : Math.sin(th) > 1e-9;
+          if (!up) continue;
+          const bx = x0 + x * px;
+          for (let dy = 0; dy < px; dy++) {
+            let o = (rowY + dy) * W + bx;
+            for (let dx = 0; dx < px; dx++, o++) { const w = T[o] * a; col[o] += w * shade; T[o] -= w; }
+          }
+        }
+      }
+    }
+    const d = v.img.data;
+    for (let o = 0, j = 0; o < W * H; o++, j += 4) { const g = Math.min(255, Math.round((col[o] + T[o]) * 255)); d[j] = d[j + 1] = d[j + 2] = g; d[j + 3] = 255; }
+    const c = $(id), ctx = c.getContext("2d");
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.putImageData(v.img, v.pad, v.pad);
+    // cube edges
+    const p = v.pad, dx = v.ox[L - 1], dy = v.oy[L - 1];
+    const f = [[0, H], [side, H], [side, H - side], [0, H - side]].map(([x, y]) => [x + p, y + p - 1]);
+    const b = f.map(([x, y]) => [x + dx, y - dy]);
+    ctx.lineWidth = 1; ctx.strokeStyle = "#222";
+    const seg = (u, w, dash) => { ctx.setLineDash(dash ? [4, 3] : []); ctx.strokeStyle = dash ? "#999" : "#222"; ctx.beginPath(); ctx.moveTo(u[0], u[1]); ctx.lineTo(w[0], w[1]); ctx.stroke(); };
+    for (let i = 0; i < 4; i++) { seg(f[i], f[(i + 1) % 4], false); }
+    seg(b[1], b[2], false); seg(b[2], b[3], false); seg(f[1], b[1], false); seg(f[2], b[2], false); seg(f[3], b[3], false);
+    seg(f[0], b[0], true); seg(b[0], b[1], true); seg(b[3], b[0], true);
+    ctx.setLineDash([]);
+  }
+
+
+  // traces ------------------------------------------------------------------------
+  function sizePlot(c) {
+    const r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(100, Math.round(r.width * dpr)), h = Math.round((c.id === "phase" ? r.width : 220) * dpr);
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    return dpr;
+  }
+  function drawTraces() {
+    const c = $("trace"), dpr = sizePlot(c), ctx = c.getContext("2d"), W = c.width, H = c.height;
+    const ml = 34 * dpr, mr = 20 * dpr, mt = 8 * dpr, mb = 22 * dpr;
+    ctx.fillStyle = css("--plot-bg"); ctx.fillRect(0, 0, W, H);
+    // fixed window [0, WIN] until t reaches WIN, then [t - WIN, t] slides along
+    const tNow = hist.length ? hist[hist.length - 1][0] : 0, t1 = Math.max(WIN, tNow), t0 = t1 - WIN;
+    const X = (t) => ml + (t - t0) / (t1 - t0) * (W - ml - mr), Y = (v) => mt + (1.1 - v) / 2.2 * (H - mt - mb);
+    ctx.strokeStyle = css("--grid"); ctx.lineWidth = 1;
+    ctx.fillStyle = css("--muted"); ctx.font = `${11 * dpr}px ${css("--f-mono")}`; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (const v of [-1, 0, 1]) { ctx.beginPath(); ctx.moveTo(ml, Y(v)); ctx.lineTo(W - mr, Y(v)); ctx.stroke(); ctx.fillText(v, ml - 6 * dpr, Y(v)); }
+    // time ticks
+    const span = t1 - t0, raw = span / 5, mag = Math.pow(10, Math.floor(Math.log10(raw))), stp = [1, 2, 5, 10].map((m) => m * mag).find((s) => s >= raw);
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let t = Math.ceil(t0 / stp) * stp; t <= t1; t += stp) { ctx.beginPath(); ctx.moveTo(X(t), mt); ctx.lineTo(X(t), H - mb); ctx.stroke(); ctx.fillText(Math.round(t), X(t), H - mb + 4 * dpr); }
+    ctx.save(); ctx.beginPath(); ctx.rect(ml, 0, W - ml - mr, H - mb); ctx.clip();
+    const line = (k, color, w) => { ctx.strokeStyle = color; ctx.lineWidth = w * dpr; ctx.beginPath(); hist.forEach((h, i) => { const x = X(h[0]), y = Y(h[k]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); };
+    if (S.dim === 2 && hist.length) {
+      const mx = Math.max(10, ...hist.map((h) => h[4]));
+      ctx.fillStyle = css("--grid");
+      ctx.strokeStyle = css("--muted"); ctx.lineWidth = 1 * dpr; ctx.beginPath();
+      hist.forEach((h, i) => { const x = X(h[0]), y = Y(-1.1 + 1.0 * h[4] / mx); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+    }
+    line(1, css("--ma"), 1.5); line(2, css("--mb"), 1.5); line(3, css("--ink"), 1.2);
+    ctx.restore();
+
+    const p = $("phase"), dp = sizePlot(p), g = p.getContext("2d"), P = p.width;
+    g.fillStyle = css("--plot-bg"); g.fillRect(0, 0, P, P);
+    const m = 26 * dp, Z = (v) => m + (1.1 + v) / 2.2 * (P - 2 * m), Zy = (v) => P - Z(v);
+    g.strokeStyle = css("--grid"); g.lineWidth = 1;
+    g.fillStyle = css("--muted"); g.font = `${11 * dp}px ${css("--f-mono")}`; g.textAlign = "center"; g.textBaseline = "top";
+    for (const v of [-1, 0, 1]) {
+      g.beginPath(); g.moveTo(Z(v), m * 0.4); g.lineTo(Z(v), P - m); g.stroke();
+      g.beginPath(); g.moveTo(m, Zy(v)); g.lineTo(P - m * 0.4, Zy(v)); g.stroke();
+      g.fillText(v, Z(v), P - m + 4 * dp);
+    }
+    g.textAlign = "right"; g.textBaseline = "middle"; for (const v of [-1, 1]) g.fillText(v, m - 5 * dp, Zy(v));
+    g.font = `italic ${13 * dp}px ${css("--f-display")}`; g.fillStyle = css("--ink");
+    const sub = (x, y, main, idx) => {
+      g.font = `italic ${14 * dp}px ${css("--f-display")}`; g.fillText(main, x, y);
+      const w = g.measureText(main).width; g.font = `${10 * dp}px ${css("--f-display")}`; g.fillText(idx, x + w + 1, y + 4 * dp);
+    };
+    g.textAlign = "left"; g.textBaseline = "bottom"; sub(P - m * 1.3, Zy(0) - 3 * dp, "M", "A");
+    g.textBaseline = "top"; sub(Z(0) + 5 * dp, m * 0.3, "M", "B");
+    g.strokeStyle = css("--traj"); g.lineWidth = 1.3 * dp; g.beginPath();
+    const tail = hist.slice(-1500);
+    tail.forEach((h, i) => { const x = Z(h[1]), y = Zy(h[2]); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke();
+    if (tail.length) { const h = tail[tail.length - 1]; g.fillStyle = css("--traj"); g.beginPath(); g.arc(Z(h[1]), Zy(h[2]), 3.5 * dp, 0, 2 * Math.PI); g.fill(); }
+  }
+
+  function drawKeys() {
+    for (const id of ["key2d"]) {
+      const el = $(id); el.innerHTML = "";
+      const n = S.model === "clock" ? S.q : 24;
+      for (let k = 0; k < n; k++) { const c = cyclic(k / n); const d = document.createElement("div"); d.style.background = `rgb(${c})`; el.appendChild(d); }
+    }
+  }
+
+  // ---------------------------------------------------------------- loop
+  function sample() {
+    const [ma, mb, mx, my] = sim.mags();
+    if (S.dim === 2) computeVortices();
+    const sAbs = Math.hypot(mx, my);
+    hist.push([sim.t, ma, mb, Math.sqrt((ma * ma + mb * mb) / 2), defs[0] + defs[1]]);
+    let cut = 0; while (cut < hist.length - 1 && hist[cut][0] < sim.t - WIN) cut++;
+    if (cut) hist = hist.slice(cut);
+    if (hist.length > 8000) hist = hist.filter((_, i) => i % 2 === 0 || i === hist.length - 1);
+    const arg = Math.atan2(my, mx);
+    if (lastArg !== null && sAbs > 0.05) {
+      let da = arg - lastArg[0]; da -= 2 * Math.PI * Math.round(da / (2 * Math.PI));
+      const dt = sim.t - lastArg[1];
+      if (dt > 0) { const w = da / dt; omegaEst = omegaEst === null ? w : 0.95 * omegaEst + 0.05 * w; }
+    }
+    lastArg = [arg, sim.t];
+    $("s-t").textContent = sim.t < 1000 ? sim.t.toFixed(1) : Math.round(sim.t);
+    $("s-m").textContent = sAbs.toFixed(3);
+    $("s-w").textContent = omegaEst === null || sAbs < 0.05 ? "–" : omegaEst.toFixed(4);
+    $("s-def").textContent = `${defs[0]} / ${defs[1]}`;
+    let phase;
+    if (sAbs < 0.15) phase = S.dim === 2 && defs[0] + defs[1] > 2 ? "disordered, vortices" : "disordered";
+    else if (omegaEst !== null && Math.abs(omegaEst) > 2e-3) phase = "rotating";
+    else phase = "ordered, static";
+    $("s-phase").textContent = phase;
+  }
+
+  function draw() {
+    if (S.dim === 2) draw2d(); else { drawVolume("vA", 0); drawVolume("vB", 1); }
+    drawTraces();
+  }
+
+  let simDebt = 0, lastFrame = performance.now(), workPerMs = null, frameCount = 0, tAcc = 0, wallAcc = 0;
+  function frame(now) {
+    const wall = Math.min(0.1, (now - lastFrame) / 1000); lastFrame = now;
+    if (S.running && sim) {
+      const want = speedVal() * wall + simDebt;
+      // cap work per frame to ~22 ms of simulation
+      const budget = 22;
+      let dt = want;
+      if (workPerMs) dt = Math.min(want, budget * workPerMs / Math.max(1, sim.cost(1)));
+      const t0 = performance.now();
+      if (dt > 0) sim.advance(dt);
+      const el = Math.max(0.05, performance.now() - t0);
+      if (dt > 0) { const wpm = sim.cost(dt) / el; workPerMs = workPerMs ? 0.8 * workPerMs + 0.2 * wpm : wpm; }
+      simDebt = Math.min(want - dt, speedVal() * 0.25);
+      tAcc += dt; wallAcc += wall;
+      if (wallAcc > 0.5) { $("s-rate").textContent = (tAcc / wallAcc).toFixed(tAcc / wallAcc < 10 ? 2 : 0) + " t/s"; tAcc = 0; wallAcc = 0; }
+      sample(); draw();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ---------------------------------------------------------------- events
+  function applyPreset(name) {
+    Object.assign(S, PRESETS[name]); buildQCol(); syncUI(); restart();
+  }
+  $("preset").addEventListener("change", (e) => applyPreset(e.target.value));
+  $("m-clock").onclick = () => { S.model = "clock"; syncUI(); restart(); };
+  $("m-xy").onclick = () => { S.model = "xy"; syncUI(); restart(); };
+  $("d-2").onclick = () => { S.dim = 2; if (S.L < 64) S.L = 128; syncUI(); restart(); };
+  $("d-3").onclick = () => { S.dim = 3; S.L = Math.min(S.L, 48); syncUI(); restart(); };
+  $("i-ord").onclick = () => { S.init = "ordered"; syncUI(); restart(); };
+  $("i-rand").onclick = () => { S.init = "random"; syncUI(); restart(); };
+  $("q").addEventListener("input", (e) => { S.q = +e.target.value; $("q-out").textContent = S.q; });
+  $("q").addEventListener("change", () => { buildQCol(); syncUI(); restart(); });
+  $("L").addEventListener("input", (e) => { S.L = +e.target.value; $("L-out").textContent = S.L; });
+  $("L").addEventListener("change", () => restart());
+  const live = (key, a, b) => {
+    const upd = (v) => { if (!isFinite(v) || v < 0) return; S[key] = v; $(a).value = v; $(b).value = v; sim.set(S.beta, S.d); syncUI(); };
+    $(a).addEventListener("input", (e) => upd(+e.target.value));
+    $(b).addEventListener("change", (e) => upd(+e.target.value));
+  };
+  live("beta", "beta", "beta-n"); live("d", "drift", "drift-n");
+  $("speed").addEventListener("input", (e) => { S.speed = +e.target.value; $("speed-out").textContent = fmtSpeed(); });
+  $("play").onclick = () => { S.running = !S.running; $("play").textContent = S.running ? "Pause" : "Run"; };
+  $("reset").onclick = () => restart();
+  $("clear").onclick = () => { hist = hist.slice(-1); };
+  $("showdef").addEventListener("change", (e) => { S.showdef = e.target.checked; if (sim && S.dim === 2) draw2d(); });
+  window.addEventListener("resize", () => { if (sim) drawTraces(); });
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq.addEventListener) mq.addEventListener("change", () => sim && drawTraces());
+
+  applyPreset("fig8");
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
