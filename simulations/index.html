@@ -2,44 +2,72 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Simulations – Jonas Köppl</title>
-<meta name="description" content="Live simulations of the driven clock and XY models of Maes and Shlosman in two and three dimensions.">
+<meta name="description" content="Live simulations of the driven clock and XY models of Maes and Shlosman and of Lipowski&#39;s lattice prey-predator model, in two and three dimensions.">
 <meta name="author" content="Jonas Köppl">
+<meta property="og:title" content="Driven clock simulations – Jonas Köppl">
+<meta property="og:description" content="Live simulations of the driven clock and XY models of Maes and Shlosman: rotating states, spiral defects and long-range correlations, in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jonaskoeppl.github.io/simulations/">
+<meta property="og:image" content="https://jonaskoeppl.github.io/simulations/media/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jonaskoeppl.github.io/simulations/media/preview.png">
+<script>
+// apply a saved theme choice before the page is drawn
+try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) { /* storage unavailable */ }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <style>
 /* Layout: instrument panel. Controls rail on the left, live readouts on top, lattice views and traces in a grid. */
 :root {
-  --bg: #ffffff;
-  --panel: #ffffff;
-  --ink: #000000;
-  --muted: #555b61;
-  --line: #d5d9db;
-  --accent: #1f3777;          /* link colour of the main site */
+  /* palette of the start page (the colours of the gallery view); token names of the simulator */
+  --bg: #F2EDE2;              /* ground */
+  --panel: #EAE4D6;           /* surfaces */
+  --ink: #15131A;
+  --muted: #5C5749;
+  --line: #D8CFBB;
+  --accent: #8E4257;          /* buttons, active controls, measured points */
   --ma: #1f2fd6;              /* M_A trace, as in Avni et al. */
-  --mb: #e3262b;              /* M_B trace */
-  --traj: #d23fd2;            /* phase-plane trajectory */
-  --plot-bg: #ffffff;
-  --grid: #eceff1;
-  --chip: #e5eeee;
-  --f-display: Times, "Times New Roman", serif;
-  --f-body: Times, "Times New Roman", serif;
-  --f-mono: ui-monospace, Menlo, Consolas, monospace;
+  --mb: #d9262b;              /* M_B trace */
+  --traj: #c43fc4;            /* phase-plane trajectory */
+  --plot-bg: #F7F4EC;
+  --grid: #E4DCCB;
+  --chip: #F2EDE2;
+  --f-display: "STIX Two Text", "STIX Two", "Iowan Old Style", Georgia, serif;
+  --f-body: "STIX Two Text", "STIX Two", "Iowan Old Style", Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --edge: clamp(1.25rem, 5vw, 3rem);
   color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15131A; --panel: #1D1A24; --ink: #EFE9DC; --muted: #9E9686; --line: #34303D;
+    --accent: #D9768F; --ma: #A8D8E8; --mb: #ff6b6b; --traj: #E3B95F;
+    --plot-bg: #1A1720; --grid: #2C2834; --chip: #15131A; color-scheme: dark;
+  }
+}
+/* a manual choice (theme button) overrides the system setting */
+:root[data-theme="dark"] {
+  --bg: #15131A; --panel: #1D1A24; --ink: #EFE9DC; --muted: #9E9686; --line: #34303D;
+  --accent: #D9768F; --ma: #A8D8E8; --mb: #ff6b6b; --traj: #E3B95F;
+  --plot-bg: #1A1720; --grid: #2C2834; --chip: #15131A; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { background: var(--bg); color: var(--ink); }
-body { font-family: var(--f-body); font-size: 17px; line-height: 1.45; margin: 0;
+body { font-family: var(--f-body); font-size: 14px; line-height: 1.45; margin: 0;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 18px 32px; }
-.wrap { max-width: 76em; margin: 0 auto; display: grid; gap: 16px; }
-header { display: grid; gap: 10px; }
-h1 { font-family: var(--f-display); font-weight: bold; font-size: 2em; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
-header p { margin: 0; max-width: 75ch; line-height: 1.35; text-align: justify; }
-.back { font-family: var(--f-body); }
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-.layout { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 16px; align-items: start; }
+.wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 16px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+h1 { font-family: var(--f-display); font-weight: 600; font-size: 30px; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 70ch; }
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 16px; align-items: start; }
 @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-width: 0; }
 .controls { display: grid; gap: 14px; }
@@ -50,17 +78,35 @@ a:hover { text-decoration: underline; }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--panel); }
 .row { display: grid; grid-template-columns: 74px minmax(0, 1fr) 58px; gap: 8px; align-items: center; }
-.row label { color: var(--muted); font-size: 15px; }
+.row label { color: var(--muted); font-size: 13px; }
 .row output, .row input[type=number] { font-family: var(--f-mono); font-size: 12.5px; text-align: right; font-variant-numeric: tabular-nums; }
 .row input[type=number] { width: 100%; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 3px 4px; }
 input[type=range] { width: 100%; accent-color: var(--accent); }
 select { font: inherit; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 6px; width: 100%; }
 .btns { display: flex; gap: 8px; flex-wrap: wrap; }
-.btn { font: inherit; border: 1px solid var(--line); background: #cdd1d3; color: var(--ink); padding: 7px 12px; border-radius: 6px; cursor: pointer; }
+.btn { font: inherit; font-weight: 500; border: 1px solid var(--line); background: var(--chip); color: var(--ink); padding: 7px 12px; border-radius: 6px; cursor: pointer; }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); min-width: 84px; }
 .btn:focus-visible, .seg button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .check { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 13px; }
 .note { font-size: 12px; color: var(--muted); margin: 0; }
+.hint { margin: 0; font-size: 13px; line-height: 1.45; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--chip); border-radius: 0 6px 6px 0; }
+.linkout { width: 100%; font-family: var(--f-mono); font-size: 12px; padding: 5px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--ink); }
+.results-box { display: grid; gap: 16px; }
+.results-box > summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; list-style-position: outside; }
+.results-box > summary { list-style: none; }
+.results-box > summary::-webkit-details-marker { display: none; }
+.results-box > summary::before { content: "▸"; color: var(--muted); font-size: 15px; width: 1em; display: inline-block; }
+.results-box[open] > summary::before { content: "▾"; }
+.results-box > summary h2 { display: inline; }
+.results-box > summary .sum-note { font-size: 13px; color: var(--muted); }
+.results-box[open] > summary { margin-bottom: 14px; }
+.results-box > p { margin: 0 0 14px; max-width: 75ch; }
+.results h2 { font-family: var(--f-display); font-weight: 600; font-size: 19px; margin: 0; }
+
+.media-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 22px 18px; align-items: start; }
+.media-grid figure { margin: 0; display: grid; gap: 6px; }
+.media-grid img, .media-grid video { width: 100%; max-width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 4px; background: #fff; }
+.media-grid figcaption { display: block; font-size: 13px; color: var(--muted); }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
 .stat { display: grid; gap: 2px; }
 .stat > span { font-size: 12px; color: var(--muted); letter-spacing: 0.02em; }
@@ -119,63 +165,165 @@ figcaption i { font-family: var(--f-display); font-size: 16px; color: var(--ink)
 .refs ol { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; }
 .formula { font-family: var(--f-mono); font-size: 12.5px; background: var(--chip); padding: 8px 10px; border-radius: 6px; overflow-x: auto; white-space: pre; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+
+/* ---- start-page identity ---- */
+body { padding: 0 !important; font-size: 16.5px; line-height: 1.55; }
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-color: currentColor; }
+.about a, .refs a { color: inherit; }
+.top { padding: 1.25rem var(--edge); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.top .name { margin-right: auto; text-decoration: none; text-transform: uppercase; letter-spacing: 0.28em; font-size: 0.72rem; font-family: var(--f-mono); }
+.nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; font-size: 0.95rem; }
+.nav a { text-decoration: none; white-space: nowrap; }
+.nav a:hover, .nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--accent); }
+.nav .ext { color: var(--muted); }
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: none; color: var(--quiet); cursor: pointer; flex: none; }
+.theme-toggle:hover { color: var(--text); border-color: var(--quiet); }
+.theme-toggle svg { width: 1rem; height: 1rem; }
+.theme-toggle .sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .sun { display: block; }
+  :root:not([data-theme="light"]) .theme-toggle .moon { display: none; }
+}
+.menu-open, .menu-close { display: none; font: inherit; font-size: 0.95rem; color: inherit; background: none; border: 0; padding: 0.25rem 0; cursor: pointer; }
+@media (min-width: 62.01rem) {
+  .nav[popover] { display: block; position: static; inset: auto; margin: 0; padding: 0; border: 0; background: none; color: inherit; overflow: visible; }
+}
+@media (max-width: 62rem) {
+  .menu-open { display: block; }
+  .menu-close { display: block; position: absolute; top: 1.25rem; right: var(--edge); }
+  .nav[popover] { inset: 0 0 auto 0; width: 100%; margin: 0; border: 0; border-bottom: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 4rem var(--edge) 2rem; }
+  .nav[popover]::backdrop { background: rgb(0 0 0 / 0.3); }
+  .nav ul { flex-direction: column; gap: 1rem; font-size: 1.2rem; }
+}
+.wrap { max-width: 78rem; padding: clamp(1rem, 4vw, 3rem) var(--edge) clamp(3rem, 7vw, 5rem); gap: 22px; }
+.pagehead { display: grid; gap: 0.9rem; margin-bottom: 0.5rem; }
+.pagehead .title { margin: 0; font-size: clamp(2.6rem, 6vw, 4.2rem); font-weight: 400; letter-spacing: -0.01em; line-height: 1; }
+.pagehead p { margin: 0; max-width: 46rem; font-size: 1.0625rem; line-height: 1.6; }
+.pagehead .quiet { color: var(--muted); font-size: 0.95rem; }
+.card { border: 0; border-radius: 0; background: var(--panel); padding: 18px; }
+.about.card, .results.card { background: transparent; padding: 2.5rem 0 0; border-top: 1px solid var(--line); }
+.about h2, .results h2, .refs h2 { font-family: var(--f-body); font-weight: 400; font-size: 1.5rem; }
+.corrtext h3 { font-size: 17px; font-weight: 600; }
+.group h2 { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.18em; font-weight: 400; }
+.pd-text b, .about b { font-weight: 600; }
+.seg, .btn, select, .linkout, .row input[type=number] { border-radius: 2px; }
+.btn { font-weight: 400; }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.hint { border-radius: 0; background: var(--bg); }
+.state-pill { border-radius: 2px; background: var(--bg); }
+.stat b { font-weight: 400; }
+.lattice, .kymo { border-color: var(--line); }
+.media-grid img, .media-grid video { border-radius: 0; }
+.formula { border-radius: 0; background: var(--panel); }
+/* phase diagram in the colours of the gallery view: cyan for rotation, rose for static order */
+.pd-dis { fill: var(--panel); }
+.pd-rot { fill: color-mix(in srgb, #A8D8E8 45%, var(--bg)); }
+.pd-static { fill: color-mix(in srgb, var(--accent) 16%, var(--bg)); }
+.pd-crit { stroke: var(--accent); }
+.pd-curve-lab { fill: var(--accent) !important; }
+:root[data-theme="dark"] .pd-rot { fill: color-mix(in srgb, #A8D8E8 26%, var(--bg)); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pd-rot { fill: color-mix(in srgb, #A8D8E8 26%, var(--bg)); } }
+.foot { padding: 2rem var(--edge) 3rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.6rem; font-size: 0.9rem; color: var(--muted); border-top: 1px solid var(--line); }
+.foot .right { margin-left: auto; }
 </style>
 </head>
 <body>
+<script>
+window.CLOCK_LAB_EXPORT = true;
+// the angle colours of the gallery view (and of the preview on the start page): slate, rose, bone, cyan
+window.CLOCK_LAB_THEME = { states: [[74, 74, 94], [142, 66, 87], [233, 217, 181], [168, 216, 232]] };
+</script>
+<header class="top">
+  <a class="name" href="../">Jonas Köppl</a>
+  <button class="menu-open" type="button" popovertarget="navigation">Menu</button>
+  <nav class="nav" id="navigation" popover aria-label="Main navigation">
+    <button class="menu-close" type="button" popovertarget="navigation" popovertargetaction="hide">Close</button>
+    <ul>
+      <li><a href="../#research">Research</a></li>
+      <li><a href="../#publications">Publications</a></li>
+      <li><a href="../#projects">Projects</a></li>
+      <li><a href="../#talks">Talks</a></li>
+      <li><a href="../#activities">Activities</a></li>
+      <li><a href="./" aria-current="page">Simulations</a></li>
+      <li><a href="../cv.pdf">CV</a></li>
+      <li><a class="ext" href="https://scholar.google.com/citations?user=HMNLW9UAAAAJ&amp;hl=de&amp;oi=ao">Google Scholar</a></li>
+      <li><a class="ext" href="http://arxiv.org/a/koppl_j_1">arXiv</a></li>
+      <li><a class="ext" href="https://orcid.org/0000-0001-9188-1883">ORCID</a></li>
+    </ul>
+  </nav>
+  <button class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch between light and dark theme">
+    <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+  </button>
+</header>
+
 <div class="wrap">
-  <header>
-    <p class="back"><a href="../">&larr; Jonas Köppl</a></p>
-    <h1>Simulations</h1>
+  <div class="pagehead">
+    <h1 class="title">Simulations</h1>
     <p>Interacting particle systems are easiest to get a feeling for by watching them. This page runs
-    the <a href="https://doi.org/10.1007/s10955-011-0325-5">driven clock and driven XY models of
-    C. Maes and S. Shlosman, <i>Rotating states in driven clock- and XY-models</i>, J. Stat. Phys. 144 (2011)</a>
-    live in your browser. Every spin is a clock hand that interacts with its neighbours like an XY spin and is pushed
-    to rotate by a constant drift. In two dimensions the collective rotation is destroyed by spiral defects; in three
-    dimensions the whole system rotates coherently. The pictures follow the conventions of
+    the driven clock and driven XY models of <a href="https://doi.org/10.1007/s10955-011-0325-5">C. Maes and
+    S. Shlosman, <i>Rotating states in driven clock- and XY-models</i>, J. Stat. Phys. 144 (2011)</a> live in
+    your browser. Every spin is a clock hand that interacts with its neighbours like an XY spin and is pushed
+    to rotate by a constant drift. In two dimensions the collective rotation is destroyed by spiral defects; in
+    three dimensions the whole system rotates coherently. The pictures follow the conventions of
     <a href="https://doi.org/10.1103/PhysRevE.111.034124">Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli,
-    <i>Dynamical phase transitions in the nonreciprocal Ising model</i>, Phys. Rev. E 111 (2025)</a>, whose nonreciprocal
-    Ising model is closely related to the four-state clock.</p>
-    <p>Pick a preset or change the parameters yourself; β and d take effect immediately. Below the lattice views
-    the page measures truncated correlations in space and in time and compares them with the spin-wave predictions,
-    and the section at the end sketches the phase diagram conjectured by Maes and Shlosman.</p>
-  </header>
+    <i>Dynamical phase transitions in the nonreciprocal Ising model</i>, Phys. Rev. E 111 (2025)</a>, whose
+    nonreciprocal Ising model is closely related to the four-state clock. A second model,
+    <a href="https://doi.org/10.1103/PhysRevE.60.5179">A. Lipowski's lattice of prey and predators, Phys. Rev. E 60 (1999)</a>,
+    oscillates for a different reason: in two dimensions only the noise has a preferred period, in three
+    dimensions the densities oscillate coherently.</p>
+    <p class="quiet">Pick a preset or change the parameters yourself; β and d take effect immediately. Below the
+    lattice views the page measures truncated correlations in space and in time and compares them with the
+    spin-wave predictions (for the prey–predator model: the power spectrum of the prey density); the notes
+    below sketch the phase diagram conjectured by Maes and Shlosman.</p>
+  </div>
 
   <div class="layout">
     <aside class="card controls" aria-label="Simulation controls">
       <div class="group">
         <h2>Preset</h2>
         <select id="preset">
-          <option value="fig8">2D spirals: q=4, β=1.5, d=0.85, L=150</option>
-          <option value="fig10">3D rotating phase: q=4, β=0.5, d=0.2, L=48</option>
-          <option value="swap2d">2D swap: q=4, β=1.4, d=0.6, L=120</option>
-          <option value="clock8">3D clock: q=8, β=1.05, d=0.65, L=40</option>
-          <option value="xy2d">2D XY, random start: β=2, d=0.5, L=96</option>
-          <option value="xy3d">3D XY: β=1, d=0.5, L=32</option>
-          <option value="eq">2D equilibrium, random start: q=4, β=1.6, d=0, L=128</option>
+          <option value="spirals-2d">2D spirals: q=4, β=1.5, d=0.85, L=150</option>
+          <option value="rotating-3d">3D rotating phase: q=4, β=0.5, d=0.2, L=48</option>
+          <option value="swap-2d">2D swap: q=4, β=1.4, d=0.6, L=120</option>
+          <option value="clock8-3d">3D clock: q=8, β=1.05, d=0.65, L=40</option>
+          <option value="xy-2d">2D XY, random start: β=2, d=0.5, L=96</option>
+          <option value="xy-3d">3D XY: β=1, d=0.5, L=32</option>
+          <option value="equilibrium-2d">2D equilibrium, random start: q=4, β=1.6, d=0, L=128</option>
+          <option value="prey-predator-3d">3D prey–predator (Lipowski): r=0.3, L=40, random start</option>
+          <option value="prey-predator-2d">2D prey–predator (Lipowski): r=0.3, L=200, random start</option>
+          <option value="" disabled>Custom setting</option>
         </select>
         <p class="note">Sets the controls below and restarts. Unless noted, the start is ordered.</p>
+        <p class="hint" id="hint"></p>
       </div>
       <div class="group">
         <h2>Model</h2>
         <div class="seg" role="group" aria-label="Model">
           <button id="m-clock" aria-pressed="true">Clock</button>
           <button id="m-xy" aria-pressed="false">XY</button>
+          <button id="m-pp" aria-pressed="false">Prey–predator</button>
         </div>
         <div class="seg" role="group" aria-label="Dimension">
           <button id="d-2" aria-pressed="true">2D</button>
           <button id="d-3" aria-pressed="false">3D</button>
         </div>
-        <div class="row"><label for="q">states q</label><input id="q" type="range" min="3" max="16" step="1" value="4"><output id="q-out">4</output></div>
+        <div class="row" id="q-row"><label for="q">states q</label><input id="q" type="range" min="3" max="16" step="1" value="4"><output id="q-out">4</output></div>
         <div class="row"><label for="L">size L</label><input id="L" type="range" min="16" max="256" step="2" value="150"><output id="L-out">150</output></div>
-        <div class="seg" role="group" aria-label="Initial state">
+        <div class="seg" role="group" aria-label="Initial state" id="init-seg">
           <button id="i-ord" aria-pressed="true">Ordered start</button>
           <button id="i-rand" aria-pressed="false">Random start</button>
         </div>
       </div>
       <div class="group">
         <h2>Parameters (live)</h2>
-        <div class="row"><label for="beta">β</label><input id="beta" type="range" min="0" max="4" step="0.01" value="1.5"><input id="beta-n" type="number" min="0" max="10" step="0.01" value="1.5" aria-label="β value"></div>
-        <div class="row"><label for="drift">drift d</label><input id="drift" type="range" min="0" max="3" step="0.01" value="0.85"><input id="drift-n" type="number" min="0" max="10" step="0.01" value="0.85" aria-label="drift value"></div>
+        <div class="row" id="beta-row"><label for="beta">β</label><input id="beta" type="range" min="0" max="4" step="0.01" value="1.5"><input id="beta-n" type="number" min="0" max="10" step="0.01" value="1.5" aria-label="β value"></div>
+        <div class="row" id="drift-row"><label for="drift">drift d</label><input id="drift" type="range" min="0" max="3" step="0.01" value="0.85"><input id="drift-n" type="number" min="0" max="10" step="0.01" value="0.85" aria-label="drift value"></div>
+        <div class="row" id="r-row" hidden><label for="rr">prey rate r</label><input id="rr" type="range" min="0.05" max="0.95" step="0.01" value="0.3"><input id="rr-n" type="number" min="0.01" max="0.99" step="0.01" value="0.3" aria-label="r value"></div>
         <div class="row"><label for="speed">speed</label><input id="speed" type="range" min="-1" max="2.5" step="0.05" value="1.3"><output id="speed-out">20</output></div>
         <p class="note" id="speed-note">Simulated time per second of wall clock.</p>
       </div>
@@ -184,35 +332,51 @@ figcaption i { font-family: var(--f-display); font-size: 16px; color: var(--ink)
         <button class="btn" id="reset">Restart</button>
         <button class="btn" id="clear">Clear traces</button>
       </div>
-      <label class="check"><input type="checkbox" id="showdef" checked> Mark ±1 vortices (2D)</label>
+      <label class="check" id="showdef-row"><input type="checkbox" id="showdef" checked> Mark ±1 vortices (2D)</label>
       <p class="note" id="equiv"></p>
+      <div class="group">
+        <h2>Share</h2>
+        <button class="btn" id="copy-link" type="button">Copy link to this setting</button>
+        <input id="link-out" class="linkout" type="text" readonly hidden aria-label="Link to this setting">
+        <p class="note" id="copy-status" aria-live="polite"></p>
+      </div>
+      <div class="group" id="export" hidden>
+        <h2>Download data (CSV)</h2>
+        <div class="btns">
+          <button class="btn" id="ex-m" type="button">M(t) traces</button>
+          <button class="btn" id="ex-c" type="button">C<sub>t</sub>(r)</button>
+          <button class="btn" id="ex-s" type="button">S(τ)</button>
+        </div>
+      </div>
     </aside>
 
     <main class="card" style="display:grid; gap:14px;">
       <div class="stats" aria-live="off">
         <div class="stat"><span>time <i>t</i></span><b id="s-t">0</b></div>
-        <div class="stat"><span>|M| = s</span><b id="s-m">1.000</b></div>
-        <div class="stat"><span>ω = d arg M / dt</span><b id="s-w">–</b></div>
-        <div class="stat" id="def-stat"><span>vortices N₊ / N₋</span><b id="s-def">0 / 0</b></div>
+        <div class="stat"><span id="lab-m">|<i>M</i>| = <i>s</i></span><b id="s-m">1.000</b></div>
+        <div class="stat"><span id="lab-w"><i>ω</i> = d arg <i>M</i>/d<i>t</i></span><b id="s-w">–</b></div>
+        <div class="stat" id="def-stat"><span id="lab-def">vortices <i>N</i>₊ / <i>N</i>₋</span><b id="s-def">0 / 0</b></div>
         <div class="stat"><span>phase</span><b><span class="state-pill" id="s-phase">starting</span></b></div>
         <div class="stat"><span>rate</span><b id="s-rate">–</b></div>
       </div>
 
       <div class="views" id="views2d">
-        <figure><figcaption><span><i>σ<sup>A</sup></i> = sgn cos θ</span></figcaption><canvas class="lattice" id="cA"></canvas></figure>
-        <figure><figcaption><span><i>σ<sup>B</sup></i> = sgn sin θ</span></figcaption><canvas class="lattice" id="cB"></canvas></figure>
-        <figure><figcaption><span><i>θ</i></span><span class="keybar" id="key2d" aria-hidden="true"></span></figcaption><canvas class="lattice" id="cT"></canvas></figure>
+        <figure><figcaption><span id="cap-A"><i>σ<sup>A</sup></i> = sgn cos θ</span></figcaption><canvas class="lattice" id="cA"></canvas></figure>
+        <figure><figcaption><span id="cap-B"><i>σ<sup>B</sup></i> = sgn sin θ</span></figcaption><canvas class="lattice" id="cB"></canvas></figure>
+        <figure><figcaption><span id="cap-T"><i>θ</i></span><span class="keybar" id="key2d" aria-hidden="true"></span></figcaption><canvas class="lattice" id="cT"></canvas></figure>
       </div>
       <div class="views three-d" id="views3d" hidden>
-        <figure><figcaption><span>A-spins, up only</span></figcaption><canvas class="vol" id="vA"></canvas></figure>
-        <figure><figcaption><span>B-spins, up only</span></figcaption><canvas class="vol" id="vB"></canvas></figure>
+        <figure><figcaption><span id="cap-vA">A-spins, up only</span></figcaption><canvas class="vol" id="vA"></canvas></figure>
+        <figure><figcaption><span id="cap-vB">B-spins, up only</span></figcaption><canvas class="vol" id="vB"></canvas></figure>
       </div>
 
       <div>
         <div class="legend">
-          <span><span class="sw" style="background:var(--ma)"></span><em>M<sub>A</sub></em></span>
-          <span><span class="sw" style="background:var(--mb)"></span><em>M<sub>B</sub></em></span>
-          <span><span class="sw" style="background:var(--ink)"></span><em>s</em> = ((M<sub>A</sub>²+M<sub>B</sub>²)/2)<sup>½</sup></span>
+          <span id="leg-ma"><span class="sw" style="background:var(--ma)"></span><em>M<sub>A</sub></em></span>
+          <span id="leg-mb"><span class="sw" style="background:var(--mb)"></span><em>M<sub>B</sub></em></span>
+          <span id="leg-x" hidden><span class="sw" style="background:var(--ma)"></span>prey density <em>x</em>(<em>t</em>)</span>
+          <span id="leg-y" hidden><span class="sw" style="background:var(--mb)"></span>predator density <em>y</em>(<em>t</em>)</span>
+          <span id="leg-s"><span class="sw" style="background:var(--ink)"></span><em>s</em> = ((M<sub>A</sub>²+M<sub>B</sub>²)/2)<sup>½</sup></span>
           <span id="leg-def"><span class="sw" style="background:var(--muted)"></span>N₊+N₋ (scaled)</span>
         </div>
         <div class="plots">
@@ -221,11 +385,12 @@ figcaption i { font-family: var(--f-display); font-size: 16px; color: var(--ink)
         </div>
       </div>
 
-      <div class="corrbox">
+      <div class="corrbox" id="corr-space">
         <canvas class="plot" id="corr" height="260"></canvas>
         <div class="corrtext">
           <h3>Truncated correlations in space, at a fixed time <i>t</i></h3>
-          <p class="note">C<sub>t</sub>(r) = ⟨σ<sub>0</sub>(t)·σ<sub>re</sub>(t)⟩ − ⟨σ<sub>0</sub>(t)⟩·⟨σ<sub>re</sub>(t)⟩ with σ = (cos θ, sin θ), estimated from the configuration at time t by averaging over all sites and the d lattice directions e.</p>
+          <p class="note pp-only">C<sub>t</sub>(r) = ⟨u<sub>0</sub>(t)·u<sub>re</sub>(t)⟩ − ⟨u<sub>0</sub>(t)⟩·⟨u<sub>re</sub>(t)⟩ for the local state u = (prey present, predator present) ∈ {0, 1}², estimated from the configuration at time t by averaging over all sites and the d lattice directions e. In the oscillating phase the local phase of the oscillation is a soft mode, as the phase of the magnetisation is in the rotating clock, and C<sub>t</sub>(r) should show the same spin-wave decay |x|<sup>2−d</sup>.</p>
+          <p class="note clock-only">C<sub>t</sub>(r) = ⟨σ<sub>0</sub>(t)·σ<sub>re</sub>(t)⟩ − ⟨σ<sub>0</sub>(t)⟩·⟨σ<sub>re</sub>(t)⟩ with σ = (cos θ, sin θ), estimated from the configuration at time t by averaging over all sites and the d lattice directions e.</p>
           <div class="legend corrlegend">
             <span><span class="dot"></span>current time <i>t</i></span>
             <span><span class="sw" style="background:var(--ink)"></span>mean over the last <span id="corr-n">0</span> times</span>
@@ -233,29 +398,45 @@ figcaption i { font-family: var(--f-display); font-size: 16px; color: var(--ink)
             <span><span class="sw dash"></span>spin waves on the L-torus, A·G<sub>L</sub>(r)</span>
             <span id="leg-pow"><span class="sw dot2"></span>A·G<sub>∞</sub>(r) ≈ A/(4πr), the decay |x|<sup>2−d</sup></span>
           </div>
-          <p class="note" id="corr-note">On the torus, subtracting the magnetization removes the k = 0 spin wave, which bends C<sub>t</sub>(r) down long before r = L/2. The rings add back exactly this spin-wave finite-size effect, A·[G<sub>∞</sub>(r) − G<sub>L</sub>(r)], so in 3D they should lie on the 1/r line out to r ≈ L/2. The amplitude A is fitted for r ≤ L/4. Let the run relax for a few hundred time units: the longest spin waves equilibrate on a time scale of order L².</p>
+          <p class="note" id="corr-note">On the torus, subtracting the magnetization (for the prey–predator model: the densities) removes the k = 0 spin wave, which bends C<sub>t</sub>(r) down long before r = L/2. The rings add back exactly this spin-wave finite-size effect, A·[G<sub>∞</sub>(r) − G<sub>L</sub>(r)], so in 3D they should lie on the 1/r line out to r ≈ L/2. The amplitude A is fitted for r ≤ L/4. Let the run relax for a few hundred time units: the longest spin waves equilibrate on a time scale of order L².</p>
           <p class="note" id="corr-fit"></p>
         </div>
       </div>
 
-      <div class="corrbox">
+      <div class="corrbox" id="corr-time">
         <canvas class="plot" id="auto" height="260"></canvas>
         <div class="corrtext">
           <h3>Truncated correlations in time</h3>
-          <p class="note">S(t<sub>0</sub>, t) = L<sup>−d</sup> Σ<sub>x</sub> σ<sub>x</sub>(t<sub>0</sub>)·σ<sub>x</sub>(t) − M(t<sub>0</sub>)·M(t), as in Chaté, Grinstein and Tang. It oscillates with the collective rotation; its envelope is predicted to decay like |t − t<sub>0</sub>|<sup>−(d−2)/2</sup>, that is t<sup>−1/2</sup> in d = 3.</p>
+          <p class="note pp-only">S(t<sub>0</sub>, t) = L<sup>−d</sup> Σ<sub>x</sub> u<sub>x</sub>(t<sub>0</sub>)·u<sub>x</sub>(t) − U(t<sub>0</sub>)·U(t), with u = (prey, predator) and U = (x, y) the densities, as in Chaté, Grinstein and Tang. It oscillates with the population cycle; its envelope is predicted to decay like τ<sup>−(d−2)/2</sup>, that is τ<sup>−1/2</sup> in d = 3.</p>
+          <p class="note clock-only">S(t<sub>0</sub>, t) = L<sup>−d</sup> Σ<sub>x</sub> σ<sub>x</sub>(t<sub>0</sub>)·σ<sub>x</sub>(t) − M(t<sub>0</sub>)·M(t), as in Chaté, Grinstein and Tang. It oscillates with the collective rotation; its envelope is predicted to decay like |t − t<sub>0</sub>|<sup>−(d−2)/2</sup>, that is t<sup>−1/2</sup> in d = 3.</p>
           <div class="legend corrlegend">
             <span><span class="sw" style="background:var(--accent)"></span>|S(τ)|, the oscillating autocorrelation</span>
             <span><span class="dot ink"></span>co-rotating S<sub>rot</sub>(τ), its envelope</span>
             <span><span class="sw dash"></span>spin waves on the L-torus, B·H<sub>L</sub>(D τ)</span>
             <span id="leg-tpow"><span class="sw dot2"></span>∝ τ<sup>−(d−2)/2</sup> = τ<sup>−1/2</sup></span>
           </div>
-          <p class="note">S<sub>rot</sub> measures every spin relative to the current direction of M, which removes the oscillation and leaves the envelope: S<sub>rot</sub>(t<sub>0</sub>, t) = Re L<sup>−d</sup> Σ<sub>x</sub> δw̄<sub>x</sub>(t<sub>0</sub>) δw<sub>x</sub>(t), δw = e<sup>iθ</sup> M̄/|M| − |M|. H<sub>L</sub>(u) = L<sup>−d</sup> Σ<sub>k≠0</sub> e<sup>−uλ<sub>k</sub></sup>/λ<sub>k</sub> is the spin-wave autocorrelation on the torus, with a fitted phase diffusion constant D.</p>
-          <p class="note">A single reference time t<sub>0</sub> gives a very ragged curve: S(t<sub>0</sub>, t) is dominated by the few longest spin waves, whose amplitudes fluctuate strongly. Both curves therefore average S(t<sub>0</sub>, t<sub>0</sub> + τ) over all time origins t<sub>0</sub> in a moving window, with exponential weights over the last <span id="auto-win">–</span> time units. Averaging starts 200 time units after a restart, so the relaxation from the initial state does not enter, and starts over when β or d changes.</p>
+          <p class="note pp-only">For the co-moving S<sub>rot</sub>, the deviation u<sub>x</sub> − U is split into its component along the velocity V of U(t) on the limit cycle, scaled by |V|<sub>rms</sub>/|V| so that it measures a shift of the local phase, and the normal component. This removes the oscillation and leaves the envelope; the curve B·H<sub>L</sub>(D τ) is the same spin-wave autocorrelation as for the clock, with a fitted phase diffusion constant D.</p>
+          <p class="note clock-only">S<sub>rot</sub> measures every spin relative to the current direction of M, which removes the oscillation and leaves the envelope: S<sub>rot</sub>(t<sub>0</sub>, t) = Re L<sup>−d</sup> Σ<sub>x</sub> δw̄<sub>x</sub>(t<sub>0</sub>) δw<sub>x</sub>(t), δw = e<sup>iθ</sup> M̄/|M| − |M|. H<sub>L</sub>(u) = L<sup>−d</sup> Σ<sub>k≠0</sub> e<sup>−uλ<sub>k</sub></sup>/λ<sub>k</sub> is the spin-wave autocorrelation on the torus, with a fitted phase diffusion constant D.</p>
+          <p class="note">A single reference time t<sub>0</sub> gives a very ragged curve: S(t<sub>0</sub>, t) is dominated by the few longest spin waves, whose amplitudes fluctuate strongly. Both curves therefore average S(t<sub>0</sub>, t<sub>0</sub> + τ) over all time origins t<sub>0</sub> in a moving window, with exponential weights over the last <span id="auto-win">–</span> time units. Averaging starts <span id="auto-burn">200</span> time units after a restart, so the relaxation from the initial state does not enter, and starts over when a parameter changes.</p>
           <p class="note" id="auto-fit"></p>
+        </div>
+      </div>
+      <div class="corrbox" id="pp-box" hidden>
+        <canvas class="plot" id="spec" height="260"></canvas>
+        <div class="corrtext">
+          <h3>Power spectrum of the prey density</h3>
+          <p class="note">S(ω) of x(t), recorded once per Monte Carlo step: an average over Hann-windowed blocks of 256 steps from the last 4096 steps, normalised so that summing over ω gives the variance σ² of x(t). A sharp peak means a regular oscillation, a broad bump only a preferred time scale of the noise.</p>
+          <div class="legend corrlegend">
+            <span><span class="sw" style="background:var(--accent)"></span>S(ω)</span>
+            <span><span class="sw dot2"></span>position of the highest peak</span>
+          </div>
+          <p class="note">Whether the oscillation survives in the infinite lattice is decided by σ·L<sup>d/2</sup>: for independent noise it stays of order one as L grows, for a genuine collective oscillation it grows like L<sup>d/2</sup>.</p>
+          <p class="note" id="spec-fit"></p>
         </div>
       </div>
     </main>
   </div>
+
 
   <section class="card about">
     <div>
@@ -266,7 +447,7 @@ d = log(p+/p−),   p+ + p− = 1</div>
       <p>For d = 0 the dynamics is reversible with respect to the Gibbs measures of the clock model H = −Σ cos(φ<sub>x</sub> − φ<sub>y</sub>). For d &gt; 0 every free spin turns counterclockwise, and the question is what the interaction makes of this drive. The XY option integrates the limit q → ∞ (Eq. 7), dφ = d·dt − Σ sin(φ<sub>x</sub> − φ<sub>y</sub>) dt + (2/β)<sup>½</sup> dW, whose generator commutes with that of the undriven XY model. Its stationary translation-invariant measure is unique for almost all β, yet at low temperature the rotated XY Gibbs states rotate forever and never relax to it (Theorem 7).</p>
     </div>
     <div>
-      <h2>Reading the figures</h2>
+      <h2>Reading the views</h2>
       <p>Pictures use θ = 2π(k + ½)/q, a global half-step rotation. For q = 4 the four states then sit on the diagonals, so σ<sup>A</sup> = sgn cos θ and σ<sup>B</sup> = sgn sin θ are two Ising spins. Their cycle (++) → (−+) → (−−) → (+−) is the swap order of the nonreciprocal Ising model of <a href="https://doi.org/10.1103/PhysRevE.111.034124">Avni et al.</a>. The driven 4-clock is their fully antisymmetric model with exponential instead of Glauber rates, with J̃ = dim·β and K̃ = d/2.</p>
       <p>A vortex is a plaquette whose four corners wind once around the clock. In 3D, voxels are drawn semi-transparent with grey encoding depth (dark = front).</p>
     </div>
@@ -318,6 +499,29 @@ d = log(p+/p−),   p+ + p− = 1</div>
         </div>
       </div>
     </div>
+    <div class="wide" id="prey-predator">
+      <h2>A second oscillator: Lipowski's prey–predator lattice</h2>
+      <div class="pd-wrap">
+        <div>
+          <p>The <i>Prey–predator</i> model is the lattice model of <a href="https://doi.org/10.1103/PhysRevE.60.5179">A. Lipowski, <i>Oscillatory behavior in a lattice prey-predator system</i></a>. Every site is empty, holds a prey, a predator, or both. A site is chosen at random; with probability r its prey (if any) breeds, otherwise its predator (if any) acts:</p>
+          <div class="formula">prey      if some neighbour has no prey, put a new prey
+          on one of those neighbours (chosen uniformly)
+predator  no prey on its site: the predator dies;
+          otherwise it eats that prey and, if some
+          neighbour has no predator, puts a new predator there</div>
+          <p>One unit of time is a Monte Carlo step, L<sup>d</sup> updates; the start is random with independent densities ½. Unlike the driven clock there is no rotation symmetry and no drift: the oscillation of the densities x (prey) and y (predators) is generated by the dynamics alone, as in the Lotka–Volterra equations. The all-prey state is absorbing, and the active phase ends at r<sub>c</sub> ≈ 0.11 in 2D and 0.05 in 3D in a directed-percolation transition.</p>
+        </div>
+        <div class="pd-text">
+          <p><b>What the paper finds.</b> In 1D the densities only fluctuate. In 2D their power spectrum has a peak, but the amplitude decays like L<sup>−d/2</sup>, so in the infinite lattice x and y are constant. In 3D, for r near 0.3, x(t) and y(t) oscillate regularly, with a sharp spectral peak and its second harmonic, and the amplitude σ stays finite as L grows. The coherent oscillation is a property of the infinite system, like the rotating state of the driven clock in 3D, although the mean-field equations alone predict a stable fixed point.</p>
+          <p><b>Correlations.</b> The analogy goes further. In the oscillating phase the local phase of the population cycle is a soft mode, like the phase of the magnetisation in the rotating clock, and the argument of Grinstein et al. and Chaté, Grinstein and Tang applies to it as well. With the local state u = (prey, predator), the equal-time truncated correlations follow the spin-wave curve A·G<sub>L</sub>(r) on the torus, so they decay like |x|<sup>2−d</sup> = 1/r, and the autocorrelation in the frame moving along the limit cycle follows B·H<sub>L</sub>(Dτ), with envelope τ<sup>−1/2</sup>, and phase diffusion constant D ≈ 0.1 (L = 48 after 15 000 steps, figure at the end of the page). The correlation panels of the simulator measure both live; because D is small, the longest modes need a few thousand steps to relax.</p>
+          <p><b>Checked here.</b> With the same dynamics (Python package, r = 0.3, after 300 burn-in steps) σ of the prey density stays at 0.13–0.18 for L = 12 … 96 in 3D, and the period is about 20 steps. In 2D at r = 0.3, and in 3D at r = 0.5, σ·L<sup>d/2</sup> stays constant (σ ≈ 1.7/L in 2D): only finite-size noise. In 3D, σ peaks at r ≈ 0.3 and is small below 0.2 and above 0.4, as in Fig. 8 of the paper. The figure at the end of the page shows the data.</p>
+        </div>
+      </div>
+    </div>
+    <div class="wide">
+      <h2>Code and citation</h2>
+      <p>The simulations on this page are written in plain JavaScript and run in a background thread of your browser. A Python package with the same exact continuous-time dynamics produces the figures and movies below: <a href="https://github.com/jonaskoeppl/driven-clock-lab">github.com/jonaskoeppl/driven-clock-lab</a>. If you use the simulations or the code, please cite the model of Maes and Shlosman and refer to this page as: J. Köppl, <i>Driven Clock Lab: simulations of the driven clock and XY models</i>, https://jonaskoeppl.github.io/simulations/ (2026).</p>
+    </div>
     <div class="wide refs">
       <h2>References</h2>
       <ol>
@@ -325,155 +529,699 @@ d = log(p+/p−),   p+ + p− = 1</div>
         <li>Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli, <a href="https://doi.org/10.1103/PhysRevE.111.034124"><i>Dynamical phase transitions in the nonreciprocal Ising model</i></a>, Phys. Rev. E 111 (2025), 034124.</li>
         <li>Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli, <a href="https://doi.org/10.1103/PhysRevLett.134.117103"><i>Nonreciprocal Ising model</i></a>, Phys. Rev. Lett. 134 (2025), 117103.</li>
         <li>H. Chaté, G. Grinstein and L.-H. Tang, <a href="https://doi.org/10.1103/PhysRevLett.74.912"><i>Long-range correlations in systems with coherent (quasi)periodic oscillations</i></a>, Phys. Rev. Lett. 74 (1995), 912–915.</li>
+        <li>A. Lipowski, <a href="https://doi.org/10.1103/PhysRevE.60.5179"><i>Oscillatory behavior in a lattice prey-predator system</i></a>, Phys. Rev. E 60 (1999), 5179–5184, <a href="https://arxiv.org/abs/cond-mat/9910095">arXiv:cond-mat/9910095</a>.</li>
         <li>G. Grinstein, D. Mukamel, R. Seidin and C. H. Bennett, <a href="https://doi.org/10.1103/PhysRevLett.70.3607"><i>Temporally periodic phases and kinetic roughening</i></a>, Phys. Rev. Lett. 70 (1993), 3607–3610.</li>
       </ol>
     </div>
   </section>
+  <section class="card results" id="results">
+    <details class="results-box">
+    <summary><h2>Longer runs: figures and movies</h2><span class="sum-note">precomputed, 2 movies and 5 figures</span></summary>
+    <p>Precomputed with the Python package (exact continuous-time dynamics, q = 4 for the clock) for anyone who prefers not to wait for the live simulation. The 2D run uses β = 1.5, d = 0.85, L = 150; the 3D runs use β = 0.5, d = 0.2, the parameters of the 3D preset.</p>
+    <div class="media-grid">
+      <figure>
+        <video controls preload="none" playsinline poster="media/movie_2d_poster.jpg" width="1280" height="626">
+          <source src="media/movie_2d.mp4" type="video/mp4">
+        </video>
+        <figcaption>2D, L = 150: rotation by droplet nucleation until spiral defects appear and destroy it (t ≤ 12 000).</figcaption>
+      </figure>
+      <figure>
+        <video controls preload="none" playsinline poster="media/movie_3d_poster.jpg" width="1280" height="626">
+          <source src="media/movie_3d.mp4" type="video/mp4">
+        </video>
+        <figcaption>3D, L = 80: semi-transparent up-spins of σ<sup>A</sup> and σ<sup>B</sup> (grey = depth) in the stable rotating phase (t ≤ 2400).</figcaption>
+      </figure>
+      <figure>
+        <img src="media/fig8_2d.png" alt="Magnetisations, spiral defect counts and snapshots of the 2D driven clock model, and a mean-field spiral" loading="lazy" width="1584" height="770">
+        <figcaption>2D: magnetisations and ±1 vortex counts (a), snapshots before, during and after the spiral takeover (b), and a spiral of the lattice mean-field equation (c).</figcaption>
+      </figure>
+      <figure>
+        <img src="media/fig10_3d.png" alt="Kymograph of the angle along a row of the 3D lattice and magnetisations over time" loading="lazy" width="1020" height="990">
+        <figcaption>3D, L = 160: θ along one lattice row over time (a) and M<sub>A</sub>, M<sub>B</sub>, s (b).</figcaption>
+      </figure>
+      <figure>
+        <img src="media/fig_correlations_3d.png" alt="Truncated correlations in space and time for the 3D driven clock model" loading="lazy" width="1600" height="686">
+        <figcaption>3D, L = 64: truncated correlations in space at a fixed time, with the finite-size correction (a), and in time (b).</figcaption>
+      </figure>
+      <figure>
+        <img src="media/fig_correlations_pp.png" alt="Truncated correlations in space and time for the 3D prey-predator model" loading="lazy" width="2100" height="900">
+        <figcaption>Prey–predator model in 3D, r = 0.3, L = 48, after 15 000 Monte Carlo steps: truncated correlations in space at a fixed time, with the finite-size correction (a), and in time, in the frame moving along the limit cycle (b). As for the rotating clock: 1/r and τ<sup>−1/2</sup>.</figcaption>
+      </figure>
+      <figure>
+        <img src="media/fig_preypred.png" alt="Prey density over time, power spectra and the amplitude of the oscillation against system size and r for Lipowski's prey-predator model" loading="lazy" width="1600" height="1056">
+        <figcaption>Lipowski's prey–predator model at r = 0.3: prey density (a) and its power spectrum (b) in 2D (L = 256) and 3D (L = 64); standard deviation σ of x(t) against the number of sites (c), and against r in 3D (d).</figcaption>
+      </figure>
+    </div>
+    </details>
+  </section>
 </div>
 
+<footer class="foot">
+  <span>© 2026 Jonas Köppl</span>
+  <a href="mailto:jonas.koeppl@uni-muenster.de">jonas.koeppl@uni-muenster.de</a>
+  <a href="../">Home</a>
+  <span class="right"><a href="https://github.com/jonaskoeppl/driven-clock-lab">Code on GitHub</a></span>
+</footer>
+
+<script type="text/js-worker" id="worker-src">
+"use strict";
+// Simulation worker: runs the driven clock / XY dynamics and all measurements
+// (magnetisations, vortices, spatial and temporal correlations) off the main thread.
+// The page sends parameters and acknowledgements; the worker answers with "frame"
+// messages (configuration copy, new trace points, plot-ready correlation data).
+
+// ---------------------------------------------------------------- RNG
+let rs = 1;
+function rnd() { rs ^= rs << 13; rs ^= rs >>> 17; rs ^= rs << 5; return (rs >>> 0) / 4294967296; }
+function gauss() { let u = 0; while (u === 0) u = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.283185307179586 * rnd()); }
+function poisson(mu) {
+  if (mu < 30) { const L = Math.exp(-mu); let k = 0, p = 1; do { k++; p *= rnd(); } while (p > L); return k - 1; }
+  return Math.max(0, Math.round(mu + Math.sqrt(mu) * gauss()));
+}
+
+// ---------------------------------------------------------------- models
+// Driven q-clock, Maes & Shlosman Eq. (4); exact continuous-time dynamics by uniformisation.
+class Clock {
+  constructor(L, dim, q, beta, d, init) {
+    this.L = L; this.dim = dim; this.q = q; this.N = dim === 2 ? L * L : L * L * L;
+    this.s = new Uint8Array(this.N);
+    if (init === "random") for (let i = 0; i < this.N; i++) this.s[i] = (rnd() * q) | 0;
+    this.counts = new Float64Array(q);
+    for (let i = 0; i < this.N; i++) this.counts[this.s[i]]++;
+    this.th = new Float64Array(q); for (let k = 0; k < q; k++) this.th[k] = 2 * Math.PI * (k + 0.5) / q;
+    this.t = 0; this.set(beta, d);
+  }
+  set(beta, d) {
+    const q = this.q, b = beta / 2; this.beta = beta; this.d = d;
+    const incF = [], incB = []; let D = -Infinity;
+    for (let m = 0; m < q; m++) {
+      const ph = 2 * Math.PI * m / q;
+      incF[m] = Math.cos(ph + 2 * Math.PI / q) - Math.cos(ph);
+      incB[m] = Math.cos(ph - 2 * Math.PI / q) - Math.cos(ph);
+      D = Math.max(D, incF[m], incB[m]);
+    }
+    this.fwd = new Float64Array(q); this.bwd = new Float64Array(q);
+    for (let m = 0; m < q; m++) { this.fwd[m] = Math.exp(b * (incF[m] - D)); this.bwd[m] = Math.exp(b * (incB[m] - D)); }
+    this.B = Math.exp(b * D * 2 * this.dim);
+    this.pp = 1 / (1 + Math.exp(-d)); this.pm = 1 - this.pp;
+  }
+  cost(dt) { return this.N * this.B * dt; }
+  advance(dt) {
+    const n = poisson(this.N * this.B * dt);
+    const s = this.s, L = this.L, L2 = L * L, N = this.N, q = this.q, fwd = this.fwd, bwd = this.bwd, cnt = this.counts;
+    const pp = this.pp, pm = this.pm, three = this.dim === 3;
+    let r = rs;
+    for (let c = 0; c < n; c++) {
+      r ^= r << 13; r ^= r >>> 17; r ^= r << 5;
+      const i = ((r >>> 0) / 4294967296 * N) | 0;
+      const k = s[i], x = i % L, y = ((i / L) | 0) % L;
+      let af = pp, ab = pm, m;
+      m = k - s[x + 1 < L ? i + 1 : i + 1 - L]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+      m = k - s[x > 0 ? i - 1 : i + L - 1]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+      m = k - s[y + 1 < L ? i + L : i + L - L2]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+      m = k - s[y > 0 ? i - L : i + L2 - L]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+      if (three) {
+        const z = (i / L2) | 0;
+        m = k - s[z + 1 < L ? i + L2 : i + L2 - N]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+        m = k - s[z > 0 ? i - L2 : i + N - L2]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
+      }
+      r ^= r << 13; r ^= r >>> 17; r ^= r << 5;
+      const u = (r >>> 0) / 4294967296;
+      let kn;
+      if (u < af) kn = k + 1 === q ? 0 : k + 1;
+      else if (u < af + ab) kn = k === 0 ? q - 1 : k - 1;
+      else continue;
+      s[i] = kn; cnt[k]--; cnt[kn]++;
+    }
+    rs = r || 1;
+    this.t += dt;
+  }
+  theta(i) { return this.th[this.s[i]]; }
+  mags() {
+    let ma = 0, mb = 0, mx = 0, my = 0;
+    for (let k = 0; k < this.q; k++) {
+      const c = Math.cos(this.th[k]), sn = Math.sin(this.th[k]), w = this.counts[k];
+      mx += w * c; my += w * sn;
+      ma += w * (Math.abs(c) < 1e-9 ? 0 : Math.sign(c)); mb += w * (Math.abs(sn) < 1e-9 ? 0 : Math.sign(sn));
+    }
+    return [ma / this.N, mb / this.N, mx / this.N, my / this.N];
+  }
+  config() { return this.s.slice(); }
+}
+
+// Driven XY model, Eq. (7); Euler-Maruyama.
+class XY {
+  constructor(L, dim, beta, d, init) {
+    this.L = L; this.dim = dim; this.N = dim === 2 ? L * L : L * L * L; this.q = 0;
+    this.phi = new Float64Array(this.N); this.f = new Float64Array(this.N);
+    if (init === "random") for (let i = 0; i < this.N; i++) this.phi[i] = 2 * Math.PI * rnd();
+    else this.phi.fill(Math.PI / 4);
+    this.t = 0; this.h = 0.04; this.set(beta, d);
+  }
+  set(beta, d) { this.beta = Math.max(beta, 1e-3); this.d = d; }
+  cost(dt) { return this.N * (dt / this.h) * 8; }
+  advance(dt) {
+    const n = Math.max(1, Math.round(dt / this.h)), h = dt / n, amp = Math.sqrt(2 * h / this.beta);
+    const L = this.L, L2 = L * L, N = this.N, p = this.phi, f = this.f, three = this.dim === 3;
+    for (let st = 0; st < n; st++) {
+      for (let i = 0; i < N; i++) {
+        const x = i % L, y = ((i / L) | 0) % L, a = p[i];
+        let s = Math.sin(a - p[x + 1 < L ? i + 1 : i + 1 - L]) + Math.sin(a - p[x > 0 ? i - 1 : i + L - 1])
+              + Math.sin(a - p[y + 1 < L ? i + L : i + L - L2]) + Math.sin(a - p[y > 0 ? i - L : i + L2 - L]);
+        if (three) { const z = (i / L2) | 0; s += Math.sin(a - p[z + 1 < L ? i + L2 : i + L2 - N]) + Math.sin(a - p[z > 0 ? i - L2 : i + N - L2]); }
+        f[i] = s;
+      }
+      for (let i = 0; i < N; i++) p[i] += (this.d - f[i]) * h + amp * gauss();
+    }
+    for (let i = 0; i < N; i++) { p[i] %= 2 * Math.PI; if (p[i] < 0) p[i] += 2 * Math.PI; }
+    this.t += dt;
+  }
+  theta(i) { return this.phi[i]; }
+  mags() {
+    let ma = 0, mb = 0, mx = 0, my = 0;
+    for (let i = 0; i < this.N; i++) { const c = Math.cos(this.phi[i]), s = Math.sin(this.phi[i]); mx += c; my += s; ma += Math.sign(c); mb += Math.sign(s); }
+    return [ma / this.N, mb / this.N, mx / this.N, my / this.N];
+  }
+  config() { return Float32Array.from(this.phi); }
+}
+
+// Lattice prey-predator model of A. Lipowski, Phys. Rev. E 60 (1999) 5179.
+// Site state: bit 1 = prey, bit 2 = predator. Random sequential updates in continuous time:
+// every site is updated at rate 1, so one unit of time is one Monte Carlo step (L^d updates).
+class PreyPred {
+  constructor(L, dim, r) {
+    this.L = L; this.dim = dim; this.N = dim === 2 ? L * L : L * L * L; this.q = 0; this.kind = "pp";
+    this.s = new Uint8Array(this.N); this.nx = 0; this.ny = 0;
+    for (let i = 0; i < this.N; i++) { const v = (rnd() < 0.5 ? 1 : 0) | (rnd() < 0.5 ? 2 : 0); this.s[i] = v; this.nx += v & 1; this.ny += v >> 1; }
+    this.t = 0; this.r = r; this.series = []; this.nextRec = 1;
+    this.trail = [[0, this.nx / this.N, this.ny / this.N]];   // densities every 0.25 time units (for the velocity)
+  }
+  set(r) { this.r = r; }
+  cost(dt) { return this.N * dt * 2.5; }
+  updates(n) {
+    const s = this.s, L = this.L, L2 = L * L, N = this.N, three = this.dim === 3, rr = this.r, nb = this.nb || (this.nb = new Int32Array(6));
+    const nn = three ? 6 : 4;
+    let r = rs, nx = this.nx, ny = this.ny;
+    for (let c = 0; c < n; c++) {
+      r ^= r << 13; r ^= r >>> 17; r ^= r << 5;
+      const i = ((r >>> 0) / 4294967296 * N) | 0;
+      r ^= r << 13; r ^= r >>> 17; r ^= r << 5;
+      const prey = (r >>> 0) / 4294967296 < rr, v = s[i];
+      if (prey ? !(v & 1) : !(v & 2)) continue;
+      if (!prey && !(v & 1)) { s[i] = v & 1; ny--; continue; }       // predator without prey dies
+      if (!prey) { s[i] = v & 2; nx--; }                                // predator eats the prey
+      const x = i % L, y = ((i / L) | 0) % L, bit = prey ? 1 : 2;
+      nb[0] = x + 1 < L ? i + 1 : i + 1 - L; nb[1] = x > 0 ? i - 1 : i + L - 1;
+      nb[2] = y + 1 < L ? i + L : i + L - L2; nb[3] = y > 0 ? i - L : i + L2 - L;
+      if (three) { const z = (i / L2) | 0; nb[4] = z + 1 < L ? i + L2 : i + L2 - N; nb[5] = z > 0 ? i - L2 : i + N - L2; }
+      let free = 0;
+      for (let k = 0; k < nn; k++) if (!(s[nb[k]] & bit)) free++;
+      if (!free) continue;                                              // overcrowded: no offspring
+      r ^= r << 13; r ^= r >>> 17; r ^= r << 5;
+      let pick = ((r >>> 0) / 4294967296 * free) | 0;
+      for (let k = 0; k < nn; k++) if (!(s[nb[k]] & bit) && pick-- === 0) { s[nb[k]] |= bit; break; }
+      if (prey) nx++; else ny++;
+    }
+    rs = r || 1; this.nx = nx; this.ny = ny;
+  }
+  advance(dt) {
+    let left = dt;
+    while (left > 1e-12) {
+      const h = Math.min(left, this.nextRec - this.t, 0.25);
+      this.updates(poisson(this.N * h));
+      this.t += h; left -= h;
+      this.trail.push([this.t, this.nx / this.N, this.ny / this.N]);
+      if (this.trail.length > 12) this.trail.shift();
+      if (this.t >= this.nextRec - 1e-9) { this.series.push(this.nx / this.N); this.nextRec += 1; }
+    }
+  }
+  theta() { return 0; }
+  mags() { return [this.nx / this.N, this.ny / this.N, 0, 0]; }
+  config() { return this.s.slice(); }
+}
+
+// ---------------------------------------------------------------- state
+let sim = null, gen = 0, running = true, speed = 20, ack = true;
+let debt = 0, lastWall = 0, workPerMs = null, tAcc = 0, wallAcc = 0, rate = 0;
+let outbox = [], defs = [0, 0], vort = new Int16Array(0), dirty = false;
+let corr = null, auto = null, corrWall = 0, corrDirty = false, postCount = 0;
+
+// ---------------------------------------------------------------- vortices (2D)
+function computeVortices() {
+  const L = sim.L, q = sim.q, list = [];
+  let np = 0, nm = 0;
+  for (let y = 0; y < L; y++) for (let x = 0; x < L; x++) {
+    const x1 = (x + 1) % L, y1 = (y + 1) % L;
+    const id = [y * L + x, y * L + x1, y1 * L + x1, y1 * L + x, y * L + x];
+    let tot = 0, amb = false;
+    if (q) {
+      for (let e = 0; e < 4; e++) {
+        let w = sim.s[id[e + 1]] - sim.s[id[e]];
+        w = ((w + (q >> 1)) % q + q) % q - (q >> 1);
+        if (q % 2 === 0 && w === -(q >> 1)) amb = true;
+        tot += w;
+      }
+      if (amb) continue;
+      tot = Math.round(tot / q);
+    } else {
+      for (let e = 0; e < 4; e++) { let w = sim.phi[id[e + 1]] - sim.phi[id[e]]; w -= 2 * Math.PI * Math.round(w / (2 * Math.PI)); tot += w; }
+      tot = Math.round(tot / (2 * Math.PI));
+    }
+    if (tot > 0) { np++; list.push(x, y, 1); } else if (tot < 0) { nm++; list.push(x, y, -1); }
+  }
+  defs = [np, nm]; vort = Int16Array.from(list);
+}
+
+// ---------------------------------------------------------------- correlations
+// Lattice Green's function of -Delta on Z^3 along an axis, r = 0..48 (Bessel integral,
+// see dclock/correlations.py); beyond that G(r) = 1/(4 pi r) to 3e-4.
+const GINF3 = [0.252731,0.08606434,0.04288931,0.02754513,0.02028887,0.01610108,0.0133647,0.01143035,0.009988055,0.008870316,0.007978273,0.007249656,0.006643228,0.00613058,0.005691489,0.005311164,0.004978535,0.004685152,0.004424451,0.004191255,0.003981426,0.003791618,0.003619095,0.003461597,0.003317242,0.003184452,0.003061889,0.002948415,0.002843055,0.002744969,0.002653428,0.002567799,0.002487526,0.002412122,0.002341158,0.002274252,0.002211066,0.002151298,0.002094678,0.002040964,0.001989937,0.001941402,0.001895179,0.001851108,0.001809041,0.001768846,0.0017304,0.00169359,0.001658316];
+const ginf3 = (r) => r < GINF3.length ? GINF3[r] : 1 / (4 * Math.PI * r);
+
+function setupCorr() {
+  const L = sim.L, d = sim.dim, R = Math.floor(L / 2), N = sim.N;
+  const lam = new Float64Array(L);
+  for (let m = 0; m < L; m++) lam[m] = 2 * (1 - Math.cos(2 * Math.PI * m / L));
+  // G_L(r) = L^-d sum_{k != 0} cos(k_1 r) / lambda_k   (separable sum over k_1)
+  const Sk = new Float64Array(L);
+  for (let a = 0; a < L; a++) {
+    if (d === 2) { for (let b = 0; b < L; b++) if (a || b) Sk[a] += 1 / (lam[a] + lam[b]); }
+    else for (let b = 0; b < L; b++) for (let c = 0; c < L; c++) if (a || b || c) Sk[a] += 1 / (lam[a] + lam[b] + lam[c]);
+  }
+  const G = new Float64Array(R + 1);
+  for (let r = 0; r <= R; r++) { let g = 0; for (let a = 0; a < L; a++) g += Math.cos(2 * Math.PI * a * r / L) * Sk[a]; G[r] = g / N; }
+  // H_L(u) = L^-d sum_{k != 0} e^{-u lambda_k}/lambda_k = int_u^inf [h(s)^d - 1/N] ds,
+  // h(s) = L^-1 sum_a e^{-s lambda_a}; tabulated on a log grid of u
+  const NU = 240, u0 = 1e-3, u1 = 400 * L * L / (4 * Math.PI * Math.PI), Hv = new Float64Array(NU);
+  const F = (sv) => { let h = 0; for (let a = 0; a < L; a++) h += Math.exp(-sv * lam[a]); h /= L; return Math.max(0, Math.pow(h, d) - 1 / N); };
+  const lr = Math.log(u1 / u0) / (NU - 1);
+  let acc = 0, prev = null;
+  for (let i = NU - 1; i >= 0; i--) {
+    const uu = u0 * Math.exp(lr * i), f = F(uu) * uu;
+    if (prev !== null) acc += 0.5 * (f + prev) * lr;
+    prev = f; Hv[i] = acc;
+  }
+  const H = (u) => {
+    if (u <= u0) return Hv[0];
+    const x = Math.log(u / u0) / lr, i = Math.floor(x);
+    if (i >= NU - 1) return 0;
+    return Hv[i] + (Hv[i + 1] - Hv[i]) * (x - i);
+  };
+  corr = { R, G, recent: [], cur: null, u: new Float32Array(N), v: new Float32Array(N) };
+  // Autocorrelation averaged over all time origins: a history of past snapshots with roughly
+  // geometric ages (RHO apart), stored as Int8 (4 bytes per site) and compared with the current
+  // configuration at every step; each comparison adds one sample at lag tau = age. The first
+  // BURN time units after a (re)start are skipped so the initial transient does not enter.
+  // prey-predator: phase diffusion is slow (D ~ 0.1), so the burn-in is longer
+  const pp = sim.kind === "pp", TMAX = pp ? (d === 3 ? 500 : 300) : (d === 3 ? 1000 : 600), NF = 260, FMIN = 0.5, BURN = pp ? 600 : 200;
+  auto = { TMAX, H, snaps: [], RHO: Math.pow(2, 1 / 3), NF, FMIN, lstep: Math.log(TMAX / FMIN) / NF,
+           lab: new Float64Array(NF), rot: new Float64Array(NF), w: new Float64Array(NF),
+           WIN: d === 3 ? 4000 : 3000, lastT: null, rr: 0, fit: null, fitCount: 0,
+           cdz: new Float32Array(2 * N), cdw: new Float32Array(2 * N), BURN, tStart: sim.t + BURN,
+           vbar2: null };
+}
+function resetCorr() {
+  if (!corr) return;
+  corr.recent = [];
+  auto.snaps = []; auto.lab.fill(0); auto.rot.fill(0); auto.w.fill(0); auto.lastT = null; auto.fit = null;
+  auto.tStart = sim.t + auto.BURN; auto.vbar2 = null;
+}
+function fillUV() {
+  const N = sim.N, u = corr.u, v = corr.v;
+  let mx = 0, my = 0;
+  if (sim.kind === "pp") {        // the local state as a vector: (prey present, predator present)
+    const st = sim.s;
+    for (let i = 0; i < N; i++) { u[i] = st[i] & 1; v[i] = st[i] >> 1; mx += u[i]; my += v[i]; }
+    return [mx / N, my / N];
+  }
+  for (let i = 0; i < N; i++) { const th = sim.theta(i); u[i] = Math.cos(th); v[i] = Math.sin(th); mx += u[i]; my += v[i]; }
+  return [mx / N, my / N];
+}
+function measureCorr() {
+  const L = sim.L, N = sim.N, d = sim.dim, R = corr.R, u = corr.u, v = corr.v;
+  const [mx, my] = fillUV();
+  const acc = new Float64Array(R + 1);
+  for (let a = 0, st = 1; a < d; a++, st *= L) {
+    for (let i = 0; i < N; i++) {
+      const c = ((i / st) | 0) % L, ui = u[i], vi = v[i];
+      for (let r = 1; r <= R; r++) {
+        const cc = c + r < L ? c + r : c + r - L, j = i + (cc - c) * st;
+        acc[r] += ui * u[j] + vi * v[j];
+      }
+    }
+  }
+  const C = new Float64Array(R + 1), m2 = mx * mx + my * my;
+  C[0] = (sim.kind === "pp" ? mx + my : 1) - m2;   // occupation numbers: u^2 = u
+  for (let r = 1; r <= R; r++) C[r] = acc[r] / (N * d) - m2;
+  corr.cur = C; corr.recent.push(C); if (corr.recent.length > 30) corr.recent.shift();
+  corrDirty = true;
+}
+function corrSummary() {
+  const R = corr.R, G = corr.G, n = corr.recent.length, d = sim.dim;
+  const mean = new Float64Array(R + 1);
+  for (const C of corr.recent) for (let r = 0; r <= R; r++) mean[r] += C[r] / n;
+  let num = 0, den = 0;
+  for (let r = sim.kind === "pp" ? 2 : 1; r <= Math.max(3, Math.floor(sim.L / 4)); r++) if (G[r] > 0 && mean[r] > 0) { num += mean[r] * G[r]; den += G[r] * G[r]; }
+  const A = den > 0 ? num / den : 0;
+  const corrected = new Float64Array(R + 1);
+  if (d === 3) for (let r = 1; r <= R; r++) corrected[r] = mean[r] + A * (ginf3(r) - G[r]);
+  return { R, n, A, G: Array.from(G), cur: Array.from(corr.cur), mean: Array.from(mean), corrected: Array.from(corrected) };
+}
+
+const Q = 63;                                   // Int8 quantisation: components lie in [-2, 2]
+function measureAuto() {
+  const [mx, my] = fillUV();
+  const A = auto, N = sim.N, u = corr.u, v = corr.v, mm = Math.hypot(mx, my) || 1;
+  const cdz = A.cdz, cdw = A.cdw;
+  if (sim.kind === "pp") {
+    // Co-moving frame of the oscillation: split the deviation from the mean densities into its
+    // component along the velocity V of (x, y) on the limit cycle, a phase shift, rescaled by
+    // |V|rms/|V| so that it measures the phase in units of time, and the normal component.
+    const tr = sim.trail;
+    let o = tr[0];
+    for (let k = tr.length - 1; k >= 0; k--) if (sim.t - tr[k][0] >= 0.45) { o = tr[k]; break; }
+    const h = sim.t - o[0];
+    let tx = 1, ty = 0, sc = 1;
+    if (h > 0.2) {
+      const vx = (mx - o[1]) / h, vy = (my - o[2]) / h, vn = Math.hypot(vx, vy) || 1e-9;
+      A.vbar2 = A.vbar2 === null ? vn * vn : 0.99 * A.vbar2 + 0.01 * vn * vn;
+      tx = vx / vn; ty = vy / vn; sc = Math.min(3, Math.sqrt(A.vbar2) / vn);
+    }
+    for (let i = 0; i < N; i++) {
+      const a = u[i] - mx, b = v[i] - my;
+      cdz[2 * i] = a; cdz[2 * i + 1] = b;
+      cdw[2 * i] = Math.max(-2, Math.min(2, (tx * a + ty * b) * sc)); cdw[2 * i + 1] = ty * a - tx * b;
+    }
+  } else for (let i = 0; i < N; i++) {
+    cdz[2 * i] = u[i] - mx; cdz[2 * i + 1] = v[i] - my;
+    cdw[2 * i] = (u[i] * mx + v[i] * my) / mm - mm; cdw[2 * i + 1] = (v[i] * mx - u[i] * my) / mm;
+  }
+  // moving window: exponential forgetting in simulation time
+  if (A.lastT !== null && sim.t > A.lastT) {
+    const f = Math.exp(-(sim.t - A.lastT) / A.WIN);
+    for (let b = 0; b < A.NF; b++) { A.lab[b] *= f; A.rot[b] *= f; A.w[b] *= f; }
+  }
+  A.lastT = sim.t;
+  const ns = A.snaps.length, budget = Math.max(1, Math.floor(6e6 / (4 * N)));
+  const collect = sim.t >= A.tStart;
+  for (let c = 0; c < (collect ? Math.min(ns, budget) : 0); c++) {
+    const snap = A.snaps[(A.rr + c) % ns], tau = sim.t - snap.t;
+    const b = Math.floor(Math.log(tau / A.FMIN) / A.lstep);
+    if (b < 0 || b >= A.NF) continue;
+    const qz = snap.dz, qw = snap.dw;
+    let lab = 0, rot = 0;
+    for (let k = 0; k < 2 * N; k++) { lab += qz[k] * cdz[k]; rot += qw[k] * cdw[k]; }
+    A.lab[b] += lab / (Q * N); A.rot[b] += rot / (Q * N); A.w[b] += 1;
+  }
+  A.rr = ns ? (A.rr + budget) % ns : 0;
+  const last = A.snaps[A.snaps.length - 1];
+  if (!last || sim.t - last.t >= A.FMIN) {
+    const dz = new Int8Array(2 * N), dw = new Int8Array(2 * N);
+    for (let k = 0; k < 2 * N; k++) { dz[k] = Math.round(cdz[k] * Q); dw[k] = Math.round(cdw[k] * Q); }
+    A.snaps.push({ t: sim.t, dz, dw });
+  }
+  const kept = []; let prevAge = 0;
+  for (let k = A.snaps.length - 1; k >= 0; k--) {
+    const age = sim.t - A.snaps[k].t;
+    if (age > A.TMAX) break;
+    if (k === A.snaps.length - 1 || age >= A.RHO * Math.max(prevAge, A.FMIN)) { kept.push(A.snaps[k]); prevAge = age; }
+  }
+  A.snaps = kept.reverse();
+}
+function autoSummary() {
+  const A = auto, d = sim.dim;
+  const lab = [], rot = [];
+  let sl = 0, sw = 0, st = 0;
+  for (let b = 0; b < A.NF; b++) {
+    const tc = A.FMIN * Math.exp(A.lstep * (b + 0.5));
+    sl += A.lab[b]; sw += A.w[b]; st += A.w[b] * tc;
+    if (sw >= 25 && tc < 0.9 * A.TMAX) { lab.push([st / sw, Math.abs(sl / sw)]); sl = 0; sw = 0; st = 0; }
+  }
+  for (let b0 = 0; b0 < A.NF; b0 += 6) {
+    let sr = 0, w = 0, tw = 0;
+    for (let b = b0; b < Math.min(A.NF, b0 + 6); b++) { sr += A.rot[b]; w += A.w[b]; tw += A.w[b] * A.FMIN * Math.exp(A.lstep * (b + 0.5)); }
+    if (w >= 25 && tw / w < 0.9 * A.TMAX) rot.push([tw / w, sr / w]);
+  }
+  // fit B and D of B H_L(D tau); refined by golden section, smoothed over time
+  const pts = rot.filter((p) => p[1] > 0 && p[0] >= (sim.kind === "pp" ? 8 : 1));   // prey-predator: local part below 8
+  if (pts.length >= 4 && (A.fitCount++ % 4 === 0 || !A.fit)) {
+    const res = (D) => {
+      let sxy = 0, sxx = 0;
+      for (const [t, y] of pts) { const h = A.H(D * t) / y; sxy += h; sxx += h * h; }
+      const B = sxy / sxx; let r = 0;
+      for (const [t, y] of pts) { const e = B * A.H(D * t) / y - 1; r += e * e; }
+      return [r, B];
+    };
+    let bestL = -2, bestR = Infinity;
+    for (let k = 0; k <= 80; k++) { const l = -3 + 4 * k / 80, r = res(Math.pow(10, l))[0]; if (r < bestR) { bestR = r; bestL = l; } }
+    let lo = bestL - 0.05, hi = bestL + 0.05;
+    for (let it = 0; it < 20; it++) {
+      const a1 = hi - 0.618 * (hi - lo), a2 = lo + 0.618 * (hi - lo);
+      if (res(Math.pow(10, a1))[0] < res(Math.pow(10, a2))[0]) hi = a2; else lo = a1;
+    }
+    const lD = 0.5 * (lo + hi), sL = A.fit ? 0.8 * Math.log10(A.fit.D) + 0.2 * lD : lD, D = Math.pow(10, sL);
+    A.fit = { D, B: res(D)[1] };
+  }
+  let curve = [], pl = [];
+  if (A.fit) {
+    const { B, D } = A.fit;
+    for (let k = 0; k <= 120; k++) { const t = A.FMIN * Math.pow(A.TMAX / A.FMIN, k / 120); curve.push([t, B * A.H(D * t)]); }
+    if (d === 3) {
+      const c = B * 2 * Math.pow(4 * Math.PI, -1.5) / Math.sqrt(D);
+      for (let k = 0; k <= 60; k++) { const t = A.FMIN * Math.pow(A.TMAX / A.FMIN, k / 60); pl.push([t, c / Math.sqrt(t)]); }
+    }
+  }
+  return { lab, rot, curve, pl, fit: A.fit, TMAX: A.TMAX, FMIN: A.FMIN, WIN: A.WIN, tStart: A.tStart, waiting: sim.t < A.tStart };
+}
+
+// ---------------------------------------------------------------- loop
+function sample() {
+  if (sim.kind === "pp") {
+    outbox.push([sim.t, sim.nx / sim.N, sim.ny / sim.N, 0, 0, 0, 0]);
+    if (outbox.length > 4000) outbox = outbox.filter((_, i) => i % 2 === 0 || i === outbox.length - 1);
+    return;
+  }
+  const [ma, mb, mx, my] = sim.mags();
+  if (sim.dim === 2) computeVortices();
+  outbox.push([sim.t, ma, mb, Math.sqrt((ma * ma + mb * mb) / 2), defs[0] + defs[1], mx, my]);
+  if (outbox.length > 4000) outbox = outbox.filter((_, i) => i % 2 === 0 || i === outbox.length - 1);
+}
+function post() {
+  const cfg = sim.config();
+  const msg = { type: "frame", gen, t: sim.t, rate, traces: outbox, defs, cfg, vort: vort.slice(), L: sim.L, dim: sim.dim, q: sim.q };
+  if (sim.kind === "pp") { msg.series = sim.series; sim.series = []; msg.model = "pp"; }
+  if (corrDirty && corr.cur) { msg.corr = corrSummary(); corrDirty = false; }
+  if (postCount % 3 === 0) msg.auto = autoSummary();
+  postMessage(msg, [cfg.buffer, msg.vort.buffer]);
+  outbox = []; ack = false; postCount++;
+}
+function step() {
+  const now = performance.now();
+  const wall = Math.min(0.1, (now - lastWall) / 1000); lastWall = now;
+  if (running && sim) {
+    const want = speed * wall + debt;
+    let dt = want;
+    if (workPerMs) dt = Math.min(want, 25 * workPerMs / Math.max(1, sim.cost(1)));   // about 25 ms of dynamics per step
+    const t0 = performance.now();
+    if (dt > 0) sim.advance(dt);
+    const el = Math.max(0.05, performance.now() - t0);
+    if (dt > 0) { const wpm = sim.cost(dt) / el; workPerMs = workPerMs ? 0.8 * workPerMs + 0.2 * wpm : wpm; }
+    debt = Math.min(want - dt, speed * 0.25);
+    tAcc += dt; wallAcc += wall;
+    if (wallAcc > 0.5) { rate = tAcc / wallAcc; tAcc = 0; wallAcc = 0; }
+    sample();
+    if (corr) {
+      measureAuto();
+      if (now - corrWall > 250) { corrWall = now; measureCorr(); }
+    }
+    dirty = true;
+  }
+  if (ack && sim && dirty) { post(); dirty = false; }   // at most one frame per redraw of the page
+  setTimeout(step, running ? 0 : 40);
+}
+
+onmessage = (e) => {
+  const m = e.data;
+  if (m.type === "init") {
+    const p = m.p;
+    gen = m.gen; rs = (Math.random() * 4294967296) >>> 0 || 1;
+    sim = p.model === "clock" ? new Clock(p.L, p.dim, p.q, p.beta, p.d, p.init)
+        : p.model === "pp" ? new PreyPred(p.L, p.dim, p.r) : new XY(p.L, p.dim, p.beta, p.d, p.init);
+    outbox = []; defs = [0, 0]; vort = new Int16Array(0); debt = 0; workPerMs = null; postCount = 0;
+    corr = null; auto = null;
+    setupCorr(); measureCorr(); measureAuto();
+    sample();
+    ack = true; dirty = true;
+  } else if (m.type === "set") { if (sim.kind === "pp") sim.set(m.r); else sim.set(m.beta, m.d); resetCorr(); }
+  else if (m.type === "speed") speed = m.v;
+  else if (m.type === "run") { running = m.on; lastWall = performance.now(); }
+  else if (m.type === "clear") { resetCorr(); dirty = true; }
+  else if (m.type === "ack") ack = true;
+};
+lastWall = performance.now();
+step();
+</script>
 <script>
 "use strict";
 (() => {
-  // ---------------------------------------------------------------- colours
-  const STATE4 = [[0x7a,0x2a,0x7f],[0xd9,0x7a,0x1e],[0xec,0xd3,0x9a],[0x2b,0x8d,0xe0]];
+  // ---------------------------------------------------------------- colours and helpers
+  // a page may set window.CLOCK_LAB_THEME = { states, spin: [up, down], volume } to restyle the views
+  const THEME = window.CLOCK_LAB_THEME || {};
+  const STATE4 = THEME.states || [[0x7a,0x2a,0x7f],[0xd9,0x7a,0x1e],[0xec,0xd3,0x9a],[0x2b,0x8d,0xe0]];
+  const SPIN = THEME.spin || [[255, 255, 255], [0, 0, 0]];
+  // prey-predator sites: empty, prey, predator, prey and predator
+  const PP4 = THEME.pp || [[244, 241, 234], [79, 157, 74], [198, 59, 43], [107, 42, 111]];
+  const VOLC = Object.assign({ bg: 1, near: 0, far: 0.93, lo: [0, 0, 0], hi: [255, 255, 255], edge: "#222", hidden: "#999", fill: "#ffffff" }, THEME.volume || {});
   function cyclic(f) {                    // f in [0,1): interpolate through the 4 state colours
     f = ((f % 1) + 1) % 1;
     const x = f * 4, i = Math.floor(x), u = x - i, a = STATE4[i % 4], b = STATE4[(i + 1) % 4];
     return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u].map(Math.round);
   }
-  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-
-  // ---------------------------------------------------------------- RNG
-  let rs = (Math.random() * 4294967296) >>> 0 || 1;
-  function rnd() { rs ^= rs << 13; rs ^= rs >>> 17; rs ^= rs << 5; return (rs >>> 0) / 4294967296; }
-  function gauss() { let u = 0; while (u === 0) u = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.283185307179586 * rnd()); }
-  function poisson(mu) {
-    if (mu < 30) { let L = Math.exp(-mu), k = 0, p = 1; do { k++; p *= rnd(); } while (p > L); return k - 1; }
-    return Math.max(0, Math.round(mu + Math.sqrt(mu) * gauss()));
-  }
-
-  // ---------------------------------------------------------------- models
-  class Clock {
-    constructor(L, dim, q, beta, d, init) {
-      this.L = L; this.dim = dim; this.q = q; this.N = dim === 2 ? L * L : L * L * L;
-      this.s = new Uint8Array(this.N);
-      if (init === "random") for (let i = 0; i < this.N; i++) this.s[i] = (rnd() * q) | 0;
-      this.counts = new Float64Array(q);
-      for (let i = 0; i < this.N; i++) this.counts[this.s[i]]++;
-      this.th = new Float64Array(q); for (let k = 0; k < q; k++) this.th[k] = 2 * Math.PI * (k + 0.5) / q;
-      this.t = 0; this.set(beta, d);
-    }
-    set(beta, d) {
-      const q = this.q, b = beta / 2; this.beta = beta; this.d = d;
-      const incF = [], incB = []; let D = -Infinity;
-      for (let m = 0; m < q; m++) {
-        const ph = 2 * Math.PI * m / q;
-        incF[m] = Math.cos(ph + 2 * Math.PI / q) - Math.cos(ph);
-        incB[m] = Math.cos(ph - 2 * Math.PI / q) - Math.cos(ph);
-        D = Math.max(D, incF[m], incB[m]);
-      }
-      this.fwd = new Float64Array(q); this.bwd = new Float64Array(q);
-      for (let m = 0; m < q; m++) { this.fwd[m] = Math.exp(b * (incF[m] - D)); this.bwd[m] = Math.exp(b * (incB[m] - D)); }
-      this.B = Math.exp(b * D * 2 * this.dim);
-      this.pp = 1 / (1 + Math.exp(-d)); this.pm = 1 - this.pp;
-    }
-    // cost of advancing by dt, in proposals
-    cost(dt) { return this.N * this.B * dt; }
-    advance(dt) {
-      const n = poisson(this.N * this.B * dt);
-      const s = this.s, L = this.L, L2 = L * L, N = this.N, q = this.q, fwd = this.fwd, bwd = this.bwd, cnt = this.counts;
-      const pp = this.pp, pm = this.pm, three = this.dim === 3;
-      let r = rs;
-      for (let c = 0; c < n; c++) {
-        r ^= r << 13; r ^= r >>> 17; r ^= r << 5;
-        const i = ((r >>> 0) / 4294967296 * N) | 0;
-        const k = s[i], x = i % L, y = ((i / L) | 0) % L;
-        let af = pp, ab = pm, m;
-        m = k - s[x + 1 < L ? i + 1 : i + 1 - L]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
-        m = k - s[x > 0 ? i - 1 : i + L - 1]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
-        m = k - s[y + 1 < L ? i + L : i + L - L2]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
-        m = k - s[y > 0 ? i - L : i + L2 - L]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
-        if (three) {
-          const z = (i / L2) | 0;
-          m = k - s[z + 1 < L ? i + L2 : i + L2 - N]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
-          m = k - s[z > 0 ? i - L2 : i + N - L2]; if (m < 0) m += q; af *= fwd[m]; ab *= bwd[m];
-        }
-        r ^= r << 13; r ^= r >>> 17; r ^= r << 5;
-        const u = (r >>> 0) / 4294967296;
-        let kn;
-        if (u < af) kn = k + 1 === q ? 0 : k + 1;
-        else if (u < af + ab) kn = k === 0 ? q - 1 : k - 1;
-        else continue;
-        s[i] = kn; cnt[k]--; cnt[kn]++;
-      }
-      rs = r || 1;
-      this.t += dt;
-    }
-    theta(i) { return this.th[this.s[i]]; }
-    mags() {
-      let ma = 0, mb = 0, mx = 0, my = 0;
-      for (let k = 0; k < this.q; k++) {
-        const c = Math.cos(this.th[k]), sn = Math.sin(this.th[k]), w = this.counts[k];
-        mx += w * c; my += w * sn;
-        ma += w * (Math.abs(c) < 1e-9 ? 0 : Math.sign(c)); mb += w * (Math.abs(sn) < 1e-9 ? 0 : Math.sign(sn));
-      }
-      return [ma / this.N, mb / this.N, mx / this.N, my / this.N];
-    }
-    colorIndex(i) { return this.s[i]; }
-  }
-
-  class XY {
-    constructor(L, dim, beta, d, init) {
-      this.L = L; this.dim = dim; this.N = dim === 2 ? L * L : L * L * L; this.q = 0;
-      this.phi = new Float64Array(this.N); this.f = new Float64Array(this.N);
-      if (init === "random") for (let i = 0; i < this.N; i++) this.phi[i] = 2 * Math.PI * rnd();
-      else this.phi.fill(Math.PI / 4);
-      this.t = 0; this.h = 0.04; this.set(beta, d);
-    }
-    set(beta, d) { this.beta = Math.max(beta, 1e-3); this.d = d; }
-    cost(dt) { return this.N * (dt / this.h) * 8; }
-    advance(dt) {
-      const n = Math.max(1, Math.round(dt / this.h)), h = dt / n, amp = Math.sqrt(2 * h / this.beta);
-      const L = this.L, L2 = L * L, N = this.N, p = this.phi, f = this.f, three = this.dim === 3;
-      for (let st = 0; st < n; st++) {
-        for (let i = 0; i < N; i++) {
-          const x = i % L, y = ((i / L) | 0) % L, a = p[i];
-          let s = Math.sin(a - p[x + 1 < L ? i + 1 : i + 1 - L]) + Math.sin(a - p[x > 0 ? i - 1 : i + L - 1])
-                + Math.sin(a - p[y + 1 < L ? i + L : i + L - L2]) + Math.sin(a - p[y > 0 ? i - L : i + L2 - L]);
-          if (three) { const z = (i / L2) | 0; s += Math.sin(a - p[z + 1 < L ? i + L2 : i + L2 - N]) + Math.sin(a - p[z > 0 ? i - L2 : i + N - L2]); }
-          f[i] = s;
-        }
-        for (let i = 0; i < N; i++) p[i] += (this.d - f[i]) * h + amp * gauss();
-      }
-      for (let i = 0; i < N; i++) { p[i] %= 2 * Math.PI; if (p[i] < 0) p[i] += 2 * Math.PI; }
-      this.t += dt;
-    }
-    theta(i) { return this.phi[i]; }
-    mags() {
-      let ma = 0, mb = 0, mx = 0, my = 0;
-      for (let i = 0; i < this.N; i++) { const c = Math.cos(this.phi[i]), s = Math.sin(this.phi[i]); mx += c; my += s; ma += Math.sign(c); mb += Math.sign(s); }
-      return [ma / this.N, mb / this.N, mx / this.N, my / this.N];
-    }
-  }
-
-  // ---------------------------------------------------------------- state
-  const PRESETS = {
-    fig8:   { model: "clock", dim: 2, q: 4, L: 150, beta: 1.5, d: 0.85, init: "ordered", speed: 1.9 },
-    fig10:  { model: "clock", dim: 3, q: 4, L: 48,  beta: 0.5, d: 0.2,  init: "ordered", speed: 1.3 },
-    swap2d: { model: "clock", dim: 2, q: 4, L: 120, beta: 1.4, d: 0.6,  init: "ordered", speed: 1.9 },
-    clock8: { model: "clock", dim: 3, q: 8, L: 40,  beta: 1.05, d: 0.65, init: "ordered", speed: 1.1 },
-    xy2d:   { model: "xy",    dim: 2, q: 4, L: 96,  beta: 2.0, d: 0.5,  init: "random",  speed: 0.7 },
-    xy3d:   { model: "xy",    dim: 3, q: 4, L: 32,  beta: 1.0, d: 0.5,  init: "ordered", speed: 0.6 },
-    eq:     { model: "clock", dim: 2, q: 4, L: 128, beta: 1.6, d: 0.0,  init: "random",  speed: 1.6 },
-  };
-  const S = { model: "clock", dim: 2, q: 4, L: 150, beta: 1.5, d: 0.85, init: "ordered", speed: 1.3, running: true, showdef: true };
-  const WIN = 1000;                       // width of the M(t) time window
-  let sim = null, hist = [], lastArg = null, omegaEst = null, rateEst = 0, defs = [0, 0];
-
+  // plot colours come from the element marked data-plot-scope (if any), so a page can give the instrument its own palette
+  const cssRoot = document.querySelector("[data-plot-scope]") || document.documentElement;
+  const css = (n) => getComputedStyle(cssRoot).getPropertyValue(n).trim();
   const $ = (id) => document.getElementById(id);
+
+  // ---------------------------------------------------------------- presets, hints, links
+  const PRESETS = {
+    "spirals-2d":     { model: "clock", dim: 2, q: 4, L: 150, beta: 1.5,  d: 0.85, init: "ordered", speed: 1.9 },
+    "rotating-3d":    { model: "clock", dim: 3, q: 4, L: 48,  beta: 0.5,  d: 0.2,  init: "ordered", speed: 1.3 },
+    "swap-2d":        { model: "clock", dim: 2, q: 4, L: 120, beta: 1.4,  d: 0.6,  init: "ordered", speed: 1.9 },
+    "clock8-3d":      { model: "clock", dim: 3, q: 8, L: 40,  beta: 1.05, d: 0.65, init: "ordered", speed: 1.1 },
+    "xy-2d":          { model: "xy",    dim: 2, q: 4, L: 96,  beta: 2.0,  d: 0.5,  init: "random",  speed: 0.7 },
+    "xy-3d":          { model: "xy",    dim: 3, q: 4, L: 32,  beta: 1.0,  d: 0.5,  init: "ordered", speed: 0.6 },
+    "equilibrium-2d": { model: "clock", dim: 2, q: 4, L: 128, beta: 1.6,  d: 0.0,  init: "random",  speed: 1.6 },
+    "prey-predator-3d": { model: "pp", dim: 3, L: 40, r: 0.3, init: "random", speed: 1.2 },
+    "prey-predator-2d": { model: "pp", dim: 2, L: 200, r: 0.3, init: "random", speed: 1.2 },
+  };
+  const HINTS = {
+    "spirals-2d": "The magnetisation rotates by droplet nucleation: σᴬ and σᴮ flip in turn and the trajectory circles in the phase plane. After a few thousand time units (one to three minutes here) pairs of spiral defects appear, multiply and destroy the rotation: M_A and M_B decay while the vortex count rises. When this happens is random; restart for another history.",
+    "rotating-3d": "A coherently rotating phase: M_A and M_B oscillate with a period of about 110 time units while s stays constant. After about half a minute the correlation panels settle: C_t(r) follows the spin-wave curve (rings on the 1/r line) and the autocorrelation envelope decays like τ^−1/2.",
+    "swap-2d": "Avni et al.'s 2D parameters. Here the droplet-driven rotation lasts very long on this lattice; spiral pairs appear only rarely. Raise d towards 0.85 to see them take over.",
+    "clock8-3d": "Eight-state clock deeper in the ordered phase: |M| ≈ 0.86 and a steady rotation with a period of about 40 time units. The correlation panels show clean spin-wave behaviour.",
+    "xy-2d": "Random start. By Theorem 7 the drift only rotates everything rigidly, so in the co-rotating frame this is the equilibrium 2D XY model: vortex–antivortex pairs annihilate and the system coarsens slowly.",
+    "xy-3d": "In 3D the rotated XY state is ordered: M rotates rigidly with angular velocity close to d = 0.5 and the correlations are those of spin waves.",
+    "equilibrium-2d": "No drift, so the dynamics is reversible. From a random start the four phases coarsen into domains; nothing rotates (ω ≈ 0).",
+    "prey-predator-3d": "Lipowski's prey-predator model in 3D. After a short transient the prey and predator densities oscillate regularly with a period of about 20 Monte Carlo steps, and the power spectrum develops a sharp peak (and a second one at twice the frequency). The oscillation is a bulk effect: its amplitude does not shrink as L grows. As in the rotating clock, the local phase of the oscillation is a soft mode: after a few thousand steps (raise the speed) the truncated correlations decay like 1/r in space and like τ^−1/2 in time, up to the torus cutoff. Move r away from 0.3 to see the oscillation weaken; near r ≈ 0.5 only noise is left.",
+    "prey-predator-2d": "The same model in 2D. The densities fluctuate irregularly; the spectrum has a broad bump near the frequency of the 3D oscillation, but the amplitude decays like 1/L, so in the infinite lattice the densities are constant. Locally, prey and predators chase each other in travelling fronts.",
+    custom: "Custom setting. The presets restore the parameters used for the figures; the address of this page now encodes your setting, so you can share it with the button below.",
+  };
+  const S = { model: "clock", dim: 2, q: 4, L: 150, beta: 1.5, d: 0.85, r: 0.3, init: "ordered", speed: 1.9, running: true, showdef: true };
+  const WINS = { clock: 1000, xy: 1000, pp: 200 };  // width of the M(t) time window
+  const isPP = () => S.model === "pp";
+
+  // custom settings: #clock-3d-q4-L48-b500-d200-ordered  (b and d in thousandths)
+  function encode() {
+    if (isPP()) {
+      for (const [name, p] of Object.entries(PRESETS))
+        if (p.model === "pp" && p.dim === S.dim && p.L === S.L && Math.abs(p.r - S.r) < 1e-9) return name;
+      return `pp-${S.dim}d-L${S.L}-r${Math.round(S.r * 1000)}`;
+    }
+    for (const [name, p] of Object.entries(PRESETS))
+      if (p.model === S.model && p.dim === S.dim && (S.model === "xy" || p.q === S.q) && p.L === S.L &&
+          Math.abs(p.beta - S.beta) < 1e-9 && Math.abs(p.d - S.d) < 1e-9 && p.init === S.init) return name;
+    return `${S.model}-${S.dim}d${S.model === "clock" ? "-q" + S.q : ""}-L${S.L}-b${Math.round(S.beta * 1000)}-d${Math.round(S.d * 1000)}-${S.init}`;
+  }
+  function decode(h) {
+    if (PRESETS[h]) return Object.assign({ preset: h }, PRESETS[h]);
+    const pp = /^pp-([23])d-L(\d+)-r(\d+)$/.exec(h);
+    if (pp) {
+      const dim = +pp[1], L = +pp[2];
+      return { model: "pp", dim, init: "random", L: dim === 2 ? Math.min(256, Math.max(16, L)) : Math.min(80, Math.max(12, L)),
+               r: Math.min(0.98, Math.max(0.02, +pp[3] / 1000)) };
+    }
+    const m = /^(clock|xy)-([23])d(?:-q(\d+))?-L(\d+)-b(\d+)-d(\d+)-(ordered|random)$/.exec(h);
+    if (!m) return null;
+    const p = { model: m[1], dim: +m[2], q: m[3] ? Math.min(16, Math.max(3, +m[3])) : 4, L: +m[4], beta: +m[5] / 1000, d: +m[6] / 1000, init: m[7] };
+    p.L = p.dim === 2 ? Math.min(256, Math.max(16, p.L)) : Math.min(80, Math.max(12, p.L));
+    return p;
+  }
+  let lastHash = "";
+  function writeHash() {
+    const h = encode();
+    $("preset").value = PRESETS[h] ? h : "";
+    $("hint").textContent = HINTS[PRESETS[h] ? h : "custom"];
+    if (h === lastHash) return;
+    lastHash = h;
+    try { history.replaceState(null, "", "#" + h); } catch (e) { try { location.hash = h; } catch (e2) { /* ignore */ } }
+  }
+
+  // ---------------------------------------------------------------- worker
+  const wsrc = $("worker-src").textContent;
+  let worker = null;
+  try {
+    worker = new Worker(URL.createObjectURL(new Blob([wsrc], { type: "text/javascript" })));
+  } catch (e) {
+    $("hint").textContent = "This browser could not start the simulation thread (Web Worker).";
+  }
+  let gen = 0, latest = null, needDraw = false, hist = [], full = [], corrData = null, autoData = null;
+  let ppx = [], spec = null, specWall = 0;        // prey density once per Monte Carlo step; its power spectrum
+  let lastArg = null, omegaEst = null;
+  const send = (m) => worker && worker.postMessage(m);
+
+  function restart() {
+    gen++;
+    hist = []; full = []; latest = null; corrData = null; autoData = null; lastArg = null; omegaEst = null;
+    ppx = []; spec = null;
+    setupCanvases();
+    send({ type: "init", gen, p: { model: S.model, dim: S.dim, q: S.q, L: S.L, beta: S.beta, d: S.d, r: S.r, init: S.init } });
+    send({ type: "speed", v: speedVal() });
+    send({ type: "run", on: S.running && !document.hidden });
+    writeHash();
+  }
+
+  if (worker) worker.onmessage = (e) => {
+    const m = e.data;
+    if (m.type !== "frame") return;
+    if (m.gen !== gen) { send({ type: "ack" }); return; }
+    latest = m;
+    for (const tr of m.traces) {
+      hist.push(tr); full.push(tr);
+      const [t, , , , , mx, my] = tr, sAbs = Math.hypot(mx, my), arg = Math.atan2(my, mx);
+      if (lastArg !== null && sAbs > 0.05 && t > lastArg[1]) {
+        let da = arg - lastArg[0]; da -= 2 * Math.PI * Math.round(da / (2 * Math.PI));
+        const w = da / (t - lastArg[1]); omegaEst = omegaEst === null ? w : 0.95 * omegaEst + 0.05 * w;
+      }
+      lastArg = [arg, t];
+    }
+    if (m.series) { for (const v of m.series) ppx.push(v); if (ppx.length > 6000) ppx = ppx.slice(-4096); }
+    const WIN = WINS[S.model];
+    let cut = 0; while (cut < hist.length - 1 && hist[cut][0] < m.t - WIN) cut++;
+    if (cut) hist = hist.slice(cut);
+    if (hist.length > 8000) hist = hist.filter((_, i) => i % 2 === 0 || i === hist.length - 1);
+    if (full.length > 100000) full = full.filter((_, i) => i % 2 === 0 || i === full.length - 1);
+    if (m.corr) corrData = m.corr;
+    if (m.auto) autoData = m.auto;
+    needDraw = true;
+  };
+
+  // ---------------------------------------------------------------- UI state
   function setPressed(a, b, on) { $(a).setAttribute("aria-pressed", on); $(b).setAttribute("aria-pressed", !on); }
+  const speedVal = () => Math.pow(10, S.speed);
+  function fmtSpeed() { const v = speedVal(); return v >= 10 ? v.toFixed(0) : v.toFixed(v >= 1 ? 1 : 2); }
+  const STATLAB = {
+    clock: ["|<i>M</i>| = <i>s</i>", "<i>ω</i> = d arg <i>M</i>/d<i>t</i>", "vortices <i>N</i>₊ / <i>N</i>₋"],
+    pp: ["prey density <i>x</i>", "predator density <i>y</i>", "period (spectral peak)"],
+  };
+  const CAPS = {
+    clock: ["<i>σ<sup>A</sup></i> = sgn cos θ", "<i>σ<sup>B</sup></i> = sgn sin θ", "<i>θ</i>", "A-spins, up only", "B-spins, up only"],
+    pp: ["prey", "predators", "sites: empty, prey, predator, both", "prey (all occupied sites)", "the plane z = L/2: empty, prey, predator, both"],
+  };
   function syncUI() {
-    setPressed("m-clock", "m-xy", S.model === "clock");
+    const pp = isPP();
+    for (const [id, m] of [["m-clock", "clock"], ["m-xy", "xy"], ["m-pp", "pp"]]) $(id).setAttribute("aria-pressed", S.model === m);
+    for (const id of ["q-row", "beta-row", "drift-row", "init-seg", "showdef-row"]) $(id).hidden = pp;
+    document.querySelectorAll(".pp-only").forEach((el) => { el.hidden = !pp; });
+    document.querySelectorAll(".clock-only").forEach((el) => { el.hidden = pp; });
+    $("auto-burn").textContent = pp ? 600 : 200;
+    for (const id of ["r-row", "pp-box"]) $(id).hidden = !pp;
+    const lab = STATLAB[pp ? "pp" : "clock"], cap = CAPS[pp ? "pp" : "clock"];
+    $("lab-m").innerHTML = lab[0]; $("lab-w").innerHTML = lab[1]; $("lab-def").innerHTML = lab[2];
+    ["cap-A", "cap-B", "cap-T", "cap-vA", "cap-vB"].forEach((id, k) => { $(id).innerHTML = cap[k]; });
+    for (const id of ["leg-ma", "leg-mb", "leg-s"]) $(id).hidden = pp;
+    for (const id of ["leg-x", "leg-y"]) $(id).hidden = !pp;
+    $("speed-note").textContent = pp ? "Monte Carlo steps per second of wall clock." : "Simulated time per second of wall clock.";
+    $("rr").value = S.r; $("rr-n").value = S.r;
     setPressed("d-2", "d-3", S.dim === 2);
     setPressed("i-ord", "i-rand", S.init === "ordered");
     $("q").value = S.q; $("q-out").textContent = S.model === "xy" ? "∞" : S.q; $("q").disabled = S.model === "xy";
@@ -483,26 +1231,23 @@ d = log(p+/p−),   p+ + p− = 1</div>
     $("beta").value = S.beta; $("beta-n").value = S.beta; $("drift").value = S.d; $("drift-n").value = S.d;
     $("speed").value = S.speed; $("speed-out").textContent = fmtSpeed();
     $("views2d").hidden = S.dim !== 2; $("views3d").hidden = S.dim !== 3;
-    $("def-stat").style.visibility = S.dim === 2 ? "visible" : "hidden";
-    $("leg-def").hidden = S.dim !== 2;
+    $("def-stat").style.visibility = S.dim === 2 || pp ? "visible" : "hidden";
+    $("leg-def").hidden = S.dim !== 2 || pp;
     $("leg-pow").hidden = S.dim !== 3; $("leg-corrected").hidden = S.dim !== 3; $("leg-tpow").hidden = S.dim !== 3;
-    $("equiv").textContent = (S.model === "clock" && S.q === 4)
+    $("equiv").textContent = pp
+      ? `Mean field (Lipowski): ẋ = r x (1 − x^${2 * S.dim}) − (1 − r) x y,  ẏ = (1 − r) x y (1 − y^${2 * S.dim}) − (1 − r)(1 − x) y.`
+      : (S.model === "clock" && S.q === 4)
       ? `Nonreciprocal Ising equivalent (exponential rates): J̃ = ${(S.dim * S.beta).toFixed(2)}, K̃ = ${(S.d / 2).toFixed(2)}.`
       : (S.model === "xy" ? "Driven XY: rotation decouples exactly, θ(t) − d·t follows equilibrium XY dynamics (Maes–Shlosman, Sec. 4)." : "");
     drawKeys();
   }
-  const speedVal = () => Math.pow(10, S.speed);
-  function fmtSpeed() { const v = speedVal(); return v >= 10 ? v.toFixed(0) : v.toFixed(v >= 1 ? 1 : 2); }
-
-  function restart() {
-    rs = (Math.random() * 4294967296) >>> 0 || 1;
-    sim = S.model === "clock" ? new Clock(S.L, S.dim, S.q, S.beta, S.d, S.init) : new XY(S.L, S.dim, S.beta, S.d, S.init);
-    hist = []; lastArg = null; omegaEst = null; defs = [0, 0];
-    setupCanvases(); setupCorr(); measureCorr(); autoStep(); sample(); draw();
-  }
 
   // ---------------------------------------------------------------- canvases
-  let off2d = null, vol = null;
+  let off2d = null, vol = null, QCOL = [], QTH = [];
+  function buildQ() {
+    QCOL = []; QTH = [];
+    for (let k = 0; k < S.q; k++) { QCOL.push(cyclic(k / S.q)); QTH.push(2 * Math.PI * (k + 0.5) / S.q); }
+  }
   function setupCanvases() {
     const L = S.L;
     if (S.dim === 2) {
@@ -524,208 +1269,117 @@ d = log(p+/p−),   p+ + p− = 1</div>
       for (const id of ["vA", "vB"]) { const c = $(id); c.width = W + 2 * pad; c.height = H + 2 * pad; }
     }
   }
+  const thetaOf = (f, i) => f.q ? QTH[f.cfg[i]] : f.cfg[i];
+  const rgbOf = (f, i) => f.q ? QCOL[f.cfg[i]] : cyclic(f.cfg[i] / (2 * Math.PI) - 0.125);
 
-  function rgbOf(i) {
-    if (sim.q) return QCOL[sim.s[i]];
-    return cyclic(sim.phi[i] / (2 * Math.PI) - 0.125);
-  }
-  let QCOL = [];
-  function buildQCol() { QCOL = []; for (let k = 0; k < S.q; k++) QCOL.push(cyclic(k / S.q)); }
-
-  function draw2d() {
-    const L = sim.L, k = off2d.k, sz = off2d.sz, A = off2d.a32, B = off2d.b32, T = off2d.t32;
+  function draw2d(f) {
+    const L = f.L, k = off2d.k, sz = off2d.sz, A = off2d.a32, B = off2d.b32, T = off2d.t32;
+    if (L * k !== sz) return;
     const px = (r, g, b) => (255 << 24 | b << 16 | g << 8 | r) >>> 0;   // little-endian RGBA
-    const WHITE = px(255, 255, 255), BLACK = px(0, 0, 0), GREY = px(128, 128, 128);
+    const WHITE = px(...SPIN[0]), BLACK = px(...SPIN[1]), GREY = px(128, 128, 128);
+    if (f.model === "pp") {
+      const C4 = PP4.map((c) => px(c[0], c[1], c[2]));
+      for (let y = 0; y < L; y++) for (let x = 0; x < L; x++) {
+        const v = f.cfg[y * L + x], a = v & 1 ? WHITE : BLACK, b = v & 2 ? WHITE : BLACK, t = C4[v];
+        let o = (L - 1 - y) * k * sz + x * k;
+        for (let dy = 0; dy < k; dy++, o += sz) for (let dx = 0; dx < k; dx++) { A[o + dx] = a; B[o + dx] = b; T[o + dx] = t; }
+      }
+      $("cA").getContext("2d").putImageData(off2d.A, 0, 0);
+      $("cB").getContext("2d").putImageData(off2d.B, 0, 0);
+      $("cT").getContext("2d").putImageData(off2d.T, 0, 0);
+      return;
+    }
     for (let y = 0; y < L; y++) for (let x = 0; x < L; x++) {
-      const i = y * L + x, th = sim.theta(i);
+      const i = y * L + x, th = thetaOf(f, i);
       const c = Math.cos(th), s = Math.sin(th);
       const a = Math.abs(c) < 1e-9 ? GREY : (c > 0 ? WHITE : BLACK), b = Math.abs(s) < 1e-9 ? GREY : (s > 0 ? WHITE : BLACK);
-      const col = rgbOf(i), t = px(col[0], col[1], col[2]);
+      const col = rgbOf(f, i), t = px(col[0], col[1], col[2]);
       let o = (L - 1 - y) * k * sz + x * k;
       for (let dy = 0; dy < k; dy++, o += sz) for (let dx = 0; dx < k; dx++) { A[o + dx] = a; B[o + dx] = b; T[o + dx] = t; }
     }
-    const blit = (id, img, marks) => {
-      const c = $(id), ctx = c.getContext("2d");
-      ctx.putImageData(img, 0, 0);
-      if (marks) {
-        const sc = c.width / L;
-        ctx.lineWidth = Math.max(1.5, sc * 0.6);
-        for (const [x, y, ch] of marks) {
-          ctx.strokeStyle = ch > 0 ? "#ffffff" : "#000000";
-          ctx.beginPath(); ctx.arc((x + 1) * sc, (L - 1 - y) * sc, Math.max(4, sc * 2.2), 0, 2 * Math.PI); ctx.stroke();
-        }
+    $("cA").getContext("2d").putImageData(off2d.A, 0, 0);
+    $("cB").getContext("2d").putImageData(off2d.B, 0, 0);
+    const ctx = $("cT").getContext("2d");
+    ctx.putImageData(off2d.T, 0, 0);
+    if (S.showdef) {
+      const sc = sz / L, v = f.vort;
+      ctx.lineWidth = Math.max(1.5, sc * 0.6);
+      for (let j = 0; j < v.length; j += 3) {
+        ctx.strokeStyle = v[j + 2] > 0 ? "#ffffff" : "#000000";
+        ctx.beginPath(); ctx.arc((v[j] + 1) * sc, (L - 1 - v[j + 1]) * sc, Math.max(4, sc * 2.2), 0, 2 * Math.PI); ctx.stroke();
       }
-    };
-    const marks = S.showdef ? vortexList() : null;
-    blit("cA", off2d.A, null); blit("cB", off2d.B, null); blit("cT", off2d.T, marks);
+    }
   }
 
-  // plaquette charges ----------------------------------------------------------
-  let vlist = [];
-  function computeVortices() {
-    if (S.dim !== 2) return;
-    const L = sim.L; let np = 0, nm = 0; vlist = [];
-    const q = sim.q;
+  function drawSlice(f, id) {                 // prey-predator in 3D: the plane z = L/2, four colours
+    const L = f.L, v = vol, c = $(id), ctx = c.getContext("2d");
+    if (v.side !== L * v.px) return;
+    const px = Math.max(1, Math.floor(0.94 * Math.min(c.width, c.height) / L)), side = L * px;
+    if (!v.slice || v.slice.width !== side) v.slice = new ImageData(side, side);
+    const d32 = new Uint32Array(v.slice.data.buffer), z = L >> 1, C4 = PP4.map((q) => (255 << 24 | q[2] << 16 | q[1] << 8 | q[0]) >>> 0);
     for (let y = 0; y < L; y++) for (let x = 0; x < L; x++) {
-      const x1 = (x + 1) % L, y1 = (y + 1) % L;
-      const id = [y * L + x, y * L + x1, y1 * L + x1, y1 * L + x, y * L + x];
-      let tot = 0, amb = false;
-      if (q) {
-        for (let e = 0; e < 4; e++) {
-          let w = sim.s[id[e + 1]] - sim.s[id[e]];
-          w = ((w + (q >> 1)) % q + q) % q - (q >> 1);
-          if (q % 2 === 0 && w === -(q >> 1)) amb = true;
-          tot += w;
-        }
-        if (amb) continue;
-        tot = Math.round(tot / q);
-      } else {
-        for (let e = 0; e < 4; e++) { let w = sim.phi[id[e + 1]] - sim.phi[id[e]]; w -= 2 * Math.PI * Math.round(w / (2 * Math.PI)); tot += w; }
-        tot = Math.round(tot / (2 * Math.PI));
-      }
-      if (tot > 0) { np++; vlist.push([x, y, 1]); } else if (tot < 0) { nm++; vlist.push([x, y, -1]); }
+      const col = C4[f.cfg[z * L * L + y * L + x]];
+      let o = (L - 1 - y) * px * side + x * px;
+      for (let dy = 0; dy < px; dy++, o += side) for (let dx = 0; dx < px; dx++) d32[o + dx] = col;
     }
-    defs = [np, nm];
+    ctx.fillStyle = VOLC.fill; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.putImageData(v.slice, Math.round((c.width - side) / 2), Math.round((c.height - side) / 2));
   }
-  function vortexList() { return vlist; }
 
-  // truncated correlations ---------------------------------------------------------
-  // Lattice Green's function of -Delta on Z^3 along an axis, r = 0..48 (from a Bessel
-  // integral, see dclock/correlations.py); beyond that G(r) = 1/(4 pi r) to 3e-4.
-  const GINF3 = [0.252731,0.08606434,0.04288931,0.02754513,0.02028887,0.01610108,0.0133647,0.01143035,0.009988055,0.008870316,0.007978273,0.007249656,0.006643228,0.00613058,0.005691489,0.005311164,0.004978535,0.004685152,0.004424451,0.004191255,0.003981426,0.003791618,0.003619095,0.003461597,0.003317242,0.003184452,0.003061889,0.002948415,0.002843055,0.002744969,0.002653428,0.002567799,0.002487526,0.002412122,0.002341158,0.002274252,0.002211066,0.002151298,0.002094678,0.002040964,0.001989937,0.001941402,0.001895179,0.001851108,0.001809041,0.001768846,0.0017304,0.00169359,0.001658316];
-  const ginf3 = (r) => r < GINF3.length ? GINF3[r] : 1 / (4 * Math.PI * r);
-  let corr = null, auto = null;
-  function setupCorr() {
-    const L = S.L, d = S.dim, R = Math.floor(L / 2), N = Math.pow(L, d);
-    const lam = new Float64Array(L);
-    for (let m = 0; m < L; m++) lam[m] = 2 * (1 - Math.cos(2 * Math.PI * m / L));
-    // G_L(r) = L^-d sum_{k != 0} cos(k_1 r) / lambda_k   (separable sum over k_1)
-    const Sk = new Float64Array(L);
-    for (let a = 0; a < L; a++) {
-      if (d === 2) { for (let b = 0; b < L; b++) if (a || b) Sk[a] += 1 / (lam[a] + lam[b]); }
-      else for (let b = 0; b < L; b++) for (let c = 0; c < L; c++) if (a || b || c) Sk[a] += 1 / (lam[a] + lam[b] + lam[c]);
-    }
-    const G = new Float64Array(R + 1);
-    for (let r = 0; r <= R; r++) { let g = 0; for (let a = 0; a < L; a++) g += Math.cos(2 * Math.PI * a * r / L) * Sk[a]; G[r] = g / N; }
-    // H_L(u) = L^-d sum_{k != 0} e^{-u lambda_k}/lambda_k = int_u^inf [h(s)^d - 1/N] ds,
-    // h(s) = L^-1 sum_a e^{-s lambda_a}; tabulated on a log grid of u
-    const NU = 240, u0 = 1e-3, u1 = 400 * L * L / (4 * Math.PI * Math.PI), Hu = new Float64Array(NU), Hv = new Float64Array(NU);
-    const F = (sv) => { let h = 0; for (let a = 0; a < L; a++) h += Math.exp(-sv * lam[a]); h /= L; return Math.max(0, Math.pow(h, d) - 1 / N); };
-    const lr = Math.log(u1 / u0) / (NU - 1);
-    let acc = 0, prev = null;
-    for (let i = NU - 1; i >= 0; i--) {
-      const uu = u0 * Math.exp(lr * i), f = F(uu) * uu;           // integrand in d(log s)
-      if (prev !== null) acc += 0.5 * (f + prev) * lr;
-      prev = f; Hu[i] = uu; Hv[i] = acc;
-    }
-    const H = (u) => {
-      if (u <= u0) return Hv[0];
-      const x = Math.log(u / u0) / lr, i = Math.floor(x);
-      if (i >= NU - 1) return 0;
-      return Hv[i] + (Hv[i + 1] - Hv[i]) * (x - i);
-    };
-    corr = { R, G, recent: [], cur: null, lastWall: 0, u: new Float32Array(N), v: new Float32Array(N) };
-    // Autocorrelation averaged over all time origins: a history of past snapshots whose ages
-    // are kept roughly geometric (RHO apart), stored as Int8 (4 bytes per site), compared with
-    // the current configuration every frame. Each comparison adds one sample at lag tau = age. The first BURN time units
-    // after a (re)start are skipped, so the transient from the initial state does not enter.
-    const TMAX = d === 3 ? 1000 : 600, NF = 260, FMIN = 0.5;
-    auto = { TMAX, H, snaps: [], RHO: Math.pow(2, 1 / 3), NF, FMIN, lstep: Math.log(TMAX / FMIN) / NF,
-             lab: new Float64Array(NF), rot: new Float64Array(NF), w: new Float64Array(NF),
-             WIN: d === 3 ? 4000 : 3000, lastT: null, rr: 0, fit: null, fitCount: 0,
-             cdz: new Float32Array(2 * N), cdw: new Float32Array(2 * N), BURN: 200, tStart: 200 };
-  }
-  function resetAuto() {
-    if (!auto) return;
-    auto.snaps = []; auto.lab.fill(0); auto.rot.fill(0); auto.w.fill(0); auto.lastT = null; auto.fit = null;
-    auto.tStart = sim.t + auto.BURN;
-  }
-  function fillUV() {
-    const N = sim.N, u = corr.u, v = corr.v;
-    let mx = 0, my = 0;
-    for (let i = 0; i < N; i++) { const th = sim.theta(i); u[i] = Math.cos(th); v[i] = Math.sin(th); mx += u[i]; my += v[i]; }
-    return [mx / N, my / N];
-  }
-  function autoStep() {                       // every frame: overlaps with the snapshot history
-    if (!auto) return;
-    const [mx, my] = fillUV();
-    measureAuto(mx, my);
-  }
-  function measureCorr() {
-    const L = sim.L, N = sim.N, d = sim.dim, R = corr.R, u = corr.u, v = corr.v;
-    const [mx, my] = fillUV();
-    const acc = new Float64Array(R + 1);
-    for (let a = 0, st = 1; a < d; a++, st *= L) {
-      for (let i = 0; i < N; i++) {
-        const c = ((i / st) | 0) % L, ui = u[i], vi = v[i];
-        for (let r = 1; r <= R; r++) {
-          const cc = c + r < L ? c + r : c + r - L, j = i + (cc - c) * st;
-          acc[r] += ui * u[j] + vi * v[j];
+  function drawVolume(f, id, which) {
+    if (f.model === "pp" && which === 1) { drawSlice(f, id); return; }
+    const L = f.L, v = vol, col = v.col, T = v.T, W = v.W, H = v.H, side = v.side, px = v.px, a = v.alpha;
+    if (v.side !== L * px) return;
+    col.fill(0); T.fill(1);
+    const L2 = L * L;
+    for (let z = 0; z < L; z++) {
+      const shade = VOLC.near + (VOLC.far - VOLC.near) * z / (L - 1), x0 = v.ox[z], y0 = H - side - v.oy[z];
+      for (let y = 0; y < L; y++) {
+        const rowY = y0 + (L - 1 - y) * px;
+        for (let x = 0; x < L; x++) {
+          let up;
+          if (f.model === "pp") up = (f.cfg[z * L2 + y * L + x] & (which === 0 ? 1 : 2)) !== 0;
+          else { const th = thetaOf(f, z * L2 + y * L + x); up = which === 0 ? Math.cos(th) > 1e-9 : Math.sin(th) > 1e-9; }
+          if (!up) continue;
+          const bx = x0 + x * px;
+          for (let dy = 0; dy < px; dy++) {
+            let o = (rowY + dy) * W + bx;
+            for (let dx = 0; dx < px; dx++, o++) { const w = T[o] * a; col[o] += w * shade; T[o] -= w; }
+          }
         }
       }
     }
-    const C = new Float64Array(R + 1), m2 = mx * mx + my * my;
-    C[0] = 1 - m2;
-    for (let r = 1; r <= R; r++) C[r] = acc[r] / (N * d) - m2;
-    corr.cur = C; corr.recent.push(C); if (corr.recent.length > 30) corr.recent.shift();
-  }
-  // temporal correlations: S (lab frame) and S_rot (co-rotating), averaged over time origins
-  const Q = 63;                                   // Int8 quantisation: components lie in [-2, 2]
-  function measureAuto(mx, my) {
-    const A = auto, N = sim.N, u = corr.u, v = corr.v, mm = Math.hypot(mx, my) || 1;
-    const cdz = A.cdz, cdw = A.cdw;
-    for (let i = 0; i < N; i++) {
-      cdz[2 * i] = u[i] - mx; cdz[2 * i + 1] = v[i] - my;
-      cdw[2 * i] = (u[i] * mx + v[i] * my) / mm - mm; cdw[2 * i + 1] = (v[i] * mx - u[i] * my) / mm;
+    const d = v.img.data;
+    const lo = VOLC.lo, hi = VOLC.hi;
+    for (let o = 0, j = 0; o < W * H; o++, j += 4) {
+      const g = Math.min(1, col[o] + T[o] * VOLC.bg);
+      d[j] = lo[0] + g * (hi[0] - lo[0]); d[j + 1] = lo[1] + g * (hi[1] - lo[1]); d[j + 2] = lo[2] + g * (hi[2] - lo[2]); d[j + 3] = 255;
     }
-    // moving window: exponential forgetting in simulation time
-    if (A.lastT !== null && sim.t > A.lastT) {
-      const f = Math.exp(-(sim.t - A.lastT) / A.WIN);
-      for (let b = 0; b < A.NF; b++) { A.lab[b] *= f; A.rot[b] *= f; A.w[b] *= f; }
-    }
-    A.lastT = sim.t;
-    // compare with past snapshots, round-robin within a work budget of about 4e6 products per frame
-    const ns = A.snaps.length, budget = Math.max(1, Math.floor(4e6 / (4 * N)));
-    const collect = sim.t >= A.tStart;            // skip the initial transient
-    for (let c = 0; c < (collect ? Math.min(ns, budget) : 0); c++) {
-      const snap = A.snaps[(A.rr + c) % ns], tau = sim.t - snap.t;
-      const b = Math.floor(Math.log(tau / A.FMIN) / A.lstep);
-      if (b < 0 || b >= A.NF) continue;
-      const qz = snap.dz, qw = snap.dw;
-      let lab = 0, rot = 0;
-      for (let k = 0; k < 2 * N; k++) { lab += qz[k] * cdz[k]; rot += qw[k] * cdw[k]; }
-      A.lab[b] += lab / (Q * N); A.rot[b] += rot / (Q * N); A.w[b] += 1;
-    }
-    A.rr = ns ? (A.rr + budget) % ns : 0;
-    // store the current configuration and thin the history to a geometric set of ages
-    const last = A.snaps[A.snaps.length - 1];
-    if (!last || sim.t - last.t >= A.FMIN) {
-      const dz = new Int8Array(2 * N), dw = new Int8Array(2 * N);
-      for (let k = 0; k < 2 * N; k++) { dz[k] = Math.round(cdz[k] * Q); dw[k] = Math.round(cdw[k] * Q); }
-      A.snaps.push({ t: sim.t, dz, dw });
-    }
-    const kept = []; let prevAge = 0;
-    for (let k = A.snaps.length - 1; k >= 0; k--) {
-      const age = sim.t - A.snaps[k].t;
-      if (age > A.TMAX) break;
-      if (k === A.snaps.length - 1 || age >= A.RHO * Math.max(prevAge, A.FMIN)) { kept.push(A.snaps[k]); prevAge = age; }
-    }
-    A.snaps = kept.reverse();
+    const c = $(id), ctx = c.getContext("2d");
+    ctx.fillStyle = VOLC.fill; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.putImageData(v.img, v.pad, v.pad);
+    const p = v.pad, dx = v.ox[L - 1], dy = v.oy[L - 1];
+    const fr = [[0, H], [side, H], [side, H - side], [0, H - side]].map(([x, y]) => [x + p, y + p - 1]);
+    const b = fr.map(([x, y]) => [x + dx, y - dy]);
+    ctx.lineWidth = 1;
+    const seg = (u, w, dash) => { ctx.setLineDash(dash ? [4, 3] : []); ctx.strokeStyle = dash ? VOLC.hidden : VOLC.edge; ctx.beginPath(); ctx.moveTo(u[0], u[1]); ctx.lineTo(w[0], w[1]); ctx.stroke(); };
+    for (let i = 0; i < 4; i++) seg(fr[i], fr[(i + 1) % 4], false);
+    seg(b[1], b[2], false); seg(b[2], b[3], false); seg(fr[1], b[1], false); seg(fr[2], b[2], false); seg(fr[3], b[3], false);
+    seg(fr[0], b[0], true); seg(b[0], b[1], true); seg(b[3], b[0], true);
+    ctx.setLineDash([]);
   }
 
+  // ---------------------------------------------------------------- plots
   const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
   const sup = (e) => String(e).split("").map((ch) => SUP[ch]).join("");
-  // shared log-log frame; returns mapping functions
-  function loglogFrame(id, xmax, ys, xlabel, xmin = 1) {
+  const YDEC = { 2: [-3, 0], 3: [-4, 0] };       // fixed vertical ranges, so the axes do not jump
+  function loglogFrame(id, xmax, xlabel, xmin = 1) {
     const c = $(id), r0 = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
     const W = Math.max(100, Math.round(r0.width * dpr)), H = Math.round(260 * dpr);
     if (c.width !== W || c.height !== H) { c.width = W; c.height = H; }
     const g = c.getContext("2d");
     g.fillStyle = css("--plot-bg"); g.fillRect(0, 0, W, H);
-    const pos = ys.filter((y) => y > 0 && isFinite(y));
-    if (!pos.length) return null;
-    const ymax = Math.max(...pos), ymin = Math.max(Math.min(...pos), ymax * 1e-4);
-    const ly0 = Math.floor(Math.log10(ymin)), ly1 = Math.ceil(Math.log10(ymax));
+    const [ly0, ly1] = YDEC[S.dim];
     const lx0 = Math.log10(xmin), lx1 = Math.log10(xmax);
     const ml = 46 * dpr, mr = 12 * dpr, mt = 10 * dpr, mb = 30 * dpr;
     const X = (x) => ml + (Math.log10(x) - lx0) / (lx1 - lx0) * (W - ml - mr);
@@ -736,7 +1390,7 @@ d = log(p+/p−),   p+ + p− = 1</div>
     g.textAlign = "center"; g.textBaseline = "top";
     for (let e = Math.floor(lx0); e <= Math.ceil(lx1); e++) for (const m of [1, 2, 5]) {
       const x = m * Math.pow(10, e); if (x < xmin * 0.999 || x > xmax * 1.001) continue;
-      const px = X(x); g.beginPath(); g.moveTo(px, mt); g.lineTo(px, H - mb); g.stroke(); g.fillText(x >= 1 ? x : x.toString(), px, H - mb + 4 * dpr);
+      const px = X(x); g.beginPath(); g.moveTo(px, mt); g.lineTo(px, H - mb); g.stroke(); g.fillText(String(x), px, H - mb + 4 * dpr);
     }
     g.font = `italic ${13 * dpr}px ${css("--f-display")}`; g.fillStyle = css("--ink"); g.textAlign = "right";
     g.fillText(xlabel, W - mr, H - mb + 15 * dpr);
@@ -751,136 +1405,49 @@ d = log(p+/p−),   p+ + p− = 1</div>
       g.fillStyle = color; g.strokeStyle = color; g.lineWidth = 1.5 * dpr;
       for (const [x, y] of pts) if (y > 0) { g.beginPath(); g.arc(X(x), Y(y), rad * dpr, 0, 2 * Math.PI); ring ? g.stroke() : g.fill(); }
     };
-    return { g, poly, dots, done: () => g.restore() };
+    return { poly, dots, done: () => g.restore() };
   }
 
   function drawCorr() {
-    if (!corr || !corr.cur) return;
-    const R = corr.R, G = corr.G, n = corr.recent.length, d = sim.dim;
-    const mean = new Float64Array(R + 1);
-    for (const C of corr.recent) for (let r = 0; r <= R; r++) mean[r] += C[r] / n;
-    let num = 0, den = 0;
-    for (let r = 1; r <= Math.max(2, Math.floor(sim.L / 4)); r++) if (G[r] > 0 && mean[r] > 0) { num += mean[r] * G[r]; den += G[r] * G[r]; }
-    const A = den > 0 ? num / den : 0;
-    $("corr-n").textContent = n;
+    if (!corrData) return;
+    const c = corrData, R = c.R, d = S.dim;
+    $("corr-n").textContent = c.n;
     const rs = []; for (let r = 1; r <= R; r++) rs.push(r);
-    const corrected = d === 3 ? rs.map((r) => [r, mean[r] + A * (ginf3(r) - G[r])]) : [];
-    const ys = rs.map((r) => corr.cur[r]).concat(rs.map((r) => mean[r]), corrected.map((p) => p[1]));
-    const f = loglogFrame("corr", R, ys, "r");
-    if (!f) return;
-    f.poly(rs.map((r) => [r, A * G[r]]), css("--muted"), 1.5, [6, 4]);
+    const f = loglogFrame("corr", R, "r");
+    f.poly(rs.map((r) => [r, c.A * c.G[r]]), css("--muted"), 1.5, [6, 4]);
     if (d === 3) {
-      const ref = []; for (let k = 0; k <= 100; k++) { const r = Math.pow(R, k / 100); ref.push([r, A / (4 * Math.PI * r)]); }
+      const ref = []; for (let k = 0; k <= 100; k++) { const r = Math.pow(R, k / 100); ref.push([r, c.A / (4 * Math.PI * r)]); }
       f.poly(ref, css("--mb"), 1.5, [2, 3]);
-      f.dots(corrected, css("--accent"), 3.6, true);
+      f.dots(rs.map((r) => [r, c.corrected[r]]), css("--accent"), 3.6, true);
     }
-    f.poly(rs.map((r) => [r, mean[r]]), css("--ink"), 1.5);
-    f.dots(rs.map((r) => [r, corr.cur[r]]), css("--accent"), 2.6);
+    f.poly(rs.map((r) => [r, c.mean[r]]), css("--ink"), 1.5);
+    f.dots(rs.map((r) => [r, c.cur[r]]), css("--accent"), 2.6);
     f.done();
-    $("corr-fit").textContent = `Fitted amplitude A = ${A.toFixed(3)}.` + (d === 3 ? "" : " In d = 2 there is no 1/r line: the spin-wave prediction falls off only logarithmically.");
+    $("corr-fit").textContent = `Fitted amplitude A = ${c.A.toFixed(3)}` + (isPP() ? " (for r ≥ 2; at r = 1 the local, short-range part adds to the spin waves)." : ".") +
+      (d === 3 ? (isPP() ? " The phase diffuses slowly (D ≈ 0.1), so the longest modes need a few thousand Monte Carlo steps to relax: raise the speed and wait before reading off the tail." : "")
+               : isPP() ? " In d = 2 the oscillation is not coherent, so no spin-wave law is expected." : " In d = 2 there is no 1/r line: the spin-wave prediction falls off only logarithmically.");
   }
 
   function drawAuto() {
-    if (!auto) return;
-    const A = auto, d = sim.dim;
-    $("auto-win").textContent = A.WIN;
-    // fine bins for the oscillating curve, merged by 6 for the envelope markers
-    // oscillating curve: merge consecutive fine bins until each point has enough weight
-    const lab = [], rotB = [];
-    let sl = 0, sw = 0, st = 0;
-    for (let b = 0; b < A.NF; b++) {
-      const tc = A.FMIN * Math.exp(A.lstep * (b + 0.5));
-      sl += A.lab[b]; sw += A.w[b]; st += A.w[b] * tc;
-      if (sw >= 25 && tc < 0.9 * A.TMAX) { lab.push([st / sw, Math.abs(sl / sw)]); sl = 0; sw = 0; st = 0; }
+    if (!autoData) return;
+    const a = autoData;
+    $("auto-win").textContent = a.WIN;
+    const f = loglogFrame("auto", a.TMAX, "τ = t − t₀", a.FMIN);
+    if (!a.rot.length && !a.lab.length) {
+      f.done();
+      $("auto-fit").textContent = a.waiting ? `Waiting until t = ${Math.round(a.tStart)} to skip the initial transient…` : "Collecting time origins…";
+      return;
     }
-    // envelope: groups of 6 fine bins, shown once they hold enough samples
-    for (let b0 = 0; b0 < A.NF; b0 += 6) {
-      let sr = 0, w = 0, tw = 0;
-      for (let b = b0; b < Math.min(A.NF, b0 + 6); b++) { sr += A.rot[b]; w += A.w[b]; tw += A.w[b] * A.FMIN * Math.exp(A.lstep * (b + 0.5)); }
-      if (w >= 25 && tw / w < 0.9 * A.TMAX) rotB.push([tw / w, sr / w]);
-    }
-    const f = loglogFrame("auto", A.TMAX, rotB.map((p) => p[1]).concat(lab.map((p) => p[1])), "τ = t − t₀", A.FMIN);
-    if (!f) { $("auto-fit").textContent = sim.t < A.tStart ? `Waiting until t = ${Math.round(A.tStart)} to skip the initial transient…` : "Collecting time origins…"; return; }
-    // fit B and D of B H_L(D tau) every 15 frames; smooth the fitted values over time
-    const pts = rotB.filter((p) => p[1] > 0 && p[0] >= 1);
-    if (pts.length >= 4 && (A.fitCount++ % 15 === 0 || !A.fit)) {
-      const res = (D) => {
-        let sxy = 0, sxx = 0;
-        for (const [t, y] of pts) { const h = A.H(D * t) / y; sxy += h; sxx += h * h; }
-        const B = sxy / sxx; let r = 0;
-        for (const [t, y] of pts) { const e = B * A.H(D * t) / y - 1; r += e * e; }
-        return [r, B];
-      };
-      let bestL = -2, bestR = Infinity;
-      for (let k = 0; k <= 60; k++) { const l = -2 + 3 * k / 60, r = res(Math.pow(10, l))[0]; if (r < bestR) { bestR = r; bestL = l; } }
-      let lo = bestL - 0.05, hi = bestL + 0.05;                       // golden-section refinement
-      for (let it = 0; it < 20; it++) {
-        const a1 = hi - 0.618 * (hi - lo), a2 = lo + 0.618 * (hi - lo);
-        if (res(Math.pow(10, a1))[0] < res(Math.pow(10, a2))[0]) hi = a2; else lo = a1;
-      }
-      const lD = 0.5 * (lo + hi);
-      const smoothL = A.fit ? 0.8 * Math.log10(A.fit.D) + 0.2 * lD : lD;
-      const D = Math.pow(10, smoothL);
-      A.fit = { D, B: res(D)[1] };
-    }
-    if (A.fit) {
-      const { B, D } = A.fit;
-      const curve = []; for (let k = 0; k <= 120; k++) { const t = A.FMIN * Math.pow(A.TMAX / A.FMIN, k / 120); curve.push([t, B * A.H(D * t)]); }
-      f.poly(curve, css("--muted"), 1.5, [6, 4]);
-      if (d === 3) {
-        const c = B * 2 * Math.pow(4 * Math.PI, -1.5) / Math.sqrt(D);
-        const pl = []; for (let k = 0; k <= 60; k++) { const t = A.FMIN * Math.pow(A.TMAX / A.FMIN, k / 60); pl.push([t, c / Math.sqrt(t)]); }
-        f.poly(pl, css("--mb"), 1.5, [2, 3]);
-      }
-    }
-    f.poly(lab, css("--accent"), 1.2);
-    f.dots(rotB, css("--ink"), 3);
+    f.poly(a.curve, css("--muted"), 1.5, [6, 4]);
+    f.poly(a.pl, css("--mb"), 1.5, [2, 3]);
+    f.poly(a.lab, css("--accent"), 1.2);
+    f.dots(a.rot, css("--ink"), 3);
     f.done();
-    $("auto-fit").textContent = A.fit
-      ? `Fitted D = ${A.fit.D.toPrecision(2)}, B = ${A.fit.B.toPrecision(3)}. The τ^−1/2 regime ends near τ ≈ L²/(4π²D) ≈ ${Math.round(sim.L * sim.L / (4 * Math.PI * Math.PI * A.fit.D))}, where the longest spin wave relaxes.`
+    $("auto-fit").textContent = a.fit
+      ? `Fitted D = ${a.fit.D.toPrecision(2)}, B = ${a.fit.B.toPrecision(3)}. The τ^−1/2 regime ends near τ ≈ L²/(4π²D) ≈ ${Math.round(S.L * S.L / (4 * Math.PI * Math.PI * a.fit.D))}, where the longest spin wave relaxes.`
       : "Collecting time origins…";
   }
 
-  // 3D volume rendering ---------------------------------------------------------
-  function drawVolume(id, which) {
-    const L = sim.L, v = vol, col = v.col, T = v.T, W = v.W, H = v.H, side = v.side, px = v.px, a = v.alpha;
-    col.fill(0); T.fill(1);
-    const L2 = L * L;
-    for (let z = 0; z < L; z++) {
-      const shade = 0.93 * z / (L - 1), x0 = v.ox[z], y0 = H - side - v.oy[z];
-      for (let y = 0; y < L; y++) {
-        const rowY = y0 + (L - 1 - y) * px;
-        for (let x = 0; x < L; x++) {
-          const th = sim.theta(z * L2 + y * L + x);
-          const up = which === 0 ? Math.cos(th) > 1e-9 : Math.sin(th) > 1e-9;
-          if (!up) continue;
-          const bx = x0 + x * px;
-          for (let dy = 0; dy < px; dy++) {
-            let o = (rowY + dy) * W + bx;
-            for (let dx = 0; dx < px; dx++, o++) { const w = T[o] * a; col[o] += w * shade; T[o] -= w; }
-          }
-        }
-      }
-    }
-    const d = v.img.data;
-    for (let o = 0, j = 0; o < W * H; o++, j += 4) { const g = Math.min(255, Math.round((col[o] + T[o]) * 255)); d[j] = d[j + 1] = d[j + 2] = g; d[j + 3] = 255; }
-    const c = $(id), ctx = c.getContext("2d");
-    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, c.width, c.height);
-    ctx.putImageData(v.img, v.pad, v.pad);
-    // cube edges
-    const p = v.pad, dx = v.ox[L - 1], dy = v.oy[L - 1];
-    const f = [[0, H], [side, H], [side, H - side], [0, H - side]].map(([x, y]) => [x + p, y + p - 1]);
-    const b = f.map(([x, y]) => [x + dx, y - dy]);
-    ctx.lineWidth = 1; ctx.strokeStyle = "#222";
-    const seg = (u, w, dash) => { ctx.setLineDash(dash ? [4, 3] : []); ctx.strokeStyle = dash ? "#999" : "#222"; ctx.beginPath(); ctx.moveTo(u[0], u[1]); ctx.lineTo(w[0], w[1]); ctx.stroke(); };
-    for (let i = 0; i < 4; i++) { seg(f[i], f[(i + 1) % 4], false); }
-    seg(b[1], b[2], false); seg(b[2], b[3], false); seg(f[1], b[1], false); seg(f[2], b[2], false); seg(f[3], b[3], false);
-    seg(f[0], b[0], true); seg(b[0], b[1], true); seg(b[3], b[0], true);
-    ctx.setLineDash([]);
-  }
-
-
-  // traces ------------------------------------------------------------------------
   function sizePlot(c) {
     const r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
     const w = Math.max(100, Math.round(r.width * dpr)), h = Math.round((c.id === "phase" ? r.width : 220) * dpr);
@@ -892,25 +1459,26 @@ d = log(p+/p−),   p+ + p− = 1</div>
     const ml = 34 * dpr, mr = 20 * dpr, mt = 8 * dpr, mb = 22 * dpr;
     ctx.fillStyle = css("--plot-bg"); ctx.fillRect(0, 0, W, H);
     // fixed window [0, WIN] until t reaches WIN, then [t - WIN, t] slides along
+    const pp = isPP(), WIN = WINS[S.model];
     const tNow = hist.length ? hist[hist.length - 1][0] : 0, t1 = Math.max(WIN, tNow), t0 = t1 - WIN;
-    const X = (t) => ml + (t - t0) / (t1 - t0) * (W - ml - mr), Y = (v) => mt + (1.1 - v) / 2.2 * (H - mt - mb);
+    const X = (t) => ml + (t - t0) / (t1 - t0) * (W - ml - mr);
+    const Y = pp ? (v) => mt + (1.05 - v) / 1.1 * (H - mt - mb) : (v) => mt + (1.1 - v) / 2.2 * (H - mt - mb);
     ctx.strokeStyle = css("--grid"); ctx.lineWidth = 1;
     ctx.fillStyle = css("--muted"); ctx.font = `${11 * dpr}px ${css("--f-mono")}`; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    for (const v of [-1, 0, 1]) { ctx.beginPath(); ctx.moveTo(ml, Y(v)); ctx.lineTo(W - mr, Y(v)); ctx.stroke(); ctx.fillText(v, ml - 6 * dpr, Y(v)); }
-    // time ticks
+    for (const v of pp ? [0, 0.5, 1] : [-1, 0, 1]) { ctx.beginPath(); ctx.moveTo(ml, Y(v)); ctx.lineTo(W - mr, Y(v)); ctx.stroke(); ctx.fillText(v, ml - 6 * dpr, Y(v)); }
     const span = t1 - t0, raw = span / 5, mag = Math.pow(10, Math.floor(Math.log10(raw))), stp = [1, 2, 5, 10].map((m) => m * mag).find((s) => s >= raw);
     ctx.textAlign = "center"; ctx.textBaseline = "top";
     for (let t = Math.ceil(t0 / stp) * stp; t <= t1; t += stp) { ctx.beginPath(); ctx.moveTo(X(t), mt); ctx.lineTo(X(t), H - mb); ctx.stroke(); ctx.fillText(Math.round(t), X(t), H - mb + 4 * dpr); }
     ctx.save(); ctx.beginPath(); ctx.rect(ml, 0, W - ml - mr, H - mb); ctx.clip();
     const line = (k, color, w) => { ctx.strokeStyle = color; ctx.lineWidth = w * dpr; ctx.beginPath(); hist.forEach((h, i) => { const x = X(h[0]), y = Y(h[k]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); };
-    if (S.dim === 2 && hist.length) {
-      const mx = Math.max(10, ...hist.map((h) => h[4]));
-      ctx.fillStyle = css("--grid");
+    if (S.dim === 2 && hist.length && !pp) {
+      let mx = 10; for (const h of hist) if (h[4] > mx) mx = h[4];
       ctx.strokeStyle = css("--muted"); ctx.lineWidth = 1 * dpr; ctx.beginPath();
       hist.forEach((h, i) => { const x = X(h[0]), y = Y(-1.1 + 1.0 * h[4] / mx); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
     }
-    line(1, css("--ma"), 1.5); line(2, css("--mb"), 1.5); line(3, css("--ink"), 1.2);
+    line(1, css("--ma"), 1.5); line(2, css("--mb"), 1.5); if (!pp) line(3, css("--ink"), 1.2);
     ctx.restore();
+    if (pp) { drawPPPhase(); return; }
 
     const p = $("phase"), dp = sizePlot(p), g = p.getContext("2d"), P = p.width;
     g.fillStyle = css("--plot-bg"); g.fillRect(0, 0, P, P);
@@ -923,7 +1491,7 @@ d = log(p+/p−),   p+ + p− = 1</div>
       g.fillText(v, Z(v), P - m + 4 * dp);
     }
     g.textAlign = "right"; g.textBaseline = "middle"; for (const v of [-1, 1]) g.fillText(v, m - 5 * dp, Zy(v));
-    g.font = `italic ${13 * dp}px ${css("--f-display")}`; g.fillStyle = css("--ink");
+    g.fillStyle = css("--ink");
     const sub = (x, y, main, idx) => {
       g.font = `italic ${14 * dp}px ${css("--f-display")}`; g.fillText(main, x, y);
       const w = g.measureText(main).width; g.font = `${10 * dp}px ${css("--f-display")}`; g.fillText(idx, x + w + 1, y + 4 * dp);
@@ -937,103 +1505,247 @@ d = log(p+/p−),   p+ + p− = 1</div>
   }
 
   function drawKeys() {
-    for (const id of ["key2d"]) {
-      const el = $(id); el.innerHTML = "";
-      const n = S.model === "clock" ? S.q : 24;
-      for (let k = 0; k < n; k++) { const c = cyclic(k / n); const d = document.createElement("div"); d.style.background = `rgb(${c})`; el.appendChild(d); }
-    }
+    const el = $("key2d"); el.innerHTML = "";
+    if (isPP()) { for (const c of PP4) { const d = document.createElement("div"); d.style.background = `rgb(${c})`; el.appendChild(d); } return; }
+    const n = S.model === "clock" ? S.q : 24;
+    for (let k = 0; k < n; k++) { const c = cyclic(k / n); const d = document.createElement("div"); d.style.background = `rgb(${c})`; el.appendChild(d); }
   }
 
-  // ---------------------------------------------------------------- loop
-  function sample() {
-    const [ma, mb, mx, my] = sim.mags();
-    if (S.dim === 2) computeVortices();
-    const sAbs = Math.hypot(mx, my);
-    hist.push([sim.t, ma, mb, Math.sqrt((ma * ma + mb * mb) / 2), defs[0] + defs[1]]);
-    let cut = 0; while (cut < hist.length - 1 && hist[cut][0] < sim.t - WIN) cut++;
-    if (cut) hist = hist.slice(cut);
-    if (hist.length > 8000) hist = hist.filter((_, i) => i % 2 === 0 || i === hist.length - 1);
-    const arg = Math.atan2(my, mx);
-    if (lastArg !== null && sAbs > 0.05) {
-      let da = arg - lastArg[0]; da -= 2 * Math.PI * Math.round(da / (2 * Math.PI));
-      const dt = sim.t - lastArg[1];
-      if (dt > 0) { const w = da / dt; omegaEst = omegaEst === null ? w : 0.95 * omegaEst + 0.05 * w; }
+  function updateStats(f) {
+    const last = hist[hist.length - 1];
+    if (!last) return;
+    if (f.model === "pp") {
+      $("s-t").textContent = f.t < 1000 ? f.t.toFixed(1) : Math.round(f.t);
+      $("s-m").textContent = last[1].toFixed(3);
+      $("s-w").textContent = last[2].toFixed(3);
+      $("s-def").textContent = spec && spec.share > 0.2 ? (spec.n / spec.kmax).toFixed(1) : "–";
+      $("s-rate").textContent = f.rate ? (f.rate.toFixed(f.rate < 10 ? 2 : 0) + " t/s") : "–";
+      $("s-phase").textContent = last[2] === 0 ? "absorbing: prey only"
+        : !spec ? "starting" : spec.sigma * Math.pow(S.L, S.dim / 2) > 6 && spec.share > 0.2 ? "oscillating" : "fluctuating";
+      return;
     }
-    lastArg = [arg, sim.t];
-    $("s-t").textContent = sim.t < 1000 ? sim.t.toFixed(1) : Math.round(sim.t);
+    const sAbs = Math.hypot(last[5], last[6]);
+    $("s-t").textContent = f.t < 1000 ? f.t.toFixed(1) : Math.round(f.t);
     $("s-m").textContent = sAbs.toFixed(3);
     $("s-w").textContent = omegaEst === null || sAbs < 0.05 ? "–" : omegaEst.toFixed(4);
-    $("s-def").textContent = `${defs[0]} / ${defs[1]}`;
+    $("s-def").textContent = `${f.defs[0]} / ${f.defs[1]}`;
+    $("s-rate").textContent = f.rate ? (f.rate.toFixed(f.rate < 10 ? 2 : 0) + " t/s") : "–";
     let phase;
-    if (sAbs < 0.15) phase = S.dim === 2 && defs[0] + defs[1] > 2 ? "disordered, vortices" : "disordered";
+    if (sAbs < 0.15) phase = S.dim === 2 && f.defs[0] + f.defs[1] > 2 ? "disordered, vortices" : "disordered";
     else if (omegaEst !== null && Math.abs(omegaEst) > 2e-3) phase = "rotating";
     else phase = "ordered, static";
     $("s-phase").textContent = phase;
   }
 
-  function draw() {
-    if (S.dim === 2) draw2d(); else { drawVolume("vA", 0); drawVolume("vB", 1); }
-    drawTraces();
-    // equal-time correlations: about four snapshots per second of wall-clock time
-    const now = performance.now();
-    if (corr && S.running && now - corr.lastWall > 250) { corr.lastWall = now; measureCorr(); }
-    if (S.running) autoStep();
-    drawCorr(); drawAuto();
+  // prey-predator: (x, y) plane and the power spectrum of x(t)
+  function drawPPPhase() {
+    const p = $("phase"), dp = sizePlot(p), g = p.getContext("2d"), P = p.width;
+    g.fillStyle = css("--plot-bg"); g.fillRect(0, 0, P, P);
+    const m = 26 * dp, Z = (v) => m + (v + 0.05) / 1.1 * (P - 1.4 * m), Zy = (v) => P - Z(v);
+    g.strokeStyle = css("--grid"); g.lineWidth = 1;
+    g.fillStyle = css("--muted"); g.font = `${11 * dp}px ${css("--f-mono")}`;
+    for (const v of [0, 0.5, 1]) {
+      g.beginPath(); g.moveTo(Z(v), Zy(1.05)); g.lineTo(Z(v), Zy(-0.05)); g.stroke();
+      g.beginPath(); g.moveTo(Z(-0.05), Zy(v)); g.lineTo(Z(1.05), Zy(v)); g.stroke();
+      g.textAlign = "center"; g.textBaseline = "top"; g.fillText(v, Z(v), Zy(-0.05) + 4 * dp);
+      g.textAlign = "right"; g.textBaseline = "middle"; g.fillText(v, Z(-0.05) - 4 * dp, Zy(v));
+    }
+    g.fillStyle = css("--ink"); g.font = `italic ${14 * dp}px ${css("--f-display")}`;
+    g.textAlign = "right"; g.textBaseline = "bottom"; g.fillText("x", Z(1.05), Zy(0) - 3 * dp);
+    g.textAlign = "left"; g.textBaseline = "top"; g.fillText("y", Z(0) + 5 * dp, Zy(1.05));
+    g.strokeStyle = css("--traj"); g.lineWidth = 1.2 * dp; g.beginPath();
+    const tail = hist.slice(-1500);
+    tail.forEach((h, i) => { const x = Z(h[1]), y = Zy(h[2]); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke();
+    if (tail.length) { const h = tail[tail.length - 1]; g.fillStyle = css("--traj"); g.beginPath(); g.arc(Z(h[1]), Zy(h[2]), 3.5 * dp, 0, 2 * Math.PI); g.fill(); }
+  }
+  function computeSpec() {
+    // Welch average of Hann-windowed segments, one-sided and normalised so that the sum over
+    // the frequencies is the variance of x(t); the first 100 Monte Carlo steps are skipped.
+    const xs = ppx.slice(100).slice(-4096), n = xs.length >= 512 ? 256 : 128;
+    if (xs.length < n) return null;
+    const w = new Float64Array(n); let w2 = 0;
+    for (let j = 0; j < n; j++) { w[j] = 0.5 - 0.5 * Math.cos(2 * Math.PI * j / (n - 1)); w2 += w[j] * w[j]; }
+    const P = new Float64Array(n / 2 + 1), cs = new Float64Array(n), sn = new Float64Array(n);
+    for (let j = 0; j < n; j++) { cs[j] = Math.cos(2 * Math.PI * j / n); sn[j] = Math.sin(2 * Math.PI * j / n); }
+    let segs = 0, mean = 0, sq = 0;
+    for (const v of xs) { mean += v; sq += v * v; }
+    mean /= xs.length;
+    const sigma = Math.sqrt(Math.max(0, sq / xs.length - mean * mean));
+    const seg = new Float64Array(n);
+    for (let s0 = xs.length - n; s0 >= 0; s0 -= n / 2) {
+      let mu = 0; for (let j = 0; j < n; j++) mu += xs[s0 + j]; mu /= n;
+      for (let j = 0; j < n; j++) seg[j] = (xs[s0 + j] - mu) * w[j];
+      for (let k = 1; k <= n / 2; k++) {
+        let re = 0, im = 0;
+        for (let j = 0, idx = 0; j < n; j++, idx = (idx + k) % n) { re += seg[j] * cs[idx]; im -= seg[j] * sn[idx]; }
+        P[k] += re * re + im * im;
+      }
+      segs++;
+    }
+    let kmax = 1;
+    for (let k = 1; k <= n / 2; k++) { P[k] *= 2 / (segs * n * w2); if (P[k] > P[kmax]) kmax = k; }
+    const tot = P.reduce((a, b) => a + b, 0);
+    return { n, P, kmax, sigma, mean, share: tot > 0 ? (P[kmax - 1] + P[kmax] + (P[kmax + 1] || 0)) / tot : 0, len: xs.length };
+  }
+  function drawSpec() {
+    const c = $("spec"), r0 = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const W = Math.max(100, Math.round(r0.width * dpr)), H = Math.round(260 * dpr);
+    if (c.width !== W || c.height !== H) { c.width = W; c.height = H; }
+    const g = c.getContext("2d");
+    g.fillStyle = css("--plot-bg"); g.fillRect(0, 0, W, H);
+    const ly0 = -9, ly1 = -1, ml = 46 * dpr, mr = 12 * dpr, mt = 10 * dpr, mb = 30 * dpr;
+    const X = (om) => ml + om / Math.PI * (W - ml - mr), Y = (v) => mt + (ly1 - Math.log10(v)) / (ly1 - ly0) * (H - mt - mb);
+    g.strokeStyle = css("--grid"); g.lineWidth = 1; g.fillStyle = css("--muted");
+    g.font = `${11 * dpr}px ${css("--f-mono")}`; g.textAlign = "right"; g.textBaseline = "middle";
+    for (let e = ly0; e <= ly1; e++) { const y = Y(Math.pow(10, e)); g.beginPath(); g.moveTo(ml, y); g.lineTo(W - mr, y); g.stroke(); g.fillText("10" + sup(e), ml - 5 * dpr, y); }
+    g.textAlign = "center"; g.textBaseline = "top";
+    for (const om of [0, 0.5, 1, 1.5, 2, 2.5, 3]) { const x = X(om); g.beginPath(); g.moveTo(x, mt); g.lineTo(x, H - mb); g.stroke(); g.fillText(String(om), x, H - mb + 4 * dpr); }
+    g.font = `italic ${13 * dpr}px ${css("--f-display")}`; g.fillStyle = css("--ink"); g.textAlign = "right";
+    g.fillText("ω", W - mr, H - mb + 15 * dpr);
+    if (!spec) {
+      $("spec-fit").textContent = `Collecting the prey density once per Monte Carlo step… (${Math.max(0, ppx.length - 100)} of 128)`;
+      return;
+    }
+    g.save(); g.beginPath(); g.rect(ml, mt, W - ml - mr, H - mt - mb); g.clip();
+    g.strokeStyle = css("--accent"); g.lineWidth = 1.6 * dpr; g.beginPath();
+    for (let k = 1; k <= spec.n / 2; k++) { const x = X(2 * Math.PI * k / spec.n), y = Y(Math.max(1e-12, spec.P[k])); k > 1 ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke();
+    const om = 2 * Math.PI * spec.kmax / spec.n;
+    g.setLineDash([2 * dpr, 3 * dpr]); g.strokeStyle = css("--mb"); g.lineWidth = 1.2 * dpr;
+    g.beginPath(); g.moveTo(X(om), mt); g.lineTo(X(om), H - mb); g.stroke(); g.setLineDash([]);
+    g.restore();
+    $("spec-fit").innerHTML = `Last ${spec.len} Monte Carlo steps: σ = ${spec.sigma.toFixed(4)}, σ·L<sup>${S.dim}/2</sup> = ${(spec.sigma * Math.pow(S.L, S.dim / 2)).toFixed(1)}; ` +
+      `peak at ω = ${om.toFixed(3)} (period ${(spec.n / spec.kmax).toFixed(1)}), carrying ${(100 * spec.share).toFixed(0)} % of the variance.`;
   }
 
-  let simDebt = 0, lastFrame = performance.now(), workPerMs = null, frameCount = 0, tAcc = 0, wallAcc = 0;
-  function frame(now) {
-    const wall = Math.min(0.1, (now - lastFrame) / 1000); lastFrame = now;
-    if (S.running && sim) {
-      const want = speedVal() * wall + simDebt;
-      // cap work per frame to ~22 ms of simulation
-      const budget = 22;
-      let dt = want;
-      if (workPerMs) dt = Math.min(want, budget * workPerMs / Math.max(1, sim.cost(1)));
-      const t0 = performance.now();
-      if (dt > 0) sim.advance(dt);
-      const el = Math.max(0.05, performance.now() - t0);
-      if (dt > 0) { const wpm = sim.cost(dt) / el; workPerMs = workPerMs ? 0.8 * workPerMs + 0.2 * wpm : wpm; }
-      simDebt = Math.min(want - dt, speedVal() * 0.25);
-      tAcc += dt; wallAcc += wall;
-      if (wallAcc > 0.5) { $("s-rate").textContent = (tAcc / wallAcc).toFixed(tAcc / wallAcc < 10 ? 2 : 0) + " t/s"; tAcc = 0; wallAcc = 0; }
-      sample(); draw();
+  function draw() {
+    if (latest && latest.L === S.L && latest.dim === S.dim) {
+      if (S.dim === 2) draw2d(latest); else { drawVolume(latest, "vA", 0); drawVolume(latest, "vB", 1); }
+      updateStats(latest);
     }
+    drawTraces();
+    if (isPP()) {
+      const now = performance.now();
+      if (now - specWall > 500) { specWall = now; spec = computeSpec(); }
+      drawSpec();
+    }
+    drawCorr(); drawAuto();
+  }
+  function frame() {
+    if (needDraw) { needDraw = false; draw(); send({ type: "ack" }); }
     requestAnimationFrame(frame);
   }
 
-  // ---------------------------------------------------------------- events
-  function applyPreset(name) {
-    Object.assign(S, PRESETS[name]); buildQCol(); syncUI(); restart();
+  // ---------------------------------------------------------------- export (website only)
+  function download(name, text) {
+    const url = URL.createObjectURL(new Blob([text], { type: "text/csv" }));
+    const a = document.createElement("a"); a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
-  $("preset").addEventListener("change", (e) => applyPreset(e.target.value));
-  $("m-clock").onclick = () => { S.model = "clock"; syncUI(); restart(); };
+  function header() {
+    if (isPP()) return `# Driven Clock Lab, Lipowski prey-predator model, d_lattice=${S.dim}, L=${S.L}, r=${S.r}, random start; time in Monte Carlo steps\n`;
+    return `# Driven Clock Lab, ${S.model === "clock" ? "q=" + S.q : "XY"}, d_lattice=${S.dim}, L=${S.L}, beta=${S.beta}, drift=${S.d}, ${S.init} start\n`;
+  }
+  if (window.CLOCK_LAB_EXPORT) {
+    $("export").hidden = false;
+    $("ex-m").onclick = () => download(`traces_${encode()}.csv`, header() +
+      (isPP() ? "t,x_prey,y_predator,-,-,-,-\n" : "t,M_A,M_B,s,N_vortices,Re_M,Im_M\n") + full.map((r) => r.map((x) => +x.toPrecision(7)).join(",")).join("\n"));
+    $("ex-c").onclick = () => {
+      if (!corrData) return;
+      const c = corrData; let out = header() + "r,C_t(r),mean,mean_corrected,A*G_L(r)\n";
+      for (let r = 1; r <= c.R; r++) out += [r, c.cur[r], c.mean[r], S.dim === 3 ? c.corrected[r] : "", c.A * c.G[r]].map((x) => typeof x === "number" ? +x.toPrecision(7) : x).join(",") + "\n";
+      download(`space_correlations_${encode()}.csv`, out);
+    };
+    $("ex-s").onclick = () => {
+      if (!autoData) return;
+      let out = header() + "kind,tau,value\n";
+      for (const [t, y] of autoData.rot) out += `S_rot,${+t.toPrecision(6)},${+y.toPrecision(7)}\n`;
+      for (const [t, y] of autoData.lab) out += `abs_S,${+t.toPrecision(6)},${+y.toPrecision(7)}\n`;
+      download(`time_correlations_${encode()}.csv`, out);
+    };
+  }
+
+  // ---------------------------------------------------------------- events
+  function applyParams(p) {
+    Object.assign(S, p); delete S.preset; buildQ(); syncUI(); restart();
+  }
+  $("preset").addEventListener("change", (e) => { if (PRESETS[e.target.value]) applyParams(PRESETS[e.target.value]); });
+  $("m-clock").onclick = () => { S.model = "clock"; buildQ(); syncUI(); restart(); };
   $("m-xy").onclick = () => { S.model = "xy"; syncUI(); restart(); };
+  $("m-pp").onclick = () => { S.model = "pp"; S.init = "random"; S.speed = 1.2; syncUI(); restart(); };
   $("d-2").onclick = () => { S.dim = 2; if (S.L < 64) S.L = 128; syncUI(); restart(); };
   $("d-3").onclick = () => { S.dim = 3; S.L = Math.min(S.L, 48); syncUI(); restart(); };
   $("i-ord").onclick = () => { S.init = "ordered"; syncUI(); restart(); };
   $("i-rand").onclick = () => { S.init = "random"; syncUI(); restart(); };
   $("q").addEventListener("input", (e) => { S.q = +e.target.value; $("q-out").textContent = S.q; });
-  $("q").addEventListener("change", () => { buildQCol(); syncUI(); restart(); });
+  $("q").addEventListener("change", () => { buildQ(); syncUI(); restart(); });
   $("L").addEventListener("input", (e) => { S.L = +e.target.value; $("L-out").textContent = S.L; });
   $("L").addEventListener("change", () => restart());
   const live = (key, a, b) => {
-    const upd = (v) => { if (!isFinite(v) || v < 0) return; S[key] = v; $(a).value = v; $(b).value = v; sim.set(S.beta, S.d); if (corr) corr.recent = []; resetAuto(); syncUI(); };
+    const upd = (v) => {
+      if (!isFinite(v) || v < 0) return;
+      S[key] = v; $(a).value = v; $(b).value = v;
+      send({ type: "set", beta: S.beta, d: S.d }); syncUI(); writeHash();
+    };
     $(a).addEventListener("input", (e) => upd(+e.target.value));
     $(b).addEventListener("change", (e) => upd(+e.target.value));
   };
   live("beta", "beta", "beta-n"); live("d", "drift", "drift-n");
-  $("speed").addEventListener("input", (e) => { S.speed = +e.target.value; $("speed-out").textContent = fmtSpeed(); });
-  $("play").onclick = () => { S.running = !S.running; $("play").textContent = S.running ? "Pause" : "Run"; };
+  const updR = (v) => {
+    if (!isFinite(v) || v <= 0 || v >= 1) return;
+    S.r = v; $("rr").value = v; $("rr-n").value = v;
+    send({ type: "set", r: v }); writeHash();
+  };
+  $("rr").addEventListener("input", (e) => updR(+e.target.value));
+  $("rr-n").addEventListener("change", (e) => updR(+e.target.value));
+  $("speed").addEventListener("input", (e) => { S.speed = +e.target.value; $("speed-out").textContent = fmtSpeed(); send({ type: "speed", v: speedVal() }); });
+  $("play").onclick = () => { S.running = !S.running; $("play").textContent = S.running ? "Pause" : "Run"; send({ type: "run", on: S.running }); };
   $("reset").onclick = () => restart();
-  $("clear").onclick = () => { hist = hist.slice(-1); if (corr) corr.recent = []; resetAuto(); };
-  $("showdef").addEventListener("change", (e) => { S.showdef = e.target.checked; if (sim && S.dim === 2) draw2d(); });
-  window.addEventListener("resize", () => { if (sim) drawTraces(); });
+  $("clear").onclick = () => { hist = hist.slice(-1); full = full.slice(-1); send({ type: "clear" }); };
+  $("showdef").addEventListener("change", (e) => { S.showdef = e.target.checked; needDraw = true; });
+  window.addEventListener("resize", () => { needDraw = true; });
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
-  if (mq.addEventListener) mq.addEventListener("change", () => sim && drawTraces());
+  if (mq.addEventListener) mq.addEventListener("change", () => { needDraw = true; });
+  // pause the simulation while the tab is hidden
+  document.addEventListener("visibilitychange", () => send({ type: "run", on: S.running && !document.hidden }));
+  window.addEventListener("hashchange", () => {
+    const h = location.hash.slice(1);
+    if (h === lastHash) return;
+    const p = decode(h);
+    if (p) applyParams(p);
+  });
+  // copy a link to the current setting
+  $("copy-link").onclick = () => {
+    writeHash();
+    const url = location.href, out = $("link-out");
+    out.value = url; out.hidden = false;
+    const done = () => { $("copy-status").textContent = "Link copied."; };
+    const fallback = () => { out.focus(); out.select(); $("copy-status").textContent = "Select the link above and copy it."; };
+    try { navigator.clipboard.writeText(url).then(done, fallback); } catch (e) { fallback(); }
+  };
 
-  applyPreset("fig8");
+  const start = decode(location.hash.slice(1)) || PRESETS["spirals-2d"];
+  applyParams(start);
   requestAnimationFrame(frame);
+})();
+</script>
+<script>
+// light / dark switch; the choice is remembered in this browser (shared with the simulations page)
+(() => {
+  const b = document.querySelector(".theme-toggle"), root = document.documentElement, mq = matchMedia("(prefers-color-scheme: dark)");
+  if (!b) return;
+  const dark = () => root.dataset.theme ? root.dataset.theme === "dark" : mq.matches;
+  const label = () => b.setAttribute("aria-label", dark() ? "Switch to light theme" : "Switch to dark theme");
+  label();
+  b.addEventListener("click", () => {
+    const t = dark() ? "light" : "dark";
+    root.dataset.theme = t;
+    try { localStorage.setItem("theme", t); } catch (e) { /* storage unavailable */ }
+    label();
+    window.dispatchEvent(new Event("resize"));      // the simulator redraws its plots on resize
+  });
+  if (mq.addEventListener) mq.addEventListener("change", label);
 })();
 </script>
 </body>

@@ -1,601 +1,329 @@
 <!doctype html>
-<html lang=en>
-
+<html lang="en">
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jonas Köppl</title>
+<meta name="description" content="Jonas Köppl is a postdoctoral researcher in mathematics (probability: interacting particle systems, Gibbs measures, percolation) at the Cluster of Excellence Mathematics Münster, University of Münster.">
+<meta name="author" content="Jonas Köppl">
+<meta name="google-site-verification" content="to9yc4uozIuw8ZEKE3a9u0u1HCWKL2wB73UjQUydeOU">
+<script>
+// apply a saved theme choice before the page is drawn
+try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) { /* storage unavailable */ }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+/* Quiet single-column academic page: small spaced name in the header, large title,
+   sections separated by hairlines. Colours of the simulations gallery: warm paper with ink
+   and rose in light mode, the dark "void" in dark mode. */
+:root {
+  --ground: #F2EDE2;
+  --surface: #E7E0D0;
+  --text: #15131A;
+  --quiet: #5C5749;
+  --accent: #8E4257;
+  --line: #D8CFBB;
+  --font: "STIX Two Text", "STIX Two", "Iowan Old Style", Georgia, serif;   /* as on the simulations gallery */
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --width: 72rem;
+  --edge: clamp(1.25rem, 5vw, 3rem);
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ground: #15131A; --surface: #1D1A24; --text: #EFE9DC; --quiet: #9E9686; --accent: #D9768F; --line: #34303D; }
+}
+/* a manual choice (theme button) overrides the system setting */
+:root[data-theme="dark"] { --ground: #15131A; --surface: #1D1A24; --text: #EFE9DC; --quiet: #9E9686; --accent: #D9768F; --line: #34303D; color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--ground); color: var(--text); font-family: var(--font); font-size: 1.125rem; line-height: 1.55; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-color: currentColor; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-    <meta charset=utf8>
-    <meta name=viewport content="width=device-width, initial-scale=1.0">
-    <title>Webpage of Jonas Köppl</title>
-<meta name="google-site-verification" content="to9yc4uozIuw8ZEKE3a9u0u1HCWKL2wB73UjQUydeOU" />
-    <meta name=description content="Jonas Köppl is a PhD student at WIAS.">
-    <meta name=author content="Jonas Köppl">
-
-    <style>
-
-        /* spacing */
-        #page           { max-width: 40em; }
-        #header         { max-width: 22em; }
-        #main           { max-width: 38em; }
-        header, section { padding-left: 1em; padding-right: 1em; }
-        #page           { margin-left: auto; margin-right: auto; }
-    
-        @media screen and (min-width: 40em){
-          #header         { max-width: 24em; }
-          #main           { max-width: 40em; }
-          header, section { padding-left: 2em; padding-right: 2em; }
-        }
-    
-        @media screen and (min-width: 64em){
-          #page   { max-width: 64em; }
-          #header { width: 37.5%; }
-          #main   { width: 62.5%; }
-        }
-    
-        /* automatic text zoom */
-        @media screen and (min-width: 42.5em){ html { font-size: 1.0625em; } }
-        @media screen and (min-width: 45em  ){ html { font-size: 1.125em;  } }
-        @media screen and (min-width: 47.5em){ html { font-size: 1.1775em; } }
-        @media screen and (min-width: 50em  ){ html { font-size: 1.25em;   } }
-    
-        @media screen and (min-width: 64em)  { html { font-size: 1em;      } }
-        
-        /* vertical margins */
-        header, section { padding-top: 2em; padding-bottom: 1em; }
-        #page           { margin-bottom: 2em; }
-    
-        @media screen and (min-width: 64em){ #main { padding-top:0.6em; } }
-    
-        /* text elements*/
-        html, .pure-g, .pure-g [class*=pure-u] { font-family: Times, "Times New Roman", serif; }
-        h4, p, #contact dt, #contact dd        { 
-            line-height: 1.3em; }
-        p.text                              { text-align: justify; }
-        a                           { color:#1f3777; text-decoration: none; }
-        a.email, #publications dt, .talks_upcoming dt
-                     { font-family: monospace; padding: 0.6em}
-    
-        /* photo */
-        @media screen and (max-width: 30em){
-          #header { max-width: none; }
-          #photo  { margin-left: -1em; margin-right: -1em; }
-        }
-    
-        /* buttons */
-        .navigation { text-align: left; line-height: 2.4em; text-decoration: none; font-family: Times, "Times New Roman", serif; }
-        .navigation a {color: #000000}
-        .navigation .internal { background: #cdd1d3; padding: 0.5em; margin: 0.1em;  border-radius: 5%}
-        .navigation .external { background: #e5eeee; padding: 0.5em; margin: 0.1em;  border-radius: 5%}
-    
-        /* publications */
-        #publications h4, #publications p { 
-            margin: 0; 
-        }
-        #publications dd { 
-            margin-bottom: 1em; 
-        }
-    
-        /* talks */
-        .talks_upcoming h4, .talks_upcoming p { margin: 0; }
-        .talks_upcoming dd                    { margin-bottom: 1em; }
-    
-    
-        /* contact details*/
-        #contact dt { clear: both; float:left; width: 8em; }
-        #contact dd { float:left; margin: 0 0 1em 2em;}
-        
-        #credit { clear: both; }
-
-        details {
-  padding: 0.5em 0.5em 0;
+/* header and navigation */
+.top { padding: 1.25rem var(--edge); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.top .name { margin-right: auto; text-decoration: none; text-transform: uppercase; letter-spacing: 0.28em; font-size: 0.72rem; font-family: var(--mono); }
+.nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; font-size: 0.95rem; }
+.nav a { text-decoration: none; white-space: nowrap; }
+.nav a:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+.nav .ext { color: var(--quiet); }
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: none; color: var(--quiet); cursor: pointer; flex: none; }
+.theme-toggle:hover { color: var(--text); border-color: var(--quiet); }
+.theme-toggle svg { width: 1rem; height: 1rem; }
+.theme-toggle .sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .sun { display: block; }
+  :root:not([data-theme="light"]) .theme-toggle .moon { display: none; }
+}
+.menu-open, .menu-close { display: none; font: inherit; font-size: 0.95rem; color: inherit; background: none; border: 0; padding: 0.25rem 0; cursor: pointer; }
+@media (min-width: 62.01rem) {
+  .nav[popover] { display: block; position: static; inset: auto; margin: 0; padding: 0; border: 0; background: none; color: inherit; overflow: visible; }
+}
+@media (max-width: 62rem) {
+  .menu-open { display: block; }
+  .menu-close { display: block; position: absolute; top: 1.25rem; right: var(--edge); }
+  .nav[popover] { inset: 0 0 auto 0; width: 100%; margin: 0; border: 0; border-bottom: 1px solid var(--line); background: var(--ground); color: var(--text); padding: 4rem var(--edge) 2rem; }
+  .nav[popover]::backdrop { background: rgb(0 0 0 / 0.3); }
+  .nav ul { flex-direction: column; gap: 1rem; font-size: 1.2rem; }
 }
 
-summary {
-  font-weight: bold;
-  margin: -0.5em -0.5em 0;
-  padding: 0.5em;
+/* page */
+.page { max-width: var(--width); margin: 0 auto; padding: clamp(1.5rem, 5vw, 4rem) var(--edge) clamp(3rem, 7vw, 6rem); }
+.intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 21rem); gap: clamp(2rem, 5vw, 4.5rem); align-items: start; margin-bottom: clamp(2.5rem, 6vw, 4rem); }
+.title { margin: 0; font-size: clamp(2.6rem, 6vw, 4.2rem); font-weight: 400; letter-spacing: -0.01em; line-height: 1; }
+.lead { max-width: 42rem; margin: 1rem 0 2rem; }
+.addresses { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.5rem 2.5rem; max-width: 46rem; font-size: 0.95rem; }
+.addresses address { font-style: normal; }
+.addresses h2 { margin: 0 0 0.3rem; font-size: 1.05rem; font-weight: 600; }
+.portrait { margin: 0; }
+.portrait img { width: 100%; height: auto; display: block; }
+.portrait figcaption { margin-top: 0.4rem; font-size: 0.8rem; color: var(--quiet); }
+
+.block { padding: 2.5rem 0; border-top: 1px solid var(--line); scroll-margin-top: 1rem; max-width: 58rem; }
+.block > h2 { margin: 0 0 1.25rem; font-size: 1.5rem; font-weight: 400; line-height: 1.2; }
+.block h3 { margin: 1.75rem 0 0.4rem; font-size: 1.125rem; font-weight: 600; }
+.block p { max-width: 46rem; }
+.quiet { color: var(--quiet); }
+
+/* publications */
+.pubs { list-style: none; margin: 0 0 1rem; padding: 0; }
+.pubs li { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: 0 0.5rem; padding: 0.6rem 0; border-top: 1px solid var(--line); }
+.pubs .no { color: var(--quiet); font-family: var(--mono); font-size: 0.78rem; font-variant-numeric: tabular-nums; padding-top: 0.3rem; }
+.pubs .pt { display: block; }
+.pubs .meta { display: block; color: var(--quiet); font-size: 0.9rem; }
+.pubs .links { font-size: 0.9rem; }
+.pubs .links a + a::before { content: " · "; color: var(--quiet); text-decoration: none; display: inline-block; white-space: pre; }
+details.group { border-top: 0; }
+details.group > summary { cursor: pointer; padding: 0.75rem 0 0.5rem; font-weight: 600; }
+details.group > summary span { font-weight: 400; color: var(--quiet); font-size: 0.95rem; margin-left: 0.5rem; }
+
+/* talks and projects */
+.rows { list-style: none; margin: 0; padding: 0; }
+.rows li { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 0.15rem 1.5rem; padding: 0.55rem 0; border-top: 1px solid var(--line); }
+.rows time, .rows .tag { color: var(--quiet); font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; padding-top: 0.3rem; }
+.rows li.single { grid-template-columns: minmax(0, 1fr); }
+.feature { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.25rem 2rem; align-items: center; }
+.feature p { margin: 0; }
+.feature img, .feature video { width: 100%; height: auto; display: block; border: 1px solid var(--line); background: var(--surface); }
+.feature video { width: 6.8rem; aspect-ratio: 1; image-rendering: pixelated; border: 0; background: #15131A; }
+
+.foot { padding: 2rem var(--edge) 3rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.6rem; font-size: 0.9rem; color: var(--quiet); border-top: 1px solid var(--line); }
+.foot .right { margin-left: auto; }
+
+@media (max-width: 48rem) {
+  .intro, .feature { grid-template-columns: 1fr; }
+  .portrait { max-width: 24rem; grid-row: 1; }
+  .rows li { grid-template-columns: 1fr; }
 }
-
-details[open] {
-  padding: 0.5em;
-}
-
-details[open] summary {
-  margin-bottom: 0.5em;
-}
-
-        </style>
-
+</style>
 </head>
-
 <body>
-    <div class=pure-g id=page>
-        <div class=pure-u-1 id=header>
-            <header>
-                <h1>Jonas Köppl</h1>
-                <p><a href=mailto:koeppl@jonas.koeppl@uni-muenster.de class=email>jonas.koeppl@uni-muenster.de</a></p>
-                <p id=photo><img style=width:100% src=OWLG_jk.JPG alt="Photo of Jonas Köppl"></p>
-                <p class="navigation">
-                    <a class="internal" href=#about>about</a>
-                    <!--<a class="internal" href=#about>news</a> -->
-                    <a class="internal" href=#research>research</a>
-                    <a class="internal" href=#publications>publications</a>
-                    <a class="internal" href=#talks>talks</a>
-                    <a class="internal" href=#contact>contact</a>
-                    <a class="internal" href="https://jonaskoeppl.github.io/cv.pdf">cv</a>
-                    <a class="internal" href="simulations/">simulations</a>
-                    <a class="external" href="https://scholar.google.com/citations?user=HMNLW9UAAAAJ&hl=de&oi=ao"> google scholar</a>
-                    <a class="external" href="http://arxiv.org/a/koppl_j_1">arxiv</a>
-                    <a class="external" href="https://orcid.org/0000-0001-9188-1883">orcid</a>
-                </p>
-            </header>
-        </div>
-        <div class=pure-u-1 id=main>
 
-            <section id=about>
-                <h2>About me</h2>
-                <p class=text>
-                    Welcome! I am a postdoctoral researcher in mathematics at 
-                    the Cluster of Excellence <a href="https://www.uni-muenster.de/MathematicsMuenster/">Mathematics Münster: Dynamics – Geometry – Structure</a>.
-                    
-                </p>
-                <p class=text>Previously, I was a PhD Student at the <a href="https://wias-berlin.de">Weierstraß Institute (WIAS)</a>
-                    in the research group <a href="https://www.wias-berlin.de/research/lgs/lg6/index.jsp?lang=1">Probabilistic Methods for Dynamic Communication Networks </a> under the supervision of 
-                    <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>
-                    and a Phase II Student at the <a href="https://math-berlin.de">Berlin Mathematical School</a>.
-                </p>
+<header class="top">
+  <a class="name" href="./">Jonas Köppl</a>
+  <button class="menu-open" type="button" popovertarget="navigation">Menu</button>
+  <nav class="nav" id="navigation" popover aria-label="Main navigation">
+    <button class="menu-close" type="button" popovertarget="navigation" popovertargetaction="hide">Close</button>
+    <ul>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#publications">Publications</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#talks">Talks</a></li>
+      <li><a href="#activities">Activities</a></li>
+      <li><a href="simulations/">Simulations</a></li>
+      <li><a href="cv.pdf">CV</a></li>
+      <li><a class="ext" href="https://scholar.google.com/citations?user=HMNLW9UAAAAJ&amp;hl=de&amp;oi=ao">Google Scholar</a></li>
+      <li><a class="ext" href="http://arxiv.org/a/koppl_j_1">arXiv</a></li>
+      <li><a class="ext" href="https://orcid.org/0000-0001-9188-1883">ORCID</a></li>
+    </ul>
+  </nav>
+  <button class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch between light and dark theme">
+    <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+  </button>
+</header>
 
-                <!--
-                <p> 
-                    From January 2025 until June 2025 I will be a visiting graduate student at UCLA, let me know if you're interested to meet and talk about math! 
-
-                </p>
-                <p class=text>
-                    Previously, I was a scholarship holder in the research group Data-driven Modeling of Complex Systems at FU Berlin, under the supervision of <a href="http://userpage.fu-berlin.de/peterkoltai/index.html">Péter Koltai</a> and <a href="https://web.maths.unsw.edu.au/~froyland/"> Gary Froyland</a>.
-                </p>
-                -->
-            </section>
-
-           <!-- <section id=news>
-                <h2>News</h2>
-                <h3><a href="https://wias-berlin.de/workshops/SDRE26/">Workshop: Spreading Dynamics in Random Environments, July 6–8, 2026</a></h3>
-                <p class=text>
-                    Together with Benedikt Jahnel and Lukas L&uumlchtrath, I am organising a three day workshop on <i>spreading dynamics in random environments</i> at the Weierstrass Institute in Berlin. 
-                    We want to bring together both established experts and early-career researchers working on mathematical approaches to information and infection spread in random environments.
-        
-                    The list of speakers and a preliminary programme can be found on the <a href="https://wias-berlin.de/workshops/SDRE26/">website</a>, looking forward to meeting you there! 
-                </p>
-                <p class=text>
-                    If you have any inquiries, let me (or one of the other organisers) know by email! 
-                </p> 
-            </section>
-            -->
-            <section id=research>
-                <h2>Research interests</h2>
-                <p class=text>
-                    Interacting particle systems, random dynamics, Gibbs measures, percolation. 
-                </p>
-            </section>
-
-            <section id=publications>
-                <h2> Selected publications</h2>
-                <dl>
-                    <dt>
-                        <p> 
-                            [19] <a href="https://arxiv.org/abs/2609.07622"> arXiv:2609.07622</a> [<a href="https://arxiv.org/pdf/2609.07622" >pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>On the stationary measures of the critical Ornstein--Uhlenbeck process. </h4>
-                        <p>With Jean-Dominique Deuschel, Yannic Steenbeck, and Thomas Worschech.</p>
-                    </dd>
-                        <dt>
-                        <p> 
-                            [18] <a href="https://arxiv.org/abs/2608.13677"> arXiv:2608.13677</a> [<a href="https://arxiv.org/pdf/2608.13677" >pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Asymptotically complete free-energy dissipation: a coarse MLSI holds at any positive temperature.</h4>
-                        <p>With Yannic Steenbeck.</p>
-                    </dd>
-                        <dt>
-                            <p>
-                                [15] <a href="http://arxiv.org/abs/2602.22104"> arXiv:2602.22104</a> [<a href="https://arxiv.org/pdf/2602.22104.pdf">pdf</a>]
-                            </p>
-                        </dt>
-                        <dd>
-                            <h4>On the absence of time-translation symmetry breaking in some non-reversible interacting particle systems.</h4>
-                        </dd>
-                <dt>
-                        <p>
-                            [9] <a href="https://arxiv.org/abs/2412.20781">arXiv:2412.20781</a> [<a href="https://arxiv.org/pdf/2412.20781">pdf</a>,<a href="https://bennhenry.github.io/NeighPerc/">simulations</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>The planar lattice two-neighbor graph percolates </h4>
-                        <p>With <a href="https://sites.google.com/view/pageprodedavidcoupier/"> David Coupier</a>, <a href="https://www.bhenry.fr/research.html"> Benoît Henry</a>, and <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>. 
-                        <p> Accepted for publication in: <i> <a href="https://imstat.org/journals-and-publications/annals-of-probability/annals-of-probability-future-papers/">Annals of Probability</a></i></p>
-                    </dd>
-                <dt>
-                        <p>
-                            [4] <a href="https://doi.org/10.2140/pmp.2025.6.479">doi:10.2140/pmp.2025.6.479
-                            </a> [<a href="https://arxiv.org/pdf/2303.10640.pdf">arxiv</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>On the long-time behaviour of reversible interacting particle systems in one and two dimensions</h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.</p>
-                        <p> Probability and Mathematical Physics 6-2 (2025), 479--503.</p>
-                    </dd>
-                <dt>
-                        <p>
-                        [3] <a href="http://dx.doi.org/10.1214/22-AAP1926">doi:10.1214/22-AAP1926</a> [<a href="https://arxiv.org/abs/2205.02738">arxiv</a>,<a href="https://jonaskoeppl.github.io/pub/dgvp.pdf">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Dynamical Gibbs variational principles for irreversible interacting
-                        particle systems with applications to attractor properties</h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.</p>
-                        <p>Annals of Applied Probability, Vol. 33, No. 6A, 4570-4607 (2023).</p>
-                     </dd>
-                     <dt></dt>
-                </dl>
-                <h2> All publications</h2>
-                <details>
-                    <summary> Preprints</summary>
-                <dl>
-                    <dt>
-                        <p>
-                            [22] <a href="http://arxiv.org/abs/2611.06800">arXiv:2611.06800</a> [<a href="https://arxiv.org/pdf/2611.06800">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Uniqueness and full coverage in k-neighbor graphs </h4>
-                        <p>With <a href="https://sites.google.com/view/pageprodedavidcoupier/"> David Coupier</a>, <a href="https://www.bhenry.fr/research.html"> Benoît Henry</a>, and <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>. 
-                    </dd>
-                    <dt>
-                        <p> 
-                            [21] <a href="https://arxiv.org/abs/2610.28307"> arXiv:2610.28307</a> [<a href="https://arxiv.org/pdf/2610.28307" >pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Space-time large deviations for continuum birth-and-death processes. </h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, Yannic Steenbeck, and <a href="https://alexzass.com"> Alexander Zass</a>.</p>
-                    </dd>
-                    <dt>
-                        <p> 
-                            [20] <a href="https://arxiv.org/abs/2609.09892"> arXiv:2609.09892</a> [<a href="https://arxiv.org/pdf/2609.09892" >pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Comparison inequalities for discrete- and continuous-time infection processes. </h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, and Pēteris Siliņš.</p>
-                    </dd>
-                    <dt>
-                        <p> 
-                            [19] <a href="https://arxiv.org/abs/2609.07622"> arXiv:2609.07622</a> [<a href="https://arxiv.org/pdf/2609.07622" >pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>On the stationary measures of the critical Ornstein--Uhlenbeck process. </h4>
-                        <p>With Jean-Dominique Deuschel, Yannic Steenbeck, and Thomas Worschech.</p>
-                    </dd>
-                    <dt>
-                        <p> 
-                            [18] <a href="https://arxiv.org/abs/2608.13677"> arXiv:2608.13677</a> [<a href="https://arxiv.org/pdf/2608.13677" >pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Asymptotically complete free-energy dissipation: a coarse MLSI holds at any positive temperature.</h4>
-                        <p>With Yannic Steenbeck.</p>
-                    </dd>
-                        <dt>
-                            <p>
-                                [17] <a href="http://arxiv.org/abs/2605.28766"> arXiv:2605.28766</a> [<a href="https://arxiv.org/pdf/2605.28766">pdf</a>]
-                            </p>
-                        </dt>
-                        <dd>
-                            <h4>Convex order and faster transmission in first contact percolation.</h4>
-                            <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, <a href="https://www.wias-berlin.de/people/luechtrath/"> Lukas Lüchtrath</a>, and Anh Duc Vu.</p>
-                        </dd>
-                        <dt>
-                            <p>
-                                [16] <a href="https://arxiv.org/abs/2603.21817"> arXiv:2603.21817</a> [<a href="https://arxiv.org/pdf/2603.21817">pdf</a>]
-                            </p>
-                        </dt>
-                        <dd>
-                            <h4>Restriction and mixing properties of interacting particle systems with unbounded range.</h4>
-                            <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.</p>
-                        </dd>
-                        <dt>
-                            <p>
-                                [15] <a href="http://arxiv.org/abs/2602.22104"> arXiv:2602.22104</a> [<a href="https://arxiv.org/pdf/2602.22104.pdf">pdf</a>]
-                            </p>
-                        </dt>
-                        <dd>
-                            <h4>On the absence of time-translation symmetry breaking in some non-reversible interacting particle systems.</h4>
-                        </dd>
-                        <dt>
-                            <p>
-                                [14] <a href="https://arxiv.org/abs/2602.13474"> arXiv:2602.13474</a> [<a href="https://arxiv.org/pdf/2602.13474.pdf">pdf</a>]
-                            </p>
-                        </dt>
-                        <dd>
-                            <h4>Reversible birth-and-death dynamics in continuum: a de Bruijn-type identity for free-energy dissipation</h4>
-                            <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, Yannic Steenbeck, and <a href="https://alexzass.com"> Alexander Zass</a>.</p>
-                        </dd>
-                    <dt>
-                    <p>
-                        [13] <a href="http://arxiv.org/abs/2510.03934"> arXiv:2510.03934</a> [<a href="https://arxiv.org/pdf/2510.03934.pdf">pdf</a>]
-                    </p>
-                    </dt>
-                <dd>
-                    <h4> Local criteria for global connectivity comparisons: beyond stochastic domination </h4>
-                    <p>With <a href="https://sites.google.com/view/jbaeumler/">Johannes Bäumler</a>, <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, <a href="https://sites.google.com/view/bas-lodewijks/home"> Bas Lodewijks</a>, <a href="https://sites.google.com/view/lily-reeves/home">Lily Reeves </a>, and <a href="https://cs.bme.hu/~tobias/"> András Tóbiás</a>.</p>
-                </dd>
-                    <dt>
-                        <p>
-                            [12] <a href="https://arxiv.org/abs/2508.21196"> arXiv:2508.21196</a> [<a href="https://arxiv.org/pdf/2508.21196.pdf">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Reversible birth-and-death dynamics in continuum: free energy dissipation and attractor properties </h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, Yannic Steenbeck, and <a href="https://alexzass.com"> Alexander Zass</a>.</p>
-                    </dd>
-                    <dt>
-                        <p>
-                            [11] <a href="https://arxiv.org/abs/2412.19957">arXiv:2412.19957</a> [<a href="https://arxiv.org/pdf/2412.19957">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Evolutionary games on the lattice: multitype contact process with density-dependent birth rates </h4>
-                        <p>With <a href="https://math.la.asu.edu/~lanchier/">Nicolas Lanchier</a> and <a href="https://sites.google.com/view/maxmercer/main-page?authuser=1"> Max Mercer</a>.</p>
-                    </dd>
-                </dl>
-                </details>
-                <details>
-                <summary>Accepted</summary>
-                <dl>
-                    <dt>
-                        <p>
-                            [10] <a href="https://arxiv.org/abs/2412.20781">arXiv:2412.20781</a> [<a href="https://arxiv.org/pdf/2412.20781">pdf</a>,<a href="https://bennhenry.github.io/NeighPerc/">simulations</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>The planar lattice two-neighbor graph percolates </h4>
-                        <p>With <a href="https://sites.google.com/view/pageprodedavidcoupier/"> David Coupier</a>, <a href="https://www.bhenry.fr/research.html"> Benoît Henry</a>, and <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>. 
-                        <p> Accepted for publication in: <i>Annals of Probability </i>. </p>
-                    </dd>
-                </dl>
-                </details>
-                <details>
-                <summary>Published</summary>
-                <dl>
-                    <dt>
-                        <p>
-                            [9] <a href="https://doi.org/10.1214/26-ECP793">doi:10.1214/26-ECP793</a> [<a href="https://arxiv.org/pdf/2505.06209">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>A correlation bound for the one-dimensional heterogeneous Ising model </h4>
-                        <p>With  Edward Athaide, <a href="https://www.math.ucla.edu/people/grad/mgluchowski"> Maciej Głuchowski</a>, and <a href="https://georgmenz.wordpress.com">Georg Menz</a>. 
-                        <p> Electronic Communications in Probability, Vol. 31, 1-13 (2026).</p>
-                    </dd>
-                    <dt>
-                        <p>
-                            [8] <a href="https://doi.org/10.1214/25-EJP1441">doi:10.1214/25-EJP1441</a> [<a href="https://arxiv.org/pdf/2408.17170.pdf">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>The variational principle for a marked Gibbs point process with infinite-range multibody interactions </h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, Yannic Steenbeck, and <a href="https://alexzass.com"> Alexander Zass</a>.
-                        </p>
-                        <p> Electronic Journal of Probability, Vol. 30, paper no. 176, 1-32 (2025).</p>
-                    </dd>
-                    <dt>
-                        <p>
-                            [7] <a href="https://doi.org/10.1007/s00023-025-01624-5">doi:10.1007/s00023-025-01624-5</a> [<a href="https://arxiv.org/pdf/2402.12300.pdf">arxiv</a>, <a href=https://youtu.be/fl9scg_INKI">video</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Time-periodic behaviour in one- and two-dimensional interacting particle systems </h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.
-                        </p>
-                        <p> Annales Henri Poincaré, Vol. 27, 3933–3963 (2026).</p>
-                    </dd>
-                    <dt>
-                        <p>
-                            [6] <a href="https://doi.org/10.1017/jpr.2025.15">doi:10.1017/jpr.2025.15</a> [<a href="https://arxiv.org/pdf/2306.14888.pdf">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Percolation in lattice k-neighbor graphs</h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, <a href="https://sites.google.com/view/bas-lodewijks/home"> Bas Lodewijks</a>, and <a href="https://cs.bme.hu/~tobias/"> András Tóbiás</a>.</p>
-                        <p> Journal of Applied Probability 62 (4), 2025.</p>
-                   
-                    </dd>
-                    <dt>
-                        <p>
-                            [5] <a href="https://doi.org/10.1214/25-EJP1335">doi:10.1214/25-EJP1335</a> [<a href="https://arxiv.org/pdf/2404.09944.pdf">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Survival and extinction for a contact process with a density-dependent birth rate </h4>
-                        <p>With <a href="https://math.la.asu.edu/~lanchier/">Nicolas Lanchier</a> and <a href="https://sites.google.com/view/maxmercer/main-page?authuser=1"> Max Mercer</a>.</p>
-                        <p>Electronic Journal of Probability, Vol. 30, paper no. 74, 1-18 (2025).</p>
-                    </dd>
-                    <dt>
-                        <p>
-                            [4] <a href="https://doi.org/10.2140/pmp.2025.6.479">doi:10.2140/pmp.2025.6.479
-                            </a> [<a href="https://arxiv.org/pdf/2303.10640.pdf">arxiv</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>On the long-time behaviour of reversible interacting particle systems in one and two dimensions</h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.</p>
-                        <p> Probability and Mathematical Physics 6-2 (2025), 479--503.</p>
-                    </dd>
-                    <dt>
-                        <p>
-                        [3] <a href="http://dx.doi.org/10.1214/22-AAP1926">doi:10.1214/22-AAP1926</a> [<a href="https://arxiv.org/abs/2205.02738">arxiv</a>,<a href="https://jonaskoeppl.github.io/pub/dgvp.pdf">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4>Dynamical Gibbs variational principles for irreversible interacting
-                        particle systems with applications to attractor properties</h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.</p>
-                        <p>Annals of Applied Probability, Vol. 33, No. 6A, 4570-4607 (2023).</p>
-                     </dd>
-                    <dt>
-                        <p>
-                            [2] <a href="https://doi.org/10.1007/s10955-023-03136-0">doi:10.1007/s10955-023-03136-0</a> [<a href="https://arxiv.org/pdf/2301.03922.pdf">arxiv</a>, <a href="https://link.springer.com/content/pdf/10.1007/s10955-023-03136-0.pdf">pdf</a>]
-                        </p>
-                    </dt>
-                    <dd>
-                        <h4> Trajectorial dissipation of \Phi-entropies for interacting particle systems</h4>
-                        <p>With <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>.</p>
-                        <p>Journal of Statistical Physics 190, 119 (2023).</p>
-                    </dd>
-                    <dt>
-                        <p>
-                            [1] <a href="https://doi.org/10.3390/e24101352">doi:10.3390/e24101352</a> [<a href="https://arxiv.org/abs/2209.07151">arxiv</a>, <a href="https://arxiv.org/pdf/2209.07151.pdf">pdf</a>]
-                        </p>
-                    </dt>
-                    
-                    <dd>
-                        <h4>Feedback Loops in Opinion Dynamics of Agent-Based Models with Multiplicative Noise</h4>
-                        <p>With <a href="https://www.zib.de/members/natasa.conrad">Natasa Djurdjevac-Conrad </a> and <a href="https://www.maths.ox.ac.uk/people/ana.djurdjevac">Ana Djurdjevac</a>.</p>
-                        <p>Entropy 24 (10), 1352 (2022).</p>
-                    </dd>
-                </dl>
-            </details>
-            <details>
-                <summary>Proceedings, Reports, etc. </summary>
-                <dl>
-                <dt>
-                    <p>[R1] <a href="https://doi.org/10.4171/owr/2025/46">doi:10.14760/OWR-2025-46</a> [<a href="https://publications.mfo.de/bitstream/handle/mfo/4395/OWR_2025_46.pdf?sequence=1&isAllowed=y">pdf</a>]</p>
-                    
-                </dt>
-                <dd>
-                    <h4>Condensation with optimal rate and excitation spectrum for Bose gases in the Gross-Pitaevskii limit</h4>
-                    <p>With <a href="https://www.gssi.it/people/professors/lectures-maths/item/25915-roos-barbara">Barbara Roos</a>. In: <i>Mathematisches Forschungsinstitut Oberwolfach Report No. 46/2025</i>, Arbeitsgemeinschaft: Analysis of Many-Body Quantum Systems (organized by C. Hainzl, B. Schlein, R. Seiringer, and J. P. Solovej), pp. 2509–2515 (2025).
-                    </p>
-                </dd>
-                </dl>
-            </details>
-            </section>
-
-            <section id=liveProjects>
-                <h2> "Live" projects</h2>
-                <dl>
-                    <dt>
-                        <p> 
-                            [cx-ips] <a href="https://github.com/jonaskoeppl/counterexamples-ips"> Counterexamples in interacting particle systems</a> (community project)[<a href="https://github.com/jonaskoeppl/counterexamples-ips" >github</a>]
-                        </p>
-                    </dt>
-                    <dt>
-                        <p> 
-                            [kNN] <a href="https://github.com/jonaskoeppl/percolation-discrete-knn"> Percolation in discrete k-nearest-neighbour graphs</a> (community project)[<a href="https://github.com/jonaskoeppl/percolation-discrete-knn" >github</a>]
-                        </p>
-                    </dt>
-                </dl>
-            </section>
-
-            <section id=talks>
-                <h2>Talks</h2> 
-                <!-- <h3>Upcoming talks</h3>
-                <dl class=talks_upcoming>
-                <p>
-                    February 15th, 20:00 CET / 11:00 PT, <a href="https://secure.math.ucla.edu/seminars/show_quarter.php?type=Probability">UCLA Probability Seminar </a> (online). <br> 
-                    September 9th-13th, <a href="https://www.eurandom.tue.nl/event/gibbs-point-processes-and-applications/">Interacting particles in the continuum</a> @ Eurandom, Eindhoven.
-                </p><dt>
-                Friday 24 February 2023, 14:30, TU Berlin, Institut für Mathematik, Room tba 
-                </dt>
-                <dd>
-                    <p><em>BMS student conference 2023</em></p> 
-                    <h4>Dynamical Gibbs variational principles and applications to attractor properties</h4>
-                    <p class=text>
-                        Interacting particle systems are countable systems of locally interacting Markov processes and are often used as toy
-                        models for stochastic phenomena with an underlying spatial structure. Even though the definition of an interacting
-                        particle system often looks very simple and the major technical issues of existence and uniqueness have long been
-                        settled, it is in general surprisingly difficult to say anything non-trivial about their behavior. Some of the main
-                        challenges deal with the long-time behavior of the systems. Because of the possible non-uniqueness of the
-                        time-stationary distribution the analysis is very delicate and various techniques have been developed to study limit
-                        theorems or attractor properties. One particular technique that will play a major role in this talk is due to Richard
-                        Holley and involves using the free energy functional with respect to some specification as a Lyapunov
-                        function for the measure-valued differential equation that describes the time evolution of the system in the space of
-                        measures. We first explain the general idea behind the method on the simple example of a continuous time Markov chain on
-                        a finite state space and then discuss how one can extend it to irreversible interacting particle systems in infinite
-                        volumes.
-                    </p>
-                </dd>
-                </dl> -->
-                <h3>Past talks</h3> 
-                <p>
-                     - Paderborn probability seminar, Universität Paderborn (November 2026)<br>
-                    - Statistical Mechanics and Combinatorics of Discrete Planar Structures, <br>Erwin Schrödinger Institute,  Vienna (Oct 2026) <br>
-                    - Oberseminar Stochastik, TU Darmstadt (Jul 2026) <br>
-                    - Statistical Mechanics of Lattice Systems @ Brin MRC, Maryland (Mar 2026) <br>
-                    - Groupe de travail "Processus ponctuels et applications", Universit&eacute de Lille  (Jan 2026)<br>
-                    - Oberseminar für angewandte Analysis, Universität Ulm (Nov 2025) <br> 
-                    - 44th Conference on Stochastic Processes and their Applications, Wroclaw (Jul 2025) <br>
-                    - LA Probability Forum, Caltech, Los Angeles (Mar 2025) <br>
-                    - UCLA Probability Seminar, Los Angeles (Feb 2025) <br>
-                    - Interacting particles in the continuum @ Eurandom, Eindhoven (Sep 2024) <br>
-                    - 4th Italian Meeting on Probability and Mathematical Statistics, Rome (Jun 2024) <br>
-                    - Paderborn probability seminar, Universität Paderborn (May 2024)<br>
-                    - Postgraduate Online Probability Seminar (POPS), online (Feb 2024)</a> <br>
-                    - UCLA Probability Seminar, online (Feb 2024) <br>
-                    - What is...? Seminar, Berlin Mathematical School, Berlin (Nov 2023; <a href="https://vimeo.com/891861465"> video</a>) <br>
-                    - Mathematics of Random Systems Summer School 2023, Kyoto (Sep 2023) <br>
-                    - German Probability and Statistic Days 2023, Essen (Mar 2023) <br>
-                    - BMS Student Conference 2023, TU Berlin (Feb 2023) <br>
-                    - Analysis and Probability seminar, Universität Passau (Jan 2023) <br>
-                    - Dies Mathematicus 2022, TU Berlin (Nov 2022; <a href="https://math-berlin.de/media-press/news/3-bms-students-with-best-presentations-at-dies-mathematicus"> best talk award</a>)<br>
-                    - Interacting Random Systems seminar, WIAS Berlin (Nov 2022) <br>
-                    - DMV Annual meeting, Berlin (Sept 2022) <br> 
-                    - BMS–BGSMath Junior Meeting, Barcelona (Sept 2022) <br>
-                    - DMV Student Conference, MPI–MIS Leipzig (Aug 2022; <a href="https://www.mathematik.de/dmv-blog/3024-studierendenkonferenz-der-deutschen-mathematiker-vereinigung-2022"> best talk award</a>)
-                </p>
-            </section>
-
-            <section id="organisation">
-                <h2 >Other activities</h2>
-                <p class=text>
-                    Since May 2024, I am a co-organiser of the <a href="https://pg-prob-sem.github.io"> Postgraduate Online Probability Seminar (POPS)</a>, a monthly online seminar which provides a platform for doctoral students and post-docs from all over the world to present and promote their research in areas related to probability and its applications.
-                    If you are interested in presenting your work or want to suggest a speaker, feel free to reach out by email! 
-                </p>
-                <!-- <p class=text>
-                    I am co-founder of <a href="https://bliss.berlin">BLISS</a>, a student-run club connecting interested students with AI/ML researchers and practicioners through weekly reading groups, invited talks, and coding challenges. If you want to know more about it or join one of our weekly meetings, write me an email! 
-                </p> -->
-            </section>
-
-            <section id=contact>
-                <h2>Contact details</h2>
-                <dl>
-                    <dt>
-                        Address
-                    </dt> 
-
-                    <dd>
-                        Universität Münster <br>
-                        Institut für mathematische Stochastik <br> 
-                        Einsteinstraße 62 <br>
-                        48149 Münster <br>
-                        Germany
-                    </dd>
-
-                    <dt>
-                        E-mail address
-                    </dt>
-                    <dd>
-                     <a href=mailto:jonas.koeppl@uni-muenster.de class="email">jonas.koeppl@uni-muenster.de</a>
-                    </dd>
-                </dl>
-            </section>
-            <section id="credit">
-                <p class=text>Photo credit: <a href="https://opc.mfo.de/detail?photo_id=27492">Bildarchiv des Mathematischen Forschungsinstituts Oberwolfach</a></p>
-            </section>
-        </div>             
+<main class="page">
+  <section class="intro" id="about">
+    <div>
+      <h1 class="title">Jonas Köppl</h1>
+      <p class="lead">Postdoctoral researcher in mathematics at the Cluster of Excellence <a href="https://www.uni-muenster.de/MathematicsMuenster/">Mathematics Münster: Dynamics – Geometry – Structure</a>. Previously, I was a PhD student at the <a href="https://wias-berlin.de">Weierstraß Institute (WIAS)</a> in the research group <a href="https://www.wias-berlin.de/research/lgs/lg6/index.jsp?lang=1">Probabilistic Methods for Dynamic Communication Networks</a> under the supervision of <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, and a Phase II student at the <a href="https://math-berlin.de">Berlin Mathematical School</a>.</p>
+      <div class="addresses">
+        <address>
+          <h2>Universität Münster</h2>
+          Institut für mathematische Stochastik<br>
+          Einsteinstraße 62, 48149 Münster, Germany<br>
+          <a href="mailto:jonas.koeppl@uni-muenster.de">jonas.koeppl@uni-muenster.de</a>
+        </address>
+      </div>
     </div>
-</section>
+    <figure class="portrait">
+      <img src="img/portrait-700.jpg" srcset="img/portrait-700.jpg 700w, img/portrait-1200.jpg 1200w" sizes="(max-width: 48rem) 24rem, 21rem" width="700" height="469" alt="Portrait of Jonas Köppl">
+      <figcaption>Photo: <a href="https://opc.mfo.de/detail?photo_id=27492">Bildarchiv des MFO</a></figcaption>
+    </figure>
+  </section>
+
+  <section class="block" id="research">
+    <h2>Research interests</h2>
+    <p>Interacting particle systems, random dynamics, Gibbs measures, percolation.</p>
+  </section>
+
+  <section class="block" id="publications">
+    <h2>Selected publications</h2>
+    <ol class="pubs">
+      <li><span class="no">19</span><span><span class="pt">On the stationary measures of the critical Ornstein–Uhlenbeck process</span><span class="meta">with Jean-Dominique Deuschel, Yannic Steenbeck and Thomas Worschech · Preprint</span><span class="links"><a href="https://arxiv.org/abs/2609.07622">arXiv:2609.07622</a><a href="https://arxiv.org/pdf/2609.07622">pdf</a></span></span></li>
+      <li><span class="no">18</span><span><span class="pt">Asymptotically complete free-energy dissipation: a coarse MLSI holds at any positive temperature</span><span class="meta">with Yannic Steenbeck · Preprint</span><span class="links"><a href="https://arxiv.org/abs/2608.13677">arXiv:2608.13677</a><a href="https://arxiv.org/pdf/2608.13677">pdf</a></span></span></li>
+      <li><span class="no">15</span><span><span class="pt">On the absence of time-translation symmetry breaking in some non-reversible interacting particle systems</span><span class="meta">Preprint</span><span class="links"><a href="http://arxiv.org/abs/2602.22104">arXiv:2602.22104</a><a href="https://arxiv.org/pdf/2602.22104.pdf">pdf</a></span></span></li>
+      <li><span class="no">10</span><span><span class="pt">The planar lattice two-neighbor graph percolates</span><span class="meta">with <a href="https://sites.google.com/view/pageprodedavidcoupier/">David Coupier</a>, <a href="https://www.bhenry.fr/research.html">Benoît Henry</a> and <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a> · Accepted for publication in <i><a href="https://imstat.org/journals-and-publications/annals-of-probability/annals-of-probability-future-papers/">Annals of Probability</a></i></span><span class="links"><a href="https://arxiv.org/abs/2412.20781">arXiv:2412.20781</a><a href="https://arxiv.org/pdf/2412.20781">pdf</a><a href="https://bennhenry.github.io/NeighPerc/">simulations</a></span></span></li>
+      <li><span class="no">4</span><span><span class="pt">On the long-time behaviour of reversible interacting particle systems in one and two dimensions</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a> · Probability and Mathematical Physics 6-2 (2025), 479–503</span><span class="links"><a href="https://doi.org/10.2140/pmp.2025.6.479">doi:10.2140/pmp.2025.6.479</a><a href="https://arxiv.org/pdf/2303.10640.pdf">arXiv</a></span></span></li>
+      <li><span class="no">3</span><span><span class="pt">Dynamical Gibbs variational principles for irreversible interacting particle systems with applications to attractor properties</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a> · Annals of Applied Probability 33 (6A), 4570–4607 (2023)</span><span class="links"><a href="http://dx.doi.org/10.1214/22-AAP1926">doi:10.1214/22-AAP1926</a><a href="https://arxiv.org/abs/2205.02738">arXiv</a><a href="pub/dgvp.pdf">pdf</a></span></span></li>
+    </ol>
+
+    <h3>All publications</h3>
+    <details class="group">
+      <summary>Preprints <span>12</span></summary>
+      <ol class="pubs">
+        <li><span class="no">22</span><span><span class="pt">Uniqueness and full coverage in k-neighbor graphs</span><span class="meta">with <a href="https://sites.google.com/view/pageprodedavidcoupier/">David Coupier</a>, <a href="https://www.bhenry.fr/research.html">Benoît Henry</a> and <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a></span><span class="links"><a href="http://arxiv.org/abs/2611.06800">arXiv:2611.06800</a><a href="https://arxiv.org/pdf/2611.06800">pdf</a></span></span></li>
+        <li><span class="no">21</span><span><span class="pt">Space-time large deviations for continuum birth-and-death processes</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, Yannic Steenbeck and <a href="https://alexzass.com">Alexander Zass</a></span><span class="links"><a href="https://arxiv.org/abs/2610.28307">arXiv:2610.28307</a><a href="https://arxiv.org/pdf/2610.28307">pdf</a></span></span></li>
+        <li><span class="no">20</span><span><span class="pt">Comparison inequalities for discrete- and continuous-time infection processes</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a> and Pēteris Siliņš</span><span class="links"><a href="https://arxiv.org/abs/2609.09892">arXiv:2609.09892</a><a href="https://arxiv.org/pdf/2609.09892">pdf</a></span></span></li>
+        <li><span class="no">19</span><span><span class="pt">On the stationary measures of the critical Ornstein–Uhlenbeck process</span><span class="meta">with Jean-Dominique Deuschel, Yannic Steenbeck and Thomas Worschech</span><span class="links"><a href="https://arxiv.org/abs/2609.07622">arXiv:2609.07622</a><a href="https://arxiv.org/pdf/2609.07622">pdf</a></span></span></li>
+        <li><span class="no">18</span><span><span class="pt">Asymptotically complete free-energy dissipation: a coarse MLSI holds at any positive temperature</span><span class="meta">with Yannic Steenbeck</span><span class="links"><a href="https://arxiv.org/abs/2608.13677">arXiv:2608.13677</a><a href="https://arxiv.org/pdf/2608.13677">pdf</a></span></span></li>
+        <li><span class="no">17</span><span><span class="pt">Convex order and faster transmission in first contact percolation</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, <a href="https://www.wias-berlin.de/people/luechtrath/">Lukas Lüchtrath</a> and Anh Duc Vu</span><span class="links"><a href="http://arxiv.org/abs/2605.28766">arXiv:2605.28766</a><a href="https://arxiv.org/pdf/2605.28766">pdf</a></span></span></li>
+        <li><span class="no">16</span><span><span class="pt">Restriction and mixing properties of interacting particle systems with unbounded range</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a></span><span class="links"><a href="https://arxiv.org/abs/2603.21817">arXiv:2603.21817</a><a href="https://arxiv.org/pdf/2603.21817">pdf</a></span></span></li>
+        <li><span class="no">15</span><span><span class="pt">On the absence of time-translation symmetry breaking in some non-reversible interacting particle systems</span><span class="links"><a href="http://arxiv.org/abs/2602.22104">arXiv:2602.22104</a><a href="https://arxiv.org/pdf/2602.22104.pdf">pdf</a></span></span></li>
+        <li><span class="no">14</span><span><span class="pt">Reversible birth-and-death dynamics in continuum: a de Bruijn-type identity for free-energy dissipation</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, Yannic Steenbeck and <a href="https://alexzass.com">Alexander Zass</a></span><span class="links"><a href="https://arxiv.org/abs/2602.13474">arXiv:2602.13474</a><a href="https://arxiv.org/pdf/2602.13474.pdf">pdf</a></span></span></li>
+        <li><span class="no">13</span><span><span class="pt">Local criteria for global connectivity comparisons: beyond stochastic domination</span><span class="meta">with <a href="https://sites.google.com/view/jbaeumler/">Johannes Bäumler</a>, <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, <a href="https://sites.google.com/view/bas-lodewijks/home">Bas Lodewijks</a>, <a href="https://sites.google.com/view/lily-reeves/home">Lily Reeves</a> and <a href="https://cs.bme.hu/~tobias/">András Tóbiás</a></span><span class="links"><a href="http://arxiv.org/abs/2510.03934">arXiv:2510.03934</a><a href="https://arxiv.org/pdf/2510.03934.pdf">pdf</a></span></span></li>
+        <li><span class="no">12</span><span><span class="pt">Reversible birth-and-death dynamics in continuum: free energy dissipation and attractor properties</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, Yannic Steenbeck and <a href="https://alexzass.com">Alexander Zass</a></span><span class="links"><a href="https://arxiv.org/abs/2508.21196">arXiv:2508.21196</a><a href="https://arxiv.org/pdf/2508.21196.pdf">pdf</a></span></span></li>
+        <li><span class="no">11</span><span><span class="pt">Evolutionary games on the lattice: multitype contact process with density-dependent birth rates</span><span class="meta">with <a href="https://math.la.asu.edu/~lanchier/">Nicolas Lanchier</a> and <a href="https://sites.google.com/view/maxmercer/main-page?authuser=1">Max Mercer</a></span><span class="links"><a href="https://arxiv.org/abs/2412.19957">arXiv:2412.19957</a><a href="https://arxiv.org/pdf/2412.19957">pdf</a></span></span></li>
+      </ol>
+    </details>
+    <details class="group">
+      <summary>Accepted <span>1</span></summary>
+      <ol class="pubs">
+        <li><span class="no">10</span><span><span class="pt">The planar lattice two-neighbor graph percolates</span><span class="meta">with <a href="https://sites.google.com/view/pageprodedavidcoupier/">David Coupier</a>, <a href="https://www.bhenry.fr/research.html">Benoît Henry</a> and <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a> · Accepted for publication in <i>Annals of Probability</i></span><span class="links"><a href="https://arxiv.org/abs/2412.20781">arXiv:2412.20781</a><a href="https://arxiv.org/pdf/2412.20781">pdf</a><a href="https://bennhenry.github.io/NeighPerc/">simulations</a></span></span></li>
+      </ol>
+    </details>
+    <details class="group">
+      <summary>Published <span>9</span></summary>
+      <ol class="pubs">
+        <li><span class="no">9</span><span><span class="pt">A correlation bound for the one-dimensional heterogeneous Ising model</span><span class="meta">with Edward Athaide, <a href="https://www.math.ucla.edu/people/grad/mgluchowski">Maciej Głuchowski</a> and <a href="https://georgmenz.wordpress.com">Georg Menz</a> · Electronic Communications in Probability 31, 1–13 (2026)</span><span class="links"><a href="https://doi.org/10.1214/26-ECP793">doi:10.1214/26-ECP793</a><a href="https://arxiv.org/pdf/2505.06209">pdf</a></span></span></li>
+        <li><span class="no">8</span><span><span class="pt">The variational principle for a marked Gibbs point process with infinite-range multibody interactions</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, Yannic Steenbeck and <a href="https://alexzass.com">Alexander Zass</a> · Electronic Journal of Probability 30, paper no. 176, 1–32 (2025)</span><span class="links"><a href="https://doi.org/10.1214/25-EJP1441">doi:10.1214/25-EJP1441</a><a href="https://arxiv.org/pdf/2408.17170.pdf">pdf</a></span></span></li>
+        <li><span class="no">7</span><span><span class="pt">Time-periodic behaviour in one- and two-dimensional interacting particle systems</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a> · Annales Henri Poincaré 27, 3933–3963 (2026)</span><span class="links"><a href="https://doi.org/10.1007/s00023-025-01624-5">doi:10.1007/s00023-025-01624-5</a><a href="https://arxiv.org/pdf/2402.12300.pdf">arXiv</a><a href="https://youtu.be/fl9scg_INKI">video</a></span></span></li>
+        <li><span class="no">6</span><span><span class="pt">Percolation in lattice k-neighbor graphs</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a>, <a href="https://sites.google.com/view/bas-lodewijks/home">Bas Lodewijks</a> and <a href="https://cs.bme.hu/~tobias/">András Tóbiás</a> · Journal of Applied Probability 62 (4), 2025</span><span class="links"><a href="https://doi.org/10.1017/jpr.2025.15">doi:10.1017/jpr.2025.15</a><a href="https://arxiv.org/pdf/2306.14888.pdf">pdf</a></span></span></li>
+        <li><span class="no">5</span><span><span class="pt">Survival and extinction for a contact process with a density-dependent birth rate</span><span class="meta">with <a href="https://math.la.asu.edu/~lanchier/">Nicolas Lanchier</a> and <a href="https://sites.google.com/view/maxmercer/main-page?authuser=1">Max Mercer</a> · Electronic Journal of Probability 30, paper no. 74, 1–18 (2025)</span><span class="links"><a href="https://doi.org/10.1214/25-EJP1335">doi:10.1214/25-EJP1335</a><a href="https://arxiv.org/pdf/2404.09944.pdf">pdf</a></span></span></li>
+        <li><span class="no">4</span><span><span class="pt">On the long-time behaviour of reversible interacting particle systems in one and two dimensions</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a> · Probability and Mathematical Physics 6-2 (2025), 479–503</span><span class="links"><a href="https://doi.org/10.2140/pmp.2025.6.479">doi:10.2140/pmp.2025.6.479</a><a href="https://arxiv.org/pdf/2303.10640.pdf">arXiv</a></span></span></li>
+        <li><span class="no">3</span><span><span class="pt">Dynamical Gibbs variational principles for irreversible interacting particle systems with applications to attractor properties</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a> · Annals of Applied Probability 33 (6A), 4570–4607 (2023)</span><span class="links"><a href="http://dx.doi.org/10.1214/22-AAP1926">doi:10.1214/22-AAP1926</a><a href="https://arxiv.org/abs/2205.02738">arXiv</a><a href="pub/dgvp.pdf">pdf</a></span></span></li>
+        <li><span class="no">2</span><span><span class="pt">Trajectorial dissipation of Φ-entropies for interacting particle systems</span><span class="meta">with <a href="https://www.wias-berlin.de/people/jahnel/">Benedikt Jahnel</a> · Journal of Statistical Physics 190, 119 (2023)</span><span class="links"><a href="https://doi.org/10.1007/s10955-023-03136-0">doi:10.1007/s10955-023-03136-0</a><a href="https://arxiv.org/pdf/2301.03922.pdf">arXiv</a><a href="https://link.springer.com/content/pdf/10.1007/s10955-023-03136-0.pdf">pdf</a></span></span></li>
+        <li><span class="no">1</span><span><span class="pt">Feedback loops in opinion dynamics of agent-based models with multiplicative noise</span><span class="meta">with <a href="https://www.zib.de/members/natasa.conrad">Nataša Djurdjevac Conrad</a> and <a href="https://www.maths.ox.ac.uk/people/ana.djurdjevac">Ana Djurdjevac</a> · Entropy 24 (10), 1352 (2022)</span><span class="links"><a href="https://doi.org/10.3390/e24101352">doi:10.3390/e24101352</a><a href="https://arxiv.org/abs/2209.07151">arXiv</a><a href="https://arxiv.org/pdf/2209.07151.pdf">pdf</a></span></span></li>
+      </ol>
+    </details>
+    <details class="group">
+      <summary>Proceedings, Reports, etc. <span>1</span></summary>
+      <ol class="pubs">
+        <li><span class="no">R1</span><span><span class="pt">Condensation with optimal rate and excitation spectrum for Bose gases in the Gross–Pitaevskii limit</span><span class="meta">with <a href="https://www.gssi.it/people/professors/lectures-maths/item/25915-roos-barbara">Barbara Roos</a> · Oberwolfach Report No. 46/2025, Arbeitsgemeinschaft: Analysis of Many-Body Quantum Systems (organized by C. Hainzl, B. Schlein, R. Seiringer and J. P. Solovej), 2509–2515 (2025)</span><span class="links"><a href="https://doi.org/10.4171/owr/2025/46">doi:10.14760/OWR-2025-46</a><a href="https://publications.mfo.de/bitstream/handle/mfo/4395/OWR_2025_46.pdf?sequence=1&amp;isAllowed=y">pdf</a></span></span></li>
+      </ol>
+    </details>
+  </section>
+
+  <section class="block" id="projects">
+    <h2>“Live” projects</h2>
+    <ul class="rows">
+      <li class="single"><span><a href="https://github.com/jonaskoeppl/counterexamples-ips">Counterexamples in interacting particle systems</a> <span class="quiet">· community project on GitHub</span></span></li>
+      <li class="single"><span><a href="https://github.com/jonaskoeppl/percolation-discrete-knn">Percolation in discrete k-nearest-neighbour graphs</a> <span class="quiet">· community project on GitHub</span></span></li>
+    </ul>
+    <h3>Simulations</h3>
+    <div class="feature">
+      <p>Live simulations of the driven clock and XY models of Maes and Shlosman and of Lipowski's lattice prey–predator model, in two and three dimensions: rotating states, spiral defects, coherent oscillations and long-range correlations, running in your browser. <a href="simulations/">Open the simulations</a></p>
+      <a href="simulations/" aria-label="Open the simulations"><video class="preview" muted loop playsinline preload="none" poster="simulations/media/onset_poster.png" width="300" height="300" data-src="simulations/media/onset.mp4" aria-label="The angle field of the 2D driven clock model as spiral defects appear"></video></a>
+    </div>
+  </section>
+
+  <section class="block" id="talks">
+    <h2>Talks</h2>
+    <h3>Upcoming talks</h3>
+    <ul class="rows">
+      <li><time>16 Nov 2026</time><span><a href="https://www.math.cit.tum.de/math/forschung/kolloquium-seminare/colloquium-in-probability/">Colloquium in Probability</a>, München <span class="quiet">· 16:30 · <i>Continuous symmetry breaking in discrete interacting particle systems?</i></span></span></li>
+      <li><time>18 Nov 2026</time><span><a href="https://www.uni-augsburg.de/de/fakultaet/mntf/math/prof/sto/oberseminar/">Oberseminar Wahrscheinlichkeitstheorie</a>, Universität Augsburg <span class="quiet">· 14:00 · room 2004 (L1)</span></span></li>
+    </ul>
+    <details class="group">
+      <summary>Past talks <span>24</span></summary>
+      <ul class="rows">
+      <li><time>Nov 2026</time><span>Paderborn probability seminar, Universität Paderborn</span></li>
+      <li><time>Oct 2026</time><span>Statistical Mechanics and Combinatorics of Discrete Planar Structures, Erwin Schrödinger Institute, Vienna</span></li>
+      <li><time>Jul 2026</time><span>Oberseminar Stochastik, TU Darmstadt</span></li>
+      <li><time>Mar 2026</time><span>Statistical Mechanics of Lattice Systems, Brin MRC, Maryland</span></li>
+      <li><time>Jan 2026</time><span>Groupe de travail “Processus ponctuels et applications”, Université de Lille</span></li>
+      <li><time>Nov 2025</time><span>Oberseminar für angewandte Analysis, Universität Ulm</span></li>
+      <li><time>Jul 2025</time><span>44th Conference on Stochastic Processes and their Applications, Wrocław</span></li>
+      <li><time>Mar 2025</time><span>LA Probability Forum, Caltech, Los Angeles</span></li>
+      <li><time>Feb 2025</time><span>UCLA Probability Seminar, Los Angeles</span></li>
+      <li><time>Sep 2024</time><span>Interacting particles in the continuum, Eurandom, Eindhoven</span></li>
+      <li><time>Jun 2024</time><span>4th Italian Meeting on Probability and Mathematical Statistics, Rome</span></li>
+      <li><time>May 2024</time><span>Paderborn probability seminar, Universität Paderborn</span></li>
+      <li><time>Feb 2024</time><span>Postgraduate Online Probability Seminar (POPS), online</span></li>
+      <li><time>Feb 2024</time><span>UCLA Probability Seminar, online</span></li>
+      <li><time>Nov 2023</time><span>What is…? Seminar, Berlin Mathematical School, Berlin <span class="quiet">· <a href="https://vimeo.com/891861465">video</a></span></span></li>
+      <li><time>Sep 2023</time><span>Mathematics of Random Systems Summer School 2023, Kyoto</span></li>
+      <li><time>Mar 2023</time><span>German Probability and Statistics Days 2023, Essen</span></li>
+      <li><time>Feb 2023</time><span>BMS Student Conference 2023, TU Berlin</span></li>
+      <li><time>Jan 2023</time><span>Analysis and Probability seminar, Universität Passau</span></li>
+      <li><time>Nov 2022</time><span>Dies Mathematicus 2022, TU Berlin <span class="quiet">· <a href="https://math-berlin.de/media-press/news/3-bms-students-with-best-presentations-at-dies-mathematicus">best talk award</a></span></span></li>
+      <li><time>Nov 2022</time><span>Interacting Random Systems seminar, WIAS Berlin</span></li>
+      <li><time>Sep 2022</time><span>DMV Annual Meeting, Berlin</span></li>
+      <li><time>Sep 2022</time><span>BMS–BGSMath Junior Meeting, Barcelona</span></li>
+      <li><time>Aug 2022</time><span>DMV Student Conference, MPI MiS Leipzig <span class="quiet">· <a href="https://www.mathematik.de/dmv-blog/3024-studierendenkonferenz-der-deutschen-mathematiker-vereinigung-2022">best talk award</a></span></span></li>
+    </ul>
+    </details>
+  </section>
+
+  <section class="block" id="activities">
+    <h2>Other activities</h2>
+    <p>Since May 2024, I am a co-organiser of the <a href="https://pg-prob-sem.github.io">Postgraduate Online Probability Seminar (POPS)</a>, a monthly online seminar which provides a platform for doctoral students and postdocs from all over the world to present and promote their research in areas related to probability and its applications. If you are interested in presenting your work or want to suggest a speaker, feel free to reach out by email!</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>© 2026 Jonas Köppl</span>
+  <a href="mailto:jonas.koeppl@uni-muenster.de">jonas.koeppl@uni-muenster.de</a>
+  <a href="cv.pdf">CV</a>
+  <span class="right">Photo: <a href="https://opc.mfo.de/detail?photo_id=27492">Bildarchiv des Mathematischen Forschungsinstituts Oberwolfach</a></span>
+</footer>
+
+<script>
+// start the preview animation only once it scrolls into view, and not at all with reduced motion
+(() => {
+  const v = document.querySelector("video.preview");
+  if (!v || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const go = () => { if (!v.src) { v.src = v.dataset.src; } v.play().catch(() => {}); };
+  if (!("IntersectionObserver" in window)) { go(); return; }
+  new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting ? go() : v.pause()), { rootMargin: "200px" }).observe(v);
+})();
+</script>
+<script>
+// light / dark switch; the choice is remembered in this browser (shared with the simulations page)
+(() => {
+  const b = document.querySelector(".theme-toggle"), root = document.documentElement, mq = matchMedia("(prefers-color-scheme: dark)");
+  if (!b) return;
+  const dark = () => root.dataset.theme ? root.dataset.theme === "dark" : mq.matches;
+  const label = () => b.setAttribute("aria-label", dark() ? "Switch to light theme" : "Switch to dark theme");
+  label();
+  b.addEventListener("click", () => {
+    const t = dark() ? "light" : "dark";
+    root.dataset.theme = t;
+    try { localStorage.setItem("theme", t); } catch (e) { /* storage unavailable */ }
+    label();
+    window.dispatchEvent(new Event("resize"));      // the simulator redraws its plots on resize
+  });
+  if (mq.addEventListener) mq.addEventListener("change", label);
+})();
+</script>
 </body>
+</html>
