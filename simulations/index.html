@@ -389,10 +389,15 @@ d = log(p+/p−),   p+ + p− = 1</div>
   function setupCanvases() {
     const L = S.L;
     if (S.dim === 2) {
-      const sz = Math.min(600, Math.max(300, L * 3));
+      // Each panel is written pixel by pixel straight into its own canvas (k x k pixels per
+      // site) with putImageData. No canvas-to-canvas drawImage: Safari performs those lazily,
+      // and a shared source canvas then made the first panel flicker.
+      const k = Math.max(1, Math.round(600 / L)), sz = k * L;
       for (const id of ["cA", "cB", "cT"]) { const c = $(id); c.width = sz; c.height = sz; }
-      off2d = { A: new ImageData(L, L), B: new ImageData(L, L), T: new ImageData(L, L), cv: document.createElement("canvas") };
-      off2d.cv.width = L; off2d.cv.height = L;
+      off2d = { k, sz, A: new ImageData(sz, sz), B: new ImageData(sz, sz), T: new ImageData(sz, sz) };
+      off2d.a32 = new Uint32Array(off2d.A.data.buffer);
+      off2d.b32 = new Uint32Array(off2d.B.data.buffer);
+      off2d.t32 = new Uint32Array(off2d.T.data.buffer);
     } else {
       const px = Math.max(2, Math.round(220 / L)), side = L * px, step = 0.55 * px, ang = 35 * Math.PI / 180;
       const ox = [], oy = [];
@@ -411,19 +416,20 @@ d = log(p+/p−),   p+ + p− = 1</div>
   function buildQCol() { QCOL = []; for (let k = 0; k < S.q; k++) QCOL.push(cyclic(k / S.q)); }
 
   function draw2d() {
-    const L = sim.L, A = off2d.A.data, B = off2d.B.data, T = off2d.T.data;
+    const L = sim.L, k = off2d.k, sz = off2d.sz, A = off2d.a32, B = off2d.b32, T = off2d.t32;
+    const px = (r, g, b) => (255 << 24 | b << 16 | g << 8 | r) >>> 0;   // little-endian RGBA
+    const WHITE = px(255, 255, 255), BLACK = px(0, 0, 0), GREY = px(128, 128, 128);
     for (let y = 0; y < L; y++) for (let x = 0; x < L; x++) {
-      const i = y * L + x, j = ((L - 1 - y) * L + x) * 4, th = sim.theta(i);
+      const i = y * L + x, th = sim.theta(i);
       const c = Math.cos(th), s = Math.sin(th);
-      const a = Math.abs(c) < 1e-9 ? 128 : (c > 0 ? 255 : 0), b = Math.abs(s) < 1e-9 ? 128 : (s > 0 ? 255 : 0);
-      A[j] = A[j + 1] = A[j + 2] = a; A[j + 3] = 255;
-      B[j] = B[j + 1] = B[j + 2] = b; B[j + 3] = 255;
-      const col = rgbOf(i); T[j] = col[0]; T[j + 1] = col[1]; T[j + 2] = col[2]; T[j + 3] = 255;
+      const a = Math.abs(c) < 1e-9 ? GREY : (c > 0 ? WHITE : BLACK), b = Math.abs(s) < 1e-9 ? GREY : (s > 0 ? WHITE : BLACK);
+      const col = rgbOf(i), t = px(col[0], col[1], col[2]);
+      let o = (L - 1 - y) * k * sz + x * k;
+      for (let dy = 0; dy < k; dy++, o += sz) for (let dx = 0; dx < k; dx++) { A[o + dx] = a; B[o + dx] = b; T[o + dx] = t; }
     }
     const blit = (id, img, marks) => {
       const c = $(id), ctx = c.getContext("2d");
-      off2d.cv.getContext("2d").putImageData(img, 0, 0);
-      ctx.imageSmoothingEnabled = false; ctx.drawImage(off2d.cv, 0, 0, c.width, c.height);
+      ctx.putImageData(img, 0, 0);
       if (marks) {
         const sc = c.width / L;
         ctx.lineWidth = Math.max(1.5, sc * 0.6);
