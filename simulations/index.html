@@ -77,15 +77,45 @@ figcaption i { font-family: var(--f-display); font-size: 16px; color: var(--ink)
 .plots { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; }
 @media (max-width: 640px) { .plots { grid-template-columns: minmax(0, 1fr); } }
 .plot { width: 100%; max-width: 100%; display: block; }
+.corrbox { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; border-top: 1px solid var(--line); padding-top: 14px; }
+@media (max-width: 640px) { .corrbox { grid-template-columns: minmax(0, 1fr); } }
+.corrtext { display: grid; gap: 8px; min-width: 0; }
+.corrtext h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.corrlegend { flex-direction: column; gap: 4px; }
+.ring { display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--accent); margin: 0 8px 0 5px; vertical-align: middle; }
+.dot.ink { background: var(--ink); }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin: 0 9px 0 6px; vertical-align: middle; }
+.sw.dash { background: repeating-linear-gradient(90deg, var(--muted) 0 5px, transparent 5px 8px); }
+.sw.dot2 { background: repeating-linear-gradient(90deg, var(--mb) 0 2px, transparent 2px 5px); }
 .legend { display: flex; gap: 14px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
 .legend em { font-style: normal; font-family: var(--f-display); font-size: 15px; color: var(--ink); }
 .sw { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
 .keybar { display: flex; height: 10px; border-radius: 2px; overflow: hidden; width: 120px; }
 .keybar div { flex: 1; }
-.about { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.about { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
 .about h2 { font-family: var(--f-display); font-weight: 600; font-size: 19px; margin: 0 0 6px; }
 .about p { margin: 0 0 8px; max-width: 68ch; }
-.refs h2 { font-family: var(--f-display); font-size: 1.3em; margin: 0 0 6px; }
+.about .wide { grid-column: 1 / -1; }
+.about a, .refs a { color: var(--accent); }
+.pd-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
+@media (max-width: 760px) { .pd-wrap { grid-template-columns: minmax(0, 1fr); } }
+.pd { margin: 0; display: grid; gap: 6px; }
+.pd svg { width: 100%; max-width: 100%; height: auto; display: block; }
+.pd figcaption { font-size: 12.5px; color: var(--muted); display: block; }
+.pd-text p { margin: 0 0 8px; }
+.pd-dis { fill: var(--chip); }
+.pd-rot { fill: color-mix(in srgb, var(--accent) 16%, var(--panel)); }
+.pd-static { fill: color-mix(in srgb, var(--mb) 12%, var(--panel)); }
+.pd-crit { fill: none; stroke: var(--mb); stroke-width: 2; }
+.pd-vline { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 5 4; }
+.pd-axis { stroke: var(--ink); stroke-width: 1.3; }
+.pd-axis-head { fill: var(--ink); }
+.pd svg text { fill: var(--ink); font-family: var(--f-body); }
+.pd-ax { font-size: 17px; font-style: italic; }
+.pd-tick { font-size: 15px; }
+.pd-lab { font-size: 15px; font-weight: 600; }
+.pd-small { font-size: 12.5px; }
+.pd-curve-lab { fill: var(--mb) !important; }
 .refs ol { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; }
 .formula { font-family: var(--f-mono); font-size: 12.5px; background: var(--chip); padding: 8px 10px; border-radius: 6px; overflow-x: auto; white-space: pre; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
@@ -105,7 +135,9 @@ figcaption i { font-family: var(--f-display); font-size: 16px; color: var(--ink)
     <a href="https://doi.org/10.1103/PhysRevE.111.034124">Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli,
     <i>Dynamical phase transitions in the nonreciprocal Ising model</i>, Phys. Rev. E 111 (2025)</a>, whose nonreciprocal
     Ising model is closely related to the four-state clock.</p>
-    <p>Pick a preset or change the parameters yourself; β and d take effect immediately.</p>
+    <p>Pick a preset or change the parameters yourself; β and d take effect immediately. Below the lattice views
+    the page measures truncated correlations in space and in time and compares them with the spin-wave predictions,
+    and the section at the end sketches the phase diagram conjectured by Maes and Shlosman.</p>
   </header>
 
   <div class="layout">
@@ -188,30 +220,113 @@ figcaption i { font-family: var(--f-display); font-size: 16px; color: var(--ink)
           <canvas class="plot" id="phase" height="220"></canvas>
         </div>
       </div>
+
+      <div class="corrbox">
+        <canvas class="plot" id="corr" height="260"></canvas>
+        <div class="corrtext">
+          <h3>Truncated correlations in space, at a fixed time <i>t</i></h3>
+          <p class="note">C<sub>t</sub>(r) = ⟨σ<sub>0</sub>(t)·σ<sub>re</sub>(t)⟩ − ⟨σ<sub>0</sub>(t)⟩·⟨σ<sub>re</sub>(t)⟩ with σ = (cos θ, sin θ), estimated from the configuration at time t by averaging over all sites and the d lattice directions e.</p>
+          <div class="legend corrlegend">
+            <span><span class="dot"></span>current time <i>t</i></span>
+            <span><span class="sw" style="background:var(--ink)"></span>mean over the last <span id="corr-n">0</span> times</span>
+            <span id="leg-corrected"><span class="ring"></span>mean, finite-size corrected</span>
+            <span><span class="sw dash"></span>spin waves on the L-torus, A·G<sub>L</sub>(r)</span>
+            <span id="leg-pow"><span class="sw dot2"></span>A·G<sub>∞</sub>(r) ≈ A/(4πr), the decay |x|<sup>2−d</sup></span>
+          </div>
+          <p class="note" id="corr-note">On the torus, subtracting the magnetization removes the k = 0 spin wave, which bends C<sub>t</sub>(r) down long before r = L/2. The rings add back exactly this spin-wave finite-size effect, A·[G<sub>∞</sub>(r) − G<sub>L</sub>(r)], so in 3D they should lie on the 1/r line out to r ≈ L/2. The amplitude A is fitted for r ≤ L/4. Let the run relax for a few hundred time units: the longest spin waves equilibrate on a time scale of order L².</p>
+          <p class="note" id="corr-fit"></p>
+        </div>
+      </div>
+
+      <div class="corrbox">
+        <canvas class="plot" id="auto" height="260"></canvas>
+        <div class="corrtext">
+          <h3>Truncated correlations in time</h3>
+          <p class="note">S(t<sub>0</sub>, t) = L<sup>−d</sup> Σ<sub>x</sub> σ<sub>x</sub>(t<sub>0</sub>)·σ<sub>x</sub>(t) − M(t<sub>0</sub>)·M(t), as in Chaté, Grinstein and Tang. It oscillates with the collective rotation; its envelope is predicted to decay like |t − t<sub>0</sub>|<sup>−(d−2)/2</sup>, that is t<sup>−1/2</sup> in d = 3.</p>
+          <div class="legend corrlegend">
+            <span><span class="sw" style="background:var(--accent)"></span>|S(t<sub>0</sub>, t)|, one reference time t<sub>0</sub></span>
+            <span><span class="dot ink"></span>co-rotating S<sub>rot</sub>, mean over <span id="auto-n">0</span> reference times</span>
+            <span><span class="sw dash"></span>spin waves on the L-torus, B·H<sub>L</sub>(D τ)</span>
+            <span id="leg-tpow"><span class="sw dot2"></span>∝ τ<sup>−(d−2)/2</sup> = τ<sup>−1/2</sup></span>
+          </div>
+          <p class="note">S<sub>rot</sub> measures every spin relative to the current direction of M, which removes the oscillation and leaves the envelope: S<sub>rot</sub>(t<sub>0</sub>, t) = Re L<sup>−d</sup> Σ<sub>x</sub> δw̄<sub>x</sub>(t<sub>0</sub>) δw<sub>x</sub>(t), δw = e<sup>iθ</sup> M̄/|M| − |M|. H<sub>L</sub>(u) = L<sup>−d</sup> Σ<sub>k≠0</sub> e<sup>−uλ<sub>k</sub></sup>/λ<sub>k</sub> is the spin-wave autocorrelation on the torus, with a fitted phase diffusion constant D. Reference times are taken every <span id="auto-every">–</span> time units and the panel resets when β or d changes.</p>
+          <p class="note" id="auto-fit"></p>
+        </div>
+      </div>
     </main>
   </div>
 
   <section class="card about">
     <div>
       <h2>The model</h2>
-      <p>Each site of the periodic lattice carries a clock spin k ∈ {0,…,q−1} with angle φ = 2πk/q. It advances or retreats by one step at the rates of <a href="https://doi.org/10.1007/s10955-011-0325-5">Maes &amp; Shlosman</a> (J. Stat. Phys. 144, 2011, Eq. 4), simulated exactly in continuous time:</p>
+      <p>Each site of the periodic lattice carries a clock spin k ∈ {0,…,q−1} with angle φ = 2πk/q. It advances or retreats by one step at the rates of <a href="https://doi.org/10.1007/s10955-011-0325-5">Maes and Shlosman</a> (Eq. 4), simulated exactly in continuous time:</p>
       <div class="formula">c±(x) = p± · exp{ (β/2) Σ_y~x [ cos(φx − φy ± 2π/q) − cos(φx − φy) ] }
 d = log(p+/p−),   p+ + p− = 1</div>
-      <p>The XY option integrates Eq. 7: dφ = d·dt − Σ sin(φx − φy) dt + (2/β)<sup>½</sup> dW.</p>
+      <p>For d = 0 the dynamics is reversible with respect to the Gibbs measures of the clock model H = −Σ cos(φ<sub>x</sub> − φ<sub>y</sub>). For d &gt; 0 every free spin turns counterclockwise, and the question is what the interaction makes of this drive. The XY option integrates the limit q → ∞ (Eq. 7), dφ = d·dt − Σ sin(φ<sub>x</sub> − φ<sub>y</sub>) dt + (2/β)<sup>½</sup> dW, whose generator commutes with that of the undriven XY model. Its stationary translation-invariant measure is unique for almost all β, yet at low temperature the rotated XY Gibbs states rotate forever and never relax to it (Theorem 7).</p>
     </div>
     <div>
       <h2>Reading the views</h2>
-      <p>Pictures use θ = 2π(k + ½)/q, a global half-step rotation. For q = 4 the four states then sit on the diagonals, so σ<sup>A</sup> = sgn cos θ and σ<sup>B</sup> = sgn sin θ are two Ising spins whose cycle (++) → (−+) → (−−) → (+−) is the swap order of the nonreciprocal Ising model of <a href="https://doi.org/10.1103/PhysRevE.111.034124">Avni et al.</a>; then J̃ = dim·β and K̃ = d/2.</p>
+      <p>Pictures use θ = 2π(k + ½)/q, a global half-step rotation. For q = 4 the four states then sit on the diagonals, so σ<sup>A</sup> = sgn cos θ and σ<sup>B</sup> = sgn sin θ are two Ising spins. Their cycle (++) → (−+) → (−−) → (+−) is the swap order of the nonreciprocal Ising model of <a href="https://doi.org/10.1103/PhysRevE.111.034124">Avni et al.</a>. The driven 4-clock is their fully antisymmetric model with exponential instead of Glauber rates, with J̃ = dim·β and K̃ = d/2.</p>
       <p>A vortex is a plaquette whose four corners wind once around the clock. In 3D, voxels are drawn semi-transparent with grey encoding depth (dark = front).</p>
     </div>
-  </section>
-  <section class="card refs">
-    <h2>References</h2>
-    <ol>
-      <li>C. Maes and S. Shlosman, <a href="https://doi.org/10.1007/s10955-011-0325-5"><i>Rotating states in driven clock- and XY-models</i></a>, J. Stat. Phys. 144 (2011), 1238–1246.</li>
-      <li>Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli, <a href="https://doi.org/10.1103/PhysRevE.111.034124"><i>Dynamical phase transitions in the nonreciprocal Ising model</i></a>, Phys. Rev. E 111 (2025), 034124.</li>
-      <li>Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli, <a href="https://doi.org/10.1103/PhysRevLett.134.117103"><i>Nonreciprocal Ising model</i></a>, Phys. Rev. Lett. 134 (2025), 117103.</li>
-    </ol>
+    <div class="wide">
+      <h2>The conjectured phase diagram in d ≥ 3</h2>
+      <div class="pd-wrap">
+        <figure class="pd">
+          <svg viewBox="0 0 600 370" role="img" aria-labelledby="pd-title pd-desc">
+            <title id="pd-title">Conjectured phase diagram of the driven q-clock model in three dimensions</title>
+            <desc id="pd-desc">Inverse temperature beta on the horizontal axis, drift d on the vertical axis. Disordered for beta below beta_cr. Between beta_cr and beta_G every positive drift gives rotation. Above beta_G a critical drift d_cr grows from zero; below it the magnetized phases are static, above it they rotate.</desc>
+            <defs>
+              <clipPath id="pd-clip"><rect x="60" y="20" width="520" height="290"></rect></clipPath>
+            </defs>
+            <g clip-path="url(#pd-clip)">
+              <rect class="pd-dis" x="60" y="20" width="140" height="290"></rect>
+              <rect class="pd-rot" x="200" y="20" width="380" height="290"></rect>
+              <path class="pd-static" d="M330 310 C 380 300, 450 240, 580 150 L 580 310 Z"></path>
+              <path class="pd-crit" d="M330 310 C 380 300, 450 240, 580 150"></path>
+            </g>
+            <line class="pd-vline" x1="200" y1="20" x2="200" y2="310"></line>
+            <line class="pd-vline" x1="330" y1="20" x2="330" y2="310"></line>
+            <line class="pd-axis" x1="60" y1="310" x2="586" y2="310"></line>
+            <line class="pd-axis" x1="60" y1="310" x2="60" y2="14"></line>
+            <path class="pd-axis-head" d="M586 306 L594 310 L586 314 Z"></path>
+            <path class="pd-axis-head" d="M56 14 L60 6 L64 14 Z"></path>
+            <text class="pd-ax" x="594" y="332" text-anchor="end">β</text>
+            <text class="pd-ax" x="40" y="22" text-anchor="middle">d</text>
+            <text class="pd-tick" x="200" y="330" text-anchor="middle">β<tspan dy="4" font-size="10">cr</tspan></text>
+            <text class="pd-tick" x="330" y="330" text-anchor="middle">β<tspan dy="4" font-size="10">G</tspan></text>
+            <text class="pd-lab" x="130" y="120" text-anchor="middle">disordered</text>
+            <text class="pd-small" x="130" y="140" text-anchor="middle">M = 0,</text>
+            <text class="pd-small" x="130" y="156" text-anchor="middle">exponential decay</text>
+            <text class="pd-lab" x="265" y="92" text-anchor="middle">rotating</text>
+            <text class="pd-small" x="265" y="112" text-anchor="middle">soft modes,</text>
+            <text class="pd-small" x="265" y="128" text-anchor="middle">d<tspan dy="3" font-size="9">cr</tspan><tspan dy="-3"> = 0</tspan></text>
+            <text class="pd-lab" x="455" y="92" text-anchor="middle">rotating</text>
+            <text class="pd-lab" x="500" y="272" text-anchor="middle">static order</text>
+            <text class="pd-small pd-curve-lab" x="452" y="212" text-anchor="middle" transform="rotate(-31 452 212)">d = d<tspan dy="3" font-size="9">cr</tspan><tspan dy="-3">(β, q)</tspan></text>
+            <text class="pd-small" x="265" y="280" text-anchor="middle">d = 0: q phases,</text>
+            <text class="pd-small" x="265" y="296" text-anchor="middle">algebraic decay</text>
+          </svg>
+          <figcaption>Schematic, after Conjectures 2–6 of Maes and Shlosman, for q large. Positions and curve shapes are not to scale. As q → ∞, β<sub>G</sub> → ∞: for the XY model every d &gt; 0 sets the ordered phase rotating.</figcaption>
+        </figure>
+        <div class="pd-text">
+          <p><b>Equilibrium (d = 0, Conjecture 2).</b> For q large the 3D clock model has two transitions. Below β<sub>cr</sub> the Gibbs state is unique and correlations decay exponentially. Between β<sub>cr</sub> and β<sub>G</sub> there are q magnetized phases whose truncated correlations decay only algebraically: the discreteness of the clock is invisible at these scales and the model behaves like the XY model, with massless spin waves (Goldstone modes). Above β<sub>G</sub> the Pirogov–Sinai theory applies and correlations decay exponentially again. Both β<sub>G</sub> and the Pirogov–Sinai threshold tend to infinity as q → ∞.</p>
+          <p><b>With drift (Conjectures 3–6).</b> In the Pirogov–Sinai regime the q phases survive a small drift d &lt; d<sub>cr</sub>(β, q): they stay static and close to equilibrium. Above d<sub>cr</sub> the magnetization rotates, |⟨σ<sub>x</sub>⟩<sup>T</sup> − m(T)e<sup>i(Φ(T)+φ<sub>k</sub>)</sup>| → 0 with periodic m and Φ, and the state never converges. In the soft-mode regime β<sub>cr</sub> &lt; β &lt; β<sub>G</sub> the critical drift vanishes: any d &gt; 0 sets the spins rotating synchronously. The stationary translation-invariant distribution is then unique with zero magnetization, while the rotating states are not attracted to it.</p>
+          <p><b>q = 4.</b> The four-state clock is two Ising models and has no soft-mode phase in equilibrium. For the corresponding fully antisymmetric nonreciprocal Ising model, Avni et al. find numerically that static order is unstable to droplet growth in any finite dimension and that the transition from disorder to the rotating (swap) phase is in the 3D XY universality class. The 3D preset sits just above this transition.</p>
+          <p><b>Correlations in the rotating phase.</b> The rotation breaks the continuous time-translation symmetry, and the local phase of the oscillation is a soft mode. Following Grinstein, Mukamel, Seidin and Bennett, its fluctuations obey a KPZ equation whose smooth phase exists for d &gt; 2. This predicts equal-time truncated correlations decaying like |x|<sup>2−d</sup> and autocorrelations whose envelope decays like |t|<sup>−(d−2)/2</sup> (<a href="https://doi.org/10.1103/PhysRevLett.74.912">Chaté, Grinstein and Tang</a>). For the driven XY model the spatial law follows from Theorem 7, since the rotating states are rotated equilibrium XY states with spin-wave correlations. The two correlation panels above test both predictions, together with their spin-wave forms on the finite torus.</p>
+        </div>
+      </div>
+    </div>
+    <div class="wide refs">
+      <h2>References</h2>
+      <ol>
+        <li>C. Maes and S. Shlosman, <a href="https://doi.org/10.1007/s10955-011-0325-5"><i>Rotating states in driven clock- and XY-models</i></a>, J. Stat. Phys. 144 (2011), 1238–1246.</li>
+        <li>Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli, <a href="https://doi.org/10.1103/PhysRevE.111.034124"><i>Dynamical phase transitions in the nonreciprocal Ising model</i></a>, Phys. Rev. E 111 (2025), 034124.</li>
+        <li>Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli, <a href="https://doi.org/10.1103/PhysRevLett.134.117103"><i>Nonreciprocal Ising model</i></a>, Phys. Rev. Lett. 134 (2025), 117103.</li>
+        <li>H. Chaté, G. Grinstein and L.-H. Tang, <a href="https://doi.org/10.1103/PhysRevLett.74.912"><i>Long-range correlations in systems with coherent (quasi)periodic oscillations</i></a>, Phys. Rev. Lett. 74 (1995), 912–915.</li>
+        <li>G. Grinstein, D. Mukamel, R. Seidin and C. H. Bennett, <a href="https://doi.org/10.1103/PhysRevLett.70.3607"><i>Temporally periodic phases and kinetic roughening</i></a>, Phys. Rev. Lett. 70 (1993), 3607–3610.</li>
+      </ol>
+    </div>
   </section>
 </div>
 
@@ -369,6 +484,7 @@ d = log(p+/p−),   p+ + p− = 1</div>
     $("views2d").hidden = S.dim !== 2; $("views3d").hidden = S.dim !== 3;
     $("def-stat").style.visibility = S.dim === 2 ? "visible" : "hidden";
     $("leg-def").hidden = S.dim !== 2;
+    $("leg-pow").hidden = S.dim !== 3; $("leg-corrected").hidden = S.dim !== 3; $("leg-tpow").hidden = S.dim !== 3;
     $("equiv").textContent = (S.model === "clock" && S.q === 4)
       ? `Nonreciprocal Ising equivalent (exponential rates): J̃ = ${(S.dim * S.beta).toFixed(2)}, K̃ = ${(S.d / 2).toFixed(2)}.`
       : (S.model === "xy" ? "Driven XY: rotation decouples exactly, θ(t) − d·t follows equilibrium XY dynamics (Maes–Shlosman, Sec. 4)." : "");
@@ -381,7 +497,7 @@ d = log(p+/p−),   p+ + p− = 1</div>
     rs = (Math.random() * 4294967296) >>> 0 || 1;
     sim = S.model === "clock" ? new Clock(S.L, S.dim, S.q, S.beta, S.d, S.init) : new XY(S.L, S.dim, S.beta, S.d, S.init);
     hist = []; lastArg = null; omegaEst = null; defs = [0, 0];
-    setupCanvases(); sample(); draw();
+    setupCanvases(); setupCorr(); measureCorr(); autoStep(); sample(); draw();
   }
 
   // ---------------------------------------------------------------- canvases
@@ -471,6 +587,231 @@ d = log(p+/p−),   p+ + p− = 1</div>
     defs = [np, nm];
   }
   function vortexList() { return vlist; }
+
+  // truncated correlations ---------------------------------------------------------
+  // Lattice Green's function of -Delta on Z^3 along an axis, r = 0..48 (from a Bessel
+  // integral, see dclock/correlations.py); beyond that G(r) = 1/(4 pi r) to 3e-4.
+  const GINF3 = [0.252731,0.08606434,0.04288931,0.02754513,0.02028887,0.01610108,0.0133647,0.01143035,0.009988055,0.008870316,0.007978273,0.007249656,0.006643228,0.00613058,0.005691489,0.005311164,0.004978535,0.004685152,0.004424451,0.004191255,0.003981426,0.003791618,0.003619095,0.003461597,0.003317242,0.003184452,0.003061889,0.002948415,0.002843055,0.002744969,0.002653428,0.002567799,0.002487526,0.002412122,0.002341158,0.002274252,0.002211066,0.002151298,0.002094678,0.002040964,0.001989937,0.001941402,0.001895179,0.001851108,0.001809041,0.001768846,0.0017304,0.00169359,0.001658316];
+  const ginf3 = (r) => r < GINF3.length ? GINF3[r] : 1 / (4 * Math.PI * r);
+  let corr = null, auto = null;
+  function setupCorr() {
+    const L = S.L, d = S.dim, R = Math.floor(L / 2), N = Math.pow(L, d);
+    const lam = new Float64Array(L);
+    for (let m = 0; m < L; m++) lam[m] = 2 * (1 - Math.cos(2 * Math.PI * m / L));
+    // G_L(r) = L^-d sum_{k != 0} cos(k_1 r) / lambda_k   (separable sum over k_1)
+    const Sk = new Float64Array(L);
+    for (let a = 0; a < L; a++) {
+      if (d === 2) { for (let b = 0; b < L; b++) if (a || b) Sk[a] += 1 / (lam[a] + lam[b]); }
+      else for (let b = 0; b < L; b++) for (let c = 0; c < L; c++) if (a || b || c) Sk[a] += 1 / (lam[a] + lam[b] + lam[c]);
+    }
+    const G = new Float64Array(R + 1);
+    for (let r = 0; r <= R; r++) { let g = 0; for (let a = 0; a < L; a++) g += Math.cos(2 * Math.PI * a * r / L) * Sk[a]; G[r] = g / N; }
+    // H_L(u) = L^-d sum_{k != 0} e^{-u lambda_k}/lambda_k = int_u^inf [h(s)^d - 1/N] ds,
+    // h(s) = L^-1 sum_a e^{-s lambda_a}; tabulated on a log grid of u
+    const NU = 240, u0 = 1e-3, u1 = 400 * L * L / (4 * Math.PI * Math.PI), Hu = new Float64Array(NU), Hv = new Float64Array(NU);
+    const F = (sv) => { let h = 0; for (let a = 0; a < L; a++) h += Math.exp(-sv * lam[a]); h /= L; return Math.max(0, Math.pow(h, d) - 1 / N); };
+    const lr = Math.log(u1 / u0) / (NU - 1);
+    let acc = 0, prev = null;
+    for (let i = NU - 1; i >= 0; i--) {
+      const uu = u0 * Math.exp(lr * i), f = F(uu) * uu;           // integrand in d(log s)
+      if (prev !== null) acc += 0.5 * (f + prev) * lr;
+      prev = f; Hu[i] = uu; Hv[i] = acc;
+    }
+    const H = (u) => {
+      if (u <= u0) return Hv[0];
+      const x = Math.log(u / u0) / lr, i = Math.floor(x);
+      if (i >= NU - 1) return 0;
+      return Hv[i] + (Hv[i + 1] - Hv[i]) * (x - i);
+    };
+    corr = { R, G, recent: [], cur: null, lastWall: 0, u: new Float32Array(N), v: new Float32Array(N) };
+    // reference snapshots: 16 N bytes each; keep the total below about 24 MB
+    const TMAX = d === 3 ? 1000 : 600, K = Math.max(4, Math.min(12, Math.floor(24e6 / (16 * N))));
+    auto = { refs: [], K, every: TMAX / K, TMAX, nextRef: null, track: null, H,
+             nb: 36, bmin: 0.5, bsum: new Float64Array(36), bcnt: new Float64Array(36) };
+    auto.lstep = Math.log(TMAX / auto.bmin) / auto.nb;
+  }
+  function resetAuto() {
+    if (!auto) return;
+    auto.refs = []; auto.nextRef = null; auto.track = null; auto.bsum.fill(0); auto.bcnt.fill(0);
+  }
+  function fillUV() {
+    const N = sim.N, u = corr.u, v = corr.v;
+    let mx = 0, my = 0;
+    for (let i = 0; i < N; i++) { const th = sim.theta(i); u[i] = Math.cos(th); v[i] = Math.sin(th); mx += u[i]; my += v[i]; }
+    return [mx / N, my / N];
+  }
+  function autoStep() {                       // every frame: cheap O(K N) overlaps
+    if (!auto) return;
+    const [mx, my] = fillUV();
+    measureAuto(mx, my);
+  }
+  function measureCorr() {
+    const L = sim.L, N = sim.N, d = sim.dim, R = corr.R, u = corr.u, v = corr.v;
+    const [mx, my] = fillUV();
+    const acc = new Float64Array(R + 1);
+    for (let a = 0, st = 1; a < d; a++, st *= L) {
+      for (let i = 0; i < N; i++) {
+        const c = ((i / st) | 0) % L, ui = u[i], vi = v[i];
+        for (let r = 1; r <= R; r++) {
+          const cc = c + r < L ? c + r : c + r - L, j = i + (cc - c) * st;
+          acc[r] += ui * u[j] + vi * v[j];
+        }
+      }
+    }
+    const C = new Float64Array(R + 1), m2 = mx * mx + my * my;
+    C[0] = 1 - m2;
+    for (let r = 1; r <= R; r++) C[r] = acc[r] / (N * d) - m2;
+    corr.cur = C; corr.recent.push(C); if (corr.recent.length > 30) corr.recent.shift();
+  }
+  // temporal correlations: S (lab frame) and S_rot (co-rotating) against reference snapshots
+  function snapshot(mx, my) {
+    const N = sim.N, u = corr.u, v = corr.v, mm = Math.hypot(mx, my) || 1;
+    const dz = new Float32Array(2 * N), dw = new Float32Array(2 * N);
+    for (let i = 0; i < N; i++) {
+      dz[2 * i] = u[i] - mx; dz[2 * i + 1] = v[i] - my;
+      dw[2 * i] = (u[i] * mx + v[i] * my) / mm - mm; dw[2 * i + 1] = (v[i] * mx - u[i] * my) / mm;
+    }
+    return { t0: sim.t, dz, dw };
+  }
+  function overlap(ref, mx, my) {
+    const N = sim.N, u = corr.u, v = corr.v, mm = Math.hypot(mx, my) || 1, dz = ref.dz, dw = ref.dw;
+    let lab = 0, rot = 0;
+    for (let i = 0; i < N; i++) {
+      lab += dz[2 * i] * (u[i] - mx) + dz[2 * i + 1] * (v[i] - my);
+      rot += dw[2 * i] * ((u[i] * mx + v[i] * my) / mm - mm) + dw[2 * i + 1] * ((v[i] * mx - u[i] * my) / mm);
+    }
+    return [lab / N, rot / N];
+  }
+  function measureAuto(mx, my) {
+    const A = auto;
+    if (A.nextRef === null || sim.t >= A.nextRef) {
+      const ref = snapshot(mx, my);
+      A.refs.push(ref); if (A.refs.length > A.K) A.refs.shift();
+      if (!A.track) A.track = { ref, pts: [] };
+      A.nextRef = sim.t + A.every;
+    }
+    for (const ref of A.refs) {
+      const tau = sim.t - ref.t0;
+      if (tau <= 0) continue;
+      const [lab, rot] = overlap(ref, mx, my);
+      if (A.track && ref === A.track.ref && tau <= A.TMAX) A.track.pts.push([tau, Math.abs(lab)]);
+      const b = Math.floor(Math.log(tau / A.bmin) / A.lstep);
+      if (b >= 0 && b < A.nb) { A.bsum[b] += rot; A.bcnt[b] += 1; }
+    }
+    if (A.track && sim.t - A.track.ref.t0 > A.TMAX) A.track = null;   // next reference starts a new track
+  }
+
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sup = (e) => String(e).split("").map((ch) => SUP[ch]).join("");
+  // shared log-log frame; returns mapping functions
+  function loglogFrame(id, xmax, ys, xlabel, xmin = 1) {
+    const c = $(id), r0 = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const W = Math.max(100, Math.round(r0.width * dpr)), H = Math.round(260 * dpr);
+    if (c.width !== W || c.height !== H) { c.width = W; c.height = H; }
+    const g = c.getContext("2d");
+    g.fillStyle = css("--plot-bg"); g.fillRect(0, 0, W, H);
+    const pos = ys.filter((y) => y > 0 && isFinite(y));
+    if (!pos.length) return null;
+    const ymax = Math.max(...pos), ymin = Math.max(Math.min(...pos), ymax * 1e-4);
+    const ly0 = Math.floor(Math.log10(ymin)), ly1 = Math.ceil(Math.log10(ymax));
+    const lx0 = Math.log10(xmin), lx1 = Math.log10(xmax);
+    const ml = 46 * dpr, mr = 12 * dpr, mt = 10 * dpr, mb = 30 * dpr;
+    const X = (x) => ml + (Math.log10(x) - lx0) / (lx1 - lx0) * (W - ml - mr);
+    const Y = (y) => mt + (ly1 - Math.log10(y)) / (ly1 - ly0 || 1) * (H - mt - mb);
+    g.strokeStyle = css("--grid"); g.lineWidth = 1; g.fillStyle = css("--muted");
+    g.font = `${11 * dpr}px ${css("--f-mono")}`; g.textAlign = "right"; g.textBaseline = "middle";
+    for (let e = ly0; e <= ly1; e++) { const y = Y(Math.pow(10, e)); g.beginPath(); g.moveTo(ml, y); g.lineTo(W - mr, y); g.stroke(); g.fillText("10" + sup(e), ml - 5 * dpr, y); }
+    g.textAlign = "center"; g.textBaseline = "top";
+    for (let e = Math.floor(lx0); e <= Math.ceil(lx1); e++) for (const m of [1, 2, 5]) {
+      const x = m * Math.pow(10, e); if (x < xmin * 0.999 || x > xmax * 1.001) continue;
+      const px = X(x); g.beginPath(); g.moveTo(px, mt); g.lineTo(px, H - mb); g.stroke(); g.fillText(x >= 1 ? x : x.toString(), px, H - mb + 4 * dpr);
+    }
+    g.font = `italic ${13 * dpr}px ${css("--f-display")}`; g.fillStyle = css("--ink"); g.textAlign = "right";
+    g.fillText(xlabel, W - mr, H - mb + 15 * dpr);
+    g.save(); g.beginPath(); g.rect(ml, mt, W - ml - mr, H - mt - mb); g.clip();
+    const poly = (pts, color, width, dash = []) => {
+      g.strokeStyle = color; g.lineWidth = width * dpr; g.setLineDash(dash.map((x) => x * dpr)); g.beginPath();
+      let on = false;
+      for (const [x, y] of pts) { if (!(y > 0) || !(x > 0)) { on = false; continue; } on ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)); on = true; }
+      g.stroke(); g.setLineDash([]);
+    };
+    const dots = (pts, color, rad, ring = false) => {
+      g.fillStyle = color; g.strokeStyle = color; g.lineWidth = 1.5 * dpr;
+      for (const [x, y] of pts) if (y > 0) { g.beginPath(); g.arc(X(x), Y(y), rad * dpr, 0, 2 * Math.PI); ring ? g.stroke() : g.fill(); }
+    };
+    return { g, poly, dots, done: () => g.restore() };
+  }
+
+  function drawCorr() {
+    if (!corr || !corr.cur) return;
+    const R = corr.R, G = corr.G, n = corr.recent.length, d = sim.dim;
+    const mean = new Float64Array(R + 1);
+    for (const C of corr.recent) for (let r = 0; r <= R; r++) mean[r] += C[r] / n;
+    let num = 0, den = 0;
+    for (let r = 1; r <= Math.max(2, Math.floor(sim.L / 4)); r++) if (G[r] > 0 && mean[r] > 0) { num += mean[r] * G[r]; den += G[r] * G[r]; }
+    const A = den > 0 ? num / den : 0;
+    $("corr-n").textContent = n;
+    const rs = []; for (let r = 1; r <= R; r++) rs.push(r);
+    const corrected = d === 3 ? rs.map((r) => [r, mean[r] + A * (ginf3(r) - G[r])]) : [];
+    const ys = rs.map((r) => corr.cur[r]).concat(rs.map((r) => mean[r]), corrected.map((p) => p[1]));
+    const f = loglogFrame("corr", R, ys, "r");
+    if (!f) return;
+    f.poly(rs.map((r) => [r, A * G[r]]), css("--muted"), 1.5, [6, 4]);
+    if (d === 3) {
+      const ref = []; for (let k = 0; k <= 100; k++) { const r = Math.pow(R, k / 100); ref.push([r, A / (4 * Math.PI * r)]); }
+      f.poly(ref, css("--mb"), 1.5, [2, 3]);
+      f.dots(corrected, css("--accent"), 3.6, true);
+    }
+    f.poly(rs.map((r) => [r, mean[r]]), css("--ink"), 1.5);
+    f.dots(rs.map((r) => [r, corr.cur[r]]), css("--accent"), 2.6);
+    f.done();
+    $("corr-fit").textContent = `Fitted amplitude A = ${A.toFixed(3)}.` + (d === 3 ? "" : " In d = 2 there is no 1/r line: the spin-wave prediction falls off only logarithmically.");
+  }
+
+  function drawAuto() {
+    if (!auto) return;
+    const A = auto, d = sim.dim;
+    $("auto-every").textContent = Math.round(A.every);
+    const bins = [];
+    let nref = 0;
+    for (let b = 0; b < A.nb; b++) if (A.bcnt[b] > 0) bins.push([A.bmin * Math.exp(A.lstep * (b + 0.5)), A.bsum[b] / A.bcnt[b], A.bcnt[b]]);
+    nref = A.refs.length;
+    $("auto-n").textContent = nref;
+    const track = A.track ? A.track.pts : [];
+    const ys = bins.map((p) => p[1]).concat(track.map((p) => p[1]));
+    const f = loglogFrame("auto", A.TMAX, ys, "τ = t − t₀", A.bmin);
+    if (!f) { $("auto-fit").textContent = "Collecting reference times…"; return; }
+    // fit B and D of B*H_L(D tau) to the binned co-rotating curve (relative least squares)
+    const fitPts = bins.filter((p) => p[1] > 0 && p[0] >= 1);
+    let best = null;
+    if (fitPts.length >= 4) {
+      for (let k = 0; k <= 60; k++) {
+        const D = Math.pow(10, -2 + 3 * k / 60);
+        let sxy = 0, sxx = 0;
+        for (const [t, y] of fitPts) { const h = A.H(D * t); sxy += h / y; sxx += (h / y) * (h / y); }
+        if (!(sxx > 0)) continue;
+        const B = sxy / sxx;
+        let res = 0; for (const [t, y] of fitPts) { const e = B * A.H(D * t) / y - 1; res += e * e; }
+        if (!best || res < best.res) best = { D, B, res };
+      }
+    }
+    if (best) {
+      const curve = []; for (let k = 0; k <= 120; k++) { const t = A.bmin * Math.pow(A.TMAX / A.bmin, k / 120); curve.push([t, best.B * A.H(best.D * t)]); }
+      f.poly(curve, css("--muted"), 1.5, [6, 4]);
+      if (d === 3) {
+        // infinite-volume spin waves: H(u) ~ 2 (4 pi)^{-3/2} u^{-1/2}
+        const c = best.B * 2 * Math.pow(4 * Math.PI, -1.5) / Math.sqrt(best.D);
+        const pl = []; for (let k = 0; k <= 60; k++) { const t = Math.pow(A.TMAX, k / 60); pl.push([t, c / Math.sqrt(t)]); }
+        f.poly(pl, css("--mb"), 1.5, [2, 3]);
+      }
+    }
+    f.poly(track, css("--accent"), 1);
+    f.dots(bins.map((p) => [p[0], p[1]]), css("--ink"), 3);
+    f.done();
+    $("auto-fit").textContent = best
+      ? `Fitted D = ${best.D.toPrecision(2)}, B = ${best.B.toPrecision(3)}. The τ^−1/2 regime ends near τ ≈ L²/(4π²D) ≈ ${Math.round(sim.L * sim.L / (4 * Math.PI * Math.PI * best.D))}, where the longest spin wave relaxes.`
+      : "Collecting reference times…";
+  }
 
   // 3D volume rendering ---------------------------------------------------------
   function drawVolume(id, which) {
@@ -605,6 +946,11 @@ d = log(p+/p−),   p+ + p− = 1</div>
   function draw() {
     if (S.dim === 2) draw2d(); else { drawVolume("vA", 0); drawVolume("vB", 1); }
     drawTraces();
+    // equal-time correlations: about four snapshots per second of wall-clock time
+    const now = performance.now();
+    if (corr && S.running && now - corr.lastWall > 250) { corr.lastWall = now; measureCorr(); }
+    if (S.running) autoStep();
+    drawCorr(); drawAuto();
   }
 
   let simDebt = 0, lastFrame = performance.now(), workPerMs = null, frameCount = 0, tAcc = 0, wallAcc = 0;
@@ -644,7 +990,7 @@ d = log(p+/p−),   p+ + p− = 1</div>
   $("L").addEventListener("input", (e) => { S.L = +e.target.value; $("L-out").textContent = S.L; });
   $("L").addEventListener("change", () => restart());
   const live = (key, a, b) => {
-    const upd = (v) => { if (!isFinite(v) || v < 0) return; S[key] = v; $(a).value = v; $(b).value = v; sim.set(S.beta, S.d); syncUI(); };
+    const upd = (v) => { if (!isFinite(v) || v < 0) return; S[key] = v; $(a).value = v; $(b).value = v; sim.set(S.beta, S.d); if (corr) corr.recent = []; resetAuto(); syncUI(); };
     $(a).addEventListener("input", (e) => upd(+e.target.value));
     $(b).addEventListener("change", (e) => upd(+e.target.value));
   };
@@ -652,7 +998,7 @@ d = log(p+/p−),   p+ + p− = 1</div>
   $("speed").addEventListener("input", (e) => { S.speed = +e.target.value; $("speed-out").textContent = fmtSpeed(); });
   $("play").onclick = () => { S.running = !S.running; $("play").textContent = S.running ? "Pause" : "Run"; };
   $("reset").onclick = () => restart();
-  $("clear").onclick = () => { hist = hist.slice(-1); };
+  $("clear").onclick = () => { hist = hist.slice(-1); if (corr) corr.recent = []; resetAuto(); };
   $("showdef").addEventListener("change", (e) => { S.showdef = e.target.checked; if (sim && S.dim === 2) draw2d(); });
   window.addEventListener("resize", () => { if (sim) drawTraces(); });
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
