@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Simulations – Jonas Köppl</title>
-<meta name="description" content="Live simulations of the driven clock and XY models of Maes and Shlosman and of Lipowski&#39;s lattice prey-predator model, in two and three dimensions.">
+<meta name="description" content="Live simulations of interacting particle systems (driven clock and XY models, Lipowski&#39;s prey-predator lattice) and of percolation in k-neighbour graphs.">
 <meta name="author" content="Jonas Köppl">
-<meta property="og:title" content="Driven clock simulations – Jonas Köppl">
-<meta property="og:description" content="Live simulations of the driven clock and XY models of Maes and Shlosman: rotating states, spiral defects and long-range correlations, in your browser.">
+<meta property="og:title" content="Simulations – Jonas Köppl">
+<meta property="og:description" content="Live simulations in your browser: rotating states in driven clock models and percolation in k-neighbour graphs.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jonaskoeppl.github.io/simulations/">
 <meta property="og:image" content="https://jonaskoeppl.github.io/simulations/media/preview.png">
@@ -240,6 +240,27 @@ a:hover { text-decoration-color: currentColor; }
 .pd-curve-lab { fill: var(--accent) !important; }
 :root[data-theme="dark"] .pd-rot { fill: color-mix(in srgb, #A8D8E8 26%, var(--bg)); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pd-rot { fill: color-mix(in srgb, #A8D8E8 26%, var(--bg)); } }
+/* ---- the two labs as large collapsible sections ---- */
+.lab { border-top: 1px solid var(--line); }
+.lab:last-of-type { border-bottom: 1px solid var(--line); }
+.lab > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem 2rem; align-items: center; padding: 1.6rem 0; }
+.lab > summary::-webkit-details-marker { display: none; }
+.lab-text { display: grid; gap: 0.35rem; max-width: 46rem; }
+.lab-kicker { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.lab-title { font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.3rem); line-height: 1.1; }
+.lab-desc { color: var(--muted); }
+.lab-cta { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.lab-cta::before { content: "Open the lab ▸"; }
+.lab[open] .lab-cta::before { content: "Close ▾"; }
+.lab > summary:hover .lab-title { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+.lab-thumb { width: 7.5rem; height: auto; aspect-ratio: 1; image-rendering: pixelated; display: block; }
+.lab-body { display: grid; gap: 22px; padding: 0 0 3rem; }
+.lab-intro { margin: 0; max-width: 46rem; }
+.lab-body > .quiet.lab-intro { color: var(--muted); font-size: 0.95rem; }
+@media (max-width: 40rem) { .lab-thumb { width: 4.5rem; } }
+.pc-view { width: 100%; max-width: 760px; aspect-ratio: 1; display: block; }
+.pc-fig figcaption { align-items: center; }
+.pc-ramp { display: inline-block; width: 120px; height: 8px; flex: none; }
 .foot { padding: 2rem var(--edge) 3rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.6rem; font-size: 0.9rem; color: var(--muted); border-top: 1px solid var(--line); }
 .foot .right { margin-left: auto; }
 </style>
@@ -247,6 +268,8 @@ a:hover { text-decoration-color: currentColor; }
 <body>
 <script>
 window.CLOCK_LAB_EXPORT = true;
+window.CLOCK_LAB_DEFER = true;     // the labs start when their sections are opened
+window.KNN_LAB_DEFER = true;
 // the angle colours of the gallery view (and of the preview on the start page): slate, rose, bone, cyan
 window.CLOCK_LAB_THEME = { states: [[74, 74, 94], [142, 66, 87], [233, 217, 181], [168, 216, 232]] };
 </script>
@@ -277,24 +300,36 @@ window.CLOCK_LAB_THEME = { states: [[74, 74, 94], [142, 66, 87], [233, 217, 181]
 <div class="wrap">
   <div class="pagehead">
     <h1 class="title">Simulations</h1>
-    <p>Interacting particle systems are easiest to get a feeling for by watching them. This page runs
-    the driven clock and driven XY models of <a href="https://doi.org/10.1007/s10955-011-0325-5">C. Maes and
-    S. Shlosman, <i>Rotating states in driven clock- and XY-models</i>, J. Stat. Phys. 144 (2011)</a> live in
-    your browser. Every spin is a clock hand that interacts with its neighbours like an XY spin and is pushed
-    to rotate by a constant drift. In two dimensions the collective rotation is destroyed by spiral defects; in
-    three dimensions the whole system rotates coherently. The pictures follow the conventions of
-    <a href="https://doi.org/10.1103/PhysRevE.111.034124">Y. Avni, M. Fruchart, D. Martin, D. Seara and V. Vitelli,
-    <i>Dynamical phase transitions in the nonreciprocal Ising model</i>, Phys. Rev. E 111 (2025)</a>, whose
-    nonreciprocal Ising model is closely related to the four-state clock. A second model,
+    <p>Interacting particle systems and percolation models are easiest to get a feeling for by watching
+    them. The two labs below run live in your browser: one on the long-time behaviour of non-equilibrium
+    dynamics, where rotating and oscillating states appear, and one on percolation in the k-neighbour
+    graphs, where every vertex opens a fixed number of edges. Open a lab to start it.</p>
+  </div>
+
+  <details class="lab" id="lab-clock">
+    <summary>
+      <span class="lab-text"><span class="lab-kicker">Interacting particle systems · non-equilibrium dynamics</span>
+      <span class="lab-title">Driven clock lab</span>
+      <span class="lab-desc">Driven clock and XY models in 2D and 3D: rotating states, spiral defects and long-range
+      correlations, and Lipowski's oscillating prey–predator lattice.</span>
+      <span class="lab-cta"></span></span>
+      <img class="lab-thumb" src="media/onset_poster.png" width="300" height="300" alt="">
+    </summary>
+    <div class="lab-body">
+    <p class="lab-intro">Every spin is a clock hand that interacts with its neighbours like an XY spin and is pushed
+    to rotate by a constant drift: the driven clock and XY models of <a href="https://doi.org/10.1007/s10955-011-0325-5">C. Maes and
+    S. Shlosman, <i>Rotating states in driven clock- and XY-models</i>, J. Stat. Phys. 144 (2011)</a>. In two dimensions the
+    collective rotation is destroyed by spiral defects; in three dimensions the whole system rotates coherently. The
+    pictures follow the conventions of <a href="https://doi.org/10.1103/PhysRevE.111.034124">Y. Avni, M. Fruchart, D. Martin,
+    D. Seara and V. Vitelli, <i>Dynamical phase transitions in the nonreciprocal Ising model</i>, Phys. Rev. E 111 (2025)</a>,
+    whose nonreciprocal Ising model is closely related to the four-state clock. A second model,
     <a href="https://doi.org/10.1103/PhysRevE.60.5179">A. Lipowski's lattice of prey and predators, Phys. Rev. E 60 (1999)</a>,
     oscillates for a different reason: in two dimensions only the noise has a preferred period, in three
     dimensions the densities oscillate coherently.</p>
-    <p class="quiet">Pick a preset or change the parameters yourself; β and d take effect immediately. Below the
-    lattice views the page measures truncated correlations in space and in time and compares them with the
-    spin-wave predictions (for the prey–predator model: the power spectrum of the prey density); the notes
+    <p class="quiet lab-intro">Pick a preset or change the parameters yourself; β and d take effect immediately. The
+    diagnostics below the lattice views measure truncated correlations in space and in time and compare them with the
+    spin-wave predictions (for the prey–predator model also the power spectrum of the prey density); the notes
     below sketch the phase diagram conjectured by Maes and Shlosman.</p>
-  </div>
-
   <div class="layout">
     <aside class="card controls" aria-label="Simulation controls">
       <div class="group">
@@ -612,6 +647,121 @@ predator  no prey on its site: the predator dies;
     </div>
     </details>
   </section>
+  </div>
+  </details>
+  <details class="lab" id="lab-knn">
+    <summary>
+      <span class="lab-text"><span class="lab-kicker">Percolation · k-neighbour graphs</span>
+      <span class="lab-title">k-neighbour percolation lab</span>
+      <span class="lab-desc">Directed k-neighbour graphs on ℤ², the triangular lattice and the Poisson–Delaunay
+      triangulation, with a continuous out-degree k = 2dp and adjustable box size.</span>
+      <span class="lab-cta"></span></span>
+      <img class="lab-thumb" src="media/knn_thumb.png" width="300" height="300" alt="">
+    </summary>
+    <div class="lab-body">
+    <p class="lab-intro">Every vertex of ℤ², of the triangular lattice or of a Poisson–Delaunay triangulation picks k of
+    its neighbours at random and draws directed edges to them. Does the origin reach infinity along the arrows? On ℤ²
+    the answer for k = 2 is yes: the main theorem of <a href="https://arxiv.org/abs/2412.20781">D. Coupier, B. Henry,
+    B. Jahnel and J. Köppl, <i>The planar lattice two-neighbor graph percolates</i>, Ann. Probab., to appear</a>, while
+    independent directed percolation with the same density of edges does not percolate. With the continuous
+    parametrisation k = 2dp of that paper the out-degree can be any real number.</p>
+    <p class="quiet lab-intro">The picture shows the forward cluster of the origin in the box [−n, n]², coloured by graph
+    distance. Changing k keeps the sample and only adds or removes edges, so the cluster grows monotonically as k
+    increases; “New sample” draws fresh randomness. Below the picture a sweep estimates the probability that the
+    origin reaches the boundary of the box as a function of k.</p>
+  <div class="layout pc-layout" id="pc-lab">
+    <aside class="card controls" aria-label="Percolation controls">
+      <div class="group">
+        <h2>Graph</h2>
+        <div class="seg" role="group" aria-label="Graph">
+          <button id="pc-g-z2" aria-pressed="true">ℤ²</button>
+          <button id="pc-g-tri" aria-pressed="false">Triangular</button>
+          <button id="pc-g-del" aria-pressed="false">Poisson–Delaunay</button>
+        </div>
+        <div class="seg" role="group" aria-label="Choice of the neighbours" id="pc-rule-seg" hidden>
+          <button id="pc-r-uni" aria-pressed="true">Uniform choice</button>
+          <button id="pc-r-near" aria-pressed="false">Nearest first</button>
+        </div>
+      </div>
+      <div class="group">
+        <h2>Parameters</h2>
+        <div class="row"><label for="pc-k">out-degree k</label><input id="pc-k" type="range" min="0" max="4" step="0.01" value="2"><input id="pc-k-n" type="number" min="0" max="6" step="0.01" value="2" aria-label="k value"></div>
+        <div class="row"><label for="pc-n">box size n</label><input id="pc-n" type="range" min="5" max="300" step="1" value="60"><output id="pc-n-out">60</output></div>
+        <p class="note" id="pc-p-note">k = 2dp with d = 2: each directed edge is open with probability p = k/4.</p>
+      </div>
+      <div class="btns">
+        <button class="btn primary" id="pc-new" type="button">New sample</button>
+        <button class="btn" id="pc-copy" type="button">Copy link</button>
+      </div>
+      <label class="check"><input type="checkbox" id="pc-edges" checked> Draw the open edges (small boxes)</label>
+      <p class="hint" id="pc-hint">Drag k: the sample stays the same and edges are only added, so the forward cluster of the origin grows monotonically.</p>
+      <p class="note" id="pc-copy-status" aria-live="polite"></p>
+    </aside>
+
+    <main class="card" style="display:grid; gap:14px;">
+      <div class="stats" aria-live="off">
+        <div class="stat"><span>out-degree <i>k</i></span><b id="pc-s-k">2.00</b></div>
+        <div class="stat"><span>edge probability <i>p</i></span><b id="pc-s-p">0.500</b></div>
+        <div class="stat"><span>cluster size</span><b id="pc-s-size">–</b></div>
+        <div class="stat"><span>graph radius</span><b id="pc-s-rad">–</b></div>
+        <div class="stat"><span>reaches the boundary</span><b><span class="state-pill" id="pc-s-hit">–</span></b></div>
+        <div class="stat"><span>vertices in the box</span><b id="pc-s-N">–</b></div>
+      </div>
+      <figure class="pc-fig">
+        <canvas id="pc-view" class="pc-view" aria-label="Forward cluster of the origin"></canvas>
+        <figcaption>
+          <span id="pc-caption">Forward cluster of the origin in the box [−n, n]², coloured by graph distance from the origin.</span>
+          <span class="pc-ramp" aria-hidden="true"></span>
+        </figcaption>
+      </figure>
+
+      <details class="diag" id="pc-diag">
+        <summary><span class="diag-title">Estimate the percolation probability</span><span class="sum-note">P(o ⇝ ∂Λ<sub>n</sub>) as a function of k, from many samples</span></summary>
+        <div class="corrbox">
+          <canvas class="plot" id="pc-sweep" height="280"></canvas>
+          <div class="corrtext">
+            <h3>Crossing probability</h3>
+            <p class="note">For every k on a grid of step 0.1 the lab draws independent samples and records whether the forward cluster of the origin reaches the boundary of the box Λ<sub>n</sub> = [−n, n]². As n grows the curve steepens towards the percolation probability θ(k), which vanishes below the critical value k<sub>c</sub> = 2dp<sub>c</sub> and is positive above it.</p>
+            <div class="btns">
+              <button class="btn primary" id="pc-run" type="button">Run sweep</button>
+              <button class="btn" id="pc-clear" type="button">Clear curves</button>
+            </div>
+            <p class="note" id="pc-sweep-status">Each run adds a curve for the current graph and box size (up to four are kept), so different n or graphs can be compared.</p>
+            <div class="legend corrlegend" id="pc-legend"></div>
+            <p class="note" id="pc-ref-note"></p>
+          </div>
+        </div>
+      </details>
+    </main>
+  </div>
+
+  <section class="card about pc-about">
+    <div>
+      <h2>The model</h2>
+      <p>Every vertex of the graph chooses, independently, k of its neighbours and draws directed edges towards them. In the continuous parametrisation of <a href="https://arxiv.org/abs/2412.20781">Coupier, Henry, Jahnel and Köppl</a>, a parameter p ∈ [0, 1] on ℤ<sup>d</sup> gives</p>
+      <div class="formula">k = ⌊2dp⌋,   ε = 2dp − k</div>
+      <p>and each vertex picks k of its 2d neighbours uniformly at random and, with probability ε, one more among the remaining ones. Every directed edge is then open with probability p, the out-degree has mean 2dp, and the edges leaving a vertex are negatively correlated. The slider sets the mean out-degree k = 2dp directly; on ℤ² the values k = 1, 2, 3 are the k-neighbour graphs of <a href="https://doi.org/10.1017/jpr.2025.15">Jahnel, Köppl, Lodewijks and Tóbiás</a>.</p>
+      <p>The model percolates if the origin is connected to infinity by a directed open path, θ(p) = P(o ⇝ ∞) &gt; 0. Increasing k only adds edges (the coupling used here: every vertex keeps a random order of its neighbours and opens a growing initial segment of it), so there is a critical value p<sub>c</sub>, and k<sub>c</sub> = 2dp<sub>c</sub>.</p>
+    </div>
+    <div>
+      <h2>What is known</h2>
+      <p><b>ℤ².</b> The 1-neighbour graph does not percolate and the 3-neighbour graph does. The main theorem of the paper is that the 2-neighbour graph percolates: p<sub>c</sub>(2) &lt; 1/2, so k<sub>c</sub> &lt; 2. A union bound over self-avoiding paths gives p<sub>c</sub>(2) ≥ 1/c(2) &gt; 0.373, with c(2) the connective constant, so 1.49 &lt; k<sub>c</sub> &lt; 2; simulations put k<sub>c</sub> near 1.84. For comparison, independent directed percolation on ℤ², with the same probability p for every edge but a random out-degree, has p<sub>c</sub> = 1/2: a fixed degree helps percolation.</p>
+      <p><b>Triangular lattice and Poisson–Delaunay triangulation.</b> The same construction with the 6 neighbours of the triangular lattice (k = 6p), or with the Delaunay neighbours of a Poisson point process of intensity 1 together with a point at the origin (mean degree 6). For the Delaunay graph the lab offers two rules: a uniform choice among the Delaunay neighbours, or the nearest ones first, a discrete version of the continuum k-nearest-neighbour graph of <a href="https://doi.org/10.1002/(SICI)1098-2418(199610)9:3%3C295::AID-RSA3%3E3.0.CO;2-S">Häggström and Meester</a>. Vertices with fewer than k neighbours choose all of them.</p>
+    </div>
+    <div class="wide refs">
+      <h2>References</h2>
+      <ol>
+        <li>D. Coupier, B. Henry, B. Jahnel and J. Köppl, <a href="https://arxiv.org/abs/2412.20781"><i>The planar lattice two-neighbor graph percolates</i></a>, to appear in Ann. Probab., arXiv:2412.20781.</li>
+        <li>B. Jahnel, J. Köppl, B. Lodewijks and A. Tóbiás, <a href="https://doi.org/10.1017/jpr.2025.15"><i>Percolation in lattice k-neighbor graphs</i></a>, J. Appl. Probab. 62 (2025).</li>
+        <li>O. Häggström and R. Meester, <i>Nearest neighbor and hard sphere models in continuum percolation</i>, Random Struct. Algorithms 9 (1996), 295–315.</li>
+        <li>P. Balister and B. Bollobás, <i>Percolation in the k-nearest neighbor graph</i>, Quaderni di Matematica 28 (2013), 83–100.</li>
+        <li>B. Henry, <a href="https://bennhenry.github.io/NeighPerc/">NeighPerc</a>: simulations of the k-neighbour graphs.</li>
+      </ol>
+    </div>
+  </section>
+
+    </div>
+  </details>
 </div>
 
 <footer class="foot">
@@ -1196,6 +1346,8 @@ step();
   let ppx = [], spec = null, specWall = 0;        // prey density once per Monte Carlo step; its power spectrum
   let lastArg = null, omegaEst = null;
   const send = (m) => worker && worker.postMessage(m);
+  let shown = true;                                  // false while the page hides the lab
+  const runOn = () => S.running && shown && !document.hidden;
 
   function restart() {
     gen++;
@@ -1204,7 +1356,7 @@ step();
     setupCanvases();
     send({ type: "init", gen, p: { model: S.model, dim: S.dim, q: S.q, L: S.L, beta: S.beta, d: S.d, r: S.r, init: S.init } });
     send({ type: "speed", v: speedVal() });
-    send({ type: "run", on: S.running && !document.hidden });
+    send({ type: "run", on: runOn() });
     writeHash();
   }
 
@@ -1741,7 +1893,7 @@ step();
   $("rr").addEventListener("input", (e) => updR(+e.target.value));
   $("rr-n").addEventListener("change", (e) => updR(+e.target.value));
   $("speed").addEventListener("input", (e) => { S.speed = +e.target.value; $("speed-out").textContent = fmtSpeed(); send({ type: "speed", v: speedVal() }); });
-  $("play").onclick = () => { S.running = !S.running; $("play").textContent = S.running ? "Pause" : "Run"; send({ type: "run", on: S.running }); };
+  $("play").onclick = () => { S.running = !S.running; $("play").textContent = S.running ? "Pause" : "Run"; send({ type: "run", on: runOn() }); };
   $("reset").onclick = () => restart();
   $("clear").onclick = () => { hist = hist.slice(-1); full = full.slice(-1); send({ type: "clear" }); };
   $("diagnostics").addEventListener("toggle", () => { needDraw = true; });
@@ -1750,7 +1902,7 @@ step();
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
   if (mq.addEventListener) mq.addEventListener("change", () => { needDraw = true; });
   // pause the simulation while the tab is hidden
-  document.addEventListener("visibilitychange", () => send({ type: "run", on: S.running && !document.hidden }));
+  document.addEventListener("visibilitychange", () => send({ type: "run", on: runOn() }));
   window.addEventListener("hashchange", () => {
     const h = location.hash.slice(1);
     if (h === lastHash) return;
@@ -1767,9 +1919,507 @@ step();
     try { navigator.clipboard.writeText(url).then(done, fallback); } catch (e) { fallback(); }
   };
 
-  const start = decode(location.hash.slice(1)) || PRESETS["spirals-2d"];
-  applyParams(start);
-  requestAnimationFrame(frame);
+  // A page may set window.CLOCK_LAB_DEFER = true and start the lab later with ClockLab.start(),
+  // e.g. when a collapsed section is opened; ClockLab.show(false) pauses it while hidden.
+  let booted = false;
+  function boot() {
+    if (booted) return;
+    booted = true;
+    applyParams(decode(location.hash.slice(1)) || PRESETS["spirals-2d"]);
+    requestAnimationFrame(frame);
+  }
+  window.ClockLab = {
+    start: boot,
+    show(v) { shown = v; if (booted) { send({ type: "run", on: runOn() }); if (v) needDraw = true; } },
+    decode: (h) => !!decode(h),
+  };
+  if (!window.CLOCK_LAB_DEFER) boot();
+})();
+</script>
+<script type="text/js-worker" id="knn-delaunator">
+// Delaunator 5.0.1, https://github.com/mapbox/delaunator, ISC License, Copyright (c) 2021, Mapbox
+!function(t,i){"object"==typeof exports&&"undefined"!=typeof module?module.exports=i():"function"==typeof define&&define.amd?define(i):(t="undefined"!=typeof globalThis?globalThis:t||self).Delaunator=i()}(this,(function(){"use strict";const t=11102230246251565e-32,i=134217729,s=(3+8*t)*t;function e(t,i,s,e,n){let h,r,l,o,a=i[0],f=e[0],c=0,u=0;f>a==f>-a?(h=a,a=i[++c]):(h=f,f=e[++u]);let _=0;if(c<t&&u<s)for(f>a==f>-a?(r=a+h,l=h-(r-a),a=i[++c]):(r=f+h,l=h-(r-f),f=e[++u]),h=r,0!==l&&(n[_++]=l);c<t&&u<s;)f>a==f>-a?(r=h+a,o=r-h,l=h-(r-o)+(a-o),a=i[++c]):(r=h+f,o=r-h,l=h-(r-o)+(f-o),f=e[++u]),h=r,0!==l&&(n[_++]=l);for(;c<t;)r=h+a,o=r-h,l=h-(r-o)+(a-o),a=i[++c],h=r,0!==l&&(n[_++]=l);for(;u<s;)r=h+f,o=r-h,l=h-(r-o)+(f-o),f=e[++u],h=r,0!==l&&(n[_++]=l);return 0===h&&0!==_||(n[_++]=h),_}function n(t){return new Float64Array(t)}const h=22204460492503146e-32,r=11093356479670487e-47,l=n(4),o=n(8),a=n(12),f=n(16),c=n(4);function u(t,n,u,_,d,g){const y=(n-g)*(u-d),w=(t-d)*(_-g),b=y-w,A=Math.abs(y+w);return Math.abs(b)>=33306690738754716e-32*A?b:-function(t,n,u,_,d,g,y){let w,b,A,k,M,p,x,S,T,z,U,m,K,L,v,F,P,E;const H=t-d,I=u-d,N=n-g,j=_-g;L=H*j,p=i*H,x=p-(p-H),S=H-x,p=i*j,T=p-(p-j),z=j-T,v=S*z-(L-x*T-S*T-x*z),F=N*I,p=i*N,x=p-(p-N),S=N-x,p=i*I,T=p-(p-I),z=I-T,P=S*z-(F-x*T-S*T-x*z),U=v-P,M=v-U,l[0]=v-(U+M)+(M-P),m=L+U,M=m-L,K=L-(m-M)+(U-M),U=K-F,M=K-U,l[1]=K-(U+M)+(M-F),E=m+U,M=E-m,l[2]=m-(E-M)+(U-M),l[3]=E;let q=function(t,i){let s=i[0];for(let e=1;e<t;e++)s+=i[e];return s}(4,l),D=h*y;if(q>=D||-q>=D)return q;if(M=t-H,w=t-(H+M)+(M-d),M=u-I,A=u-(I+M)+(M-d),M=n-N,b=n-(N+M)+(M-g),M=_-j,k=_-(j+M)+(M-g),0===w&&0===b&&0===A&&0===k)return q;if(D=r*y+s*Math.abs(q),q+=H*k+j*w-(N*A+I*b),q>=D||-q>=D)return q;L=w*j,p=i*w,x=p-(p-w),S=w-x,p=i*j,T=p-(p-j),z=j-T,v=S*z-(L-x*T-S*T-x*z),F=b*I,p=i*b,x=p-(p-b),S=b-x,p=i*I,T=p-(p-I),z=I-T,P=S*z-(F-x*T-S*T-x*z),U=v-P,M=v-U,c[0]=v-(U+M)+(M-P),m=L+U,M=m-L,K=L-(m-M)+(U-M),U=K-F,M=K-U,c[1]=K-(U+M)+(M-F),E=m+U,M=E-m,c[2]=m-(E-M)+(U-M),c[3]=E;const B=e(4,l,4,c,o);L=H*k,p=i*H,x=p-(p-H),S=H-x,p=i*k,T=p-(p-k),z=k-T,v=S*z-(L-x*T-S*T-x*z),F=N*A,p=i*N,x=p-(p-N),S=N-x,p=i*A,T=p-(p-A),z=A-T,P=S*z-(F-x*T-S*T-x*z),U=v-P,M=v-U,c[0]=v-(U+M)+(M-P),m=L+U,M=m-L,K=L-(m-M)+(U-M),U=K-F,M=K-U,c[1]=K-(U+M)+(M-F),E=m+U,M=E-m,c[2]=m-(E-M)+(U-M),c[3]=E;const C=e(B,o,4,c,a);L=w*k,p=i*w,x=p-(p-w),S=w-x,p=i*k,T=p-(p-k),z=k-T,v=S*z-(L-x*T-S*T-x*z),F=b*A,p=i*b,x=p-(p-b),S=b-x,p=i*A,T=p-(p-A),z=A-T,P=S*z-(F-x*T-S*T-x*z),U=v-P,M=v-U,c[0]=v-(U+M)+(M-P),m=L+U,M=m-L,K=L-(m-M)+(U-M),U=K-F,M=K-U,c[1]=K-(U+M)+(M-F),E=m+U,M=E-m,c[2]=m-(E-M)+(U-M),c[3]=E;const G=e(C,a,4,c,f);return f[G-1]}(t,n,u,_,d,g,A)}const _=Math.pow(2,-52),d=new Uint32Array(512);class g{static from(t,i=M,s=p){const e=t.length,n=new Float64Array(2*e);for(let h=0;h<e;h++){const e=t[h];n[2*h]=i(e),n[2*h+1]=s(e)}return new g(n)}constructor(t){const i=t.length>>1;if(i>0&&"number"!=typeof t[0])throw new Error("Expected coords to contain numbers.");this.coords=t;const s=Math.max(2*i-5,0);this._triangles=new Uint32Array(3*s),this._halfedges=new Int32Array(3*s),this._hashSize=Math.ceil(Math.sqrt(i)),this._hullPrev=new Uint32Array(i),this._hullNext=new Uint32Array(i),this._hullTri=new Uint32Array(i),this._hullHash=new Int32Array(this._hashSize),this._ids=new Uint32Array(i),this._dists=new Float64Array(i),this.update()}update(){const{coords:t,_hullPrev:i,_hullNext:s,_hullTri:e,_hullHash:n}=this,h=t.length>>1;let r=1/0,l=1/0,o=-1/0,a=-1/0;for(let i=0;i<h;i++){const s=t[2*i],e=t[2*i+1];s<r&&(r=s),e<l&&(l=e),s>o&&(o=s),e>a&&(a=e),this._ids[i]=i}const f=(r+o)/2,c=(l+a)/2;let d,g,w;for(let i=0,s=1/0;i<h;i++){const e=y(f,c,t[2*i],t[2*i+1]);e<s&&(d=i,s=e)}const k=t[2*d],M=t[2*d+1];for(let i=0,s=1/0;i<h;i++){if(i===d)continue;const e=y(k,M,t[2*i],t[2*i+1]);e<s&&e>0&&(g=i,s=e)}let p=t[2*g],x=t[2*g+1],S=1/0;for(let i=0;i<h;i++){if(i===d||i===g)continue;const s=b(k,M,p,x,t[2*i],t[2*i+1]);s<S&&(w=i,S=s)}let T=t[2*w],z=t[2*w+1];if(S===1/0){for(let i=0;i<h;i++)this._dists[i]=t[2*i]-t[0]||t[2*i+1]-t[1];A(this._ids,this._dists,0,h-1);const i=new Uint32Array(h);let s=0;for(let t=0,e=-1/0;t<h;t++){const n=this._ids[t],h=this._dists[n];h>e&&(i[s++]=n,e=h)}return this.hull=i.subarray(0,s),this.triangles=new Uint32Array(0),void(this.halfedges=new Uint32Array(0))}if(u(k,M,p,x,T,z)<0){const t=g,i=p,s=x;g=w,p=T,x=z,w=t,T=i,z=s}const U=function(t,i,s,e,n,h){const r=s-t,l=e-i,o=n-t,a=h-i,f=r*r+l*l,c=o*o+a*a,u=.5/(r*a-l*o);return{x:t+(a*f-l*c)*u,y:i+(r*c-o*f)*u}}(k,M,p,x,T,z);this._cx=U.x,this._cy=U.y;for(let i=0;i<h;i++)this._dists[i]=y(t[2*i],t[2*i+1],U.x,U.y);A(this._ids,this._dists,0,h-1),this._hullStart=d;let m=3;s[d]=i[w]=g,s[g]=i[d]=w,s[w]=i[g]=d,e[d]=0,e[g]=1,e[w]=2,n.fill(-1),n[this._hashKey(k,M)]=d,n[this._hashKey(p,x)]=g,n[this._hashKey(T,z)]=w,this.trianglesLen=0,this._addTriangle(d,g,w,-1,-1,-1);for(let h,r,l=0;l<this._ids.length;l++){const o=this._ids[l],a=t[2*o],f=t[2*o+1];if(l>0&&Math.abs(a-h)<=_&&Math.abs(f-r)<=_)continue;if(h=a,r=f,o===d||o===g||o===w)continue;let c=0;for(let t=0,i=this._hashKey(a,f);t<this._hashSize&&(c=n[(i+t)%this._hashSize],-1===c||c===s[c]);t++);c=i[c];let y,b=c;for(;y=s[b],u(a,f,t[2*b],t[2*b+1],t[2*y],t[2*y+1])>=0;)if(b=y,b===c){b=-1;break}if(-1===b)continue;let A=this._addTriangle(b,o,s[b],-1,-1,e[b]);e[o]=this._legalize(A+2),e[b]=A,m++;let k=s[b];for(;y=s[k],u(a,f,t[2*k],t[2*k+1],t[2*y],t[2*y+1])<0;)A=this._addTriangle(k,o,y,e[o],-1,e[k]),e[o]=this._legalize(A+2),s[k]=k,m--,k=y;if(b===c)for(;y=i[b],u(a,f,t[2*y],t[2*y+1],t[2*b],t[2*b+1])<0;)A=this._addTriangle(y,o,b,-1,e[b],e[y]),this._legalize(A+2),e[y]=A,s[b]=b,m--,b=y;this._hullStart=i[o]=b,s[b]=i[k]=o,s[o]=k,n[this._hashKey(a,f)]=o,n[this._hashKey(t[2*b],t[2*b+1])]=b}this.hull=new Uint32Array(m);for(let t=0,i=this._hullStart;t<m;t++)this.hull[t]=i,i=s[i];this.triangles=this._triangles.subarray(0,this.trianglesLen),this.halfedges=this._halfedges.subarray(0,this.trianglesLen)}_hashKey(t,i){return Math.floor(function(t,i){const s=t/(Math.abs(t)+Math.abs(i));return(i>0?3-s:1+s)/4}(t-this._cx,i-this._cy)*this._hashSize)%this._hashSize}_legalize(t){const{_triangles:i,_halfedges:s,coords:e}=this;let n=0,h=0;for(;;){const r=s[t],l=t-t%3;if(h=l+(t+2)%3,-1===r){if(0===n)break;t=d[--n];continue}const o=r-r%3,a=l+(t+1)%3,f=o+(r+2)%3,c=i[h],u=i[t],_=i[a],g=i[f];if(w(e[2*c],e[2*c+1],e[2*u],e[2*u+1],e[2*_],e[2*_+1],e[2*g],e[2*g+1])){i[t]=g,i[r]=c;const e=s[f];if(-1===e){let i=this._hullStart;do{if(this._hullTri[i]===f){this._hullTri[i]=t;break}i=this._hullPrev[i]}while(i!==this._hullStart)}this._link(t,e),this._link(r,s[h]),this._link(h,f);const l=o+(r+1)%3;n<d.length&&(d[n++]=l)}else{if(0===n)break;t=d[--n]}}return h}_link(t,i){this._halfedges[t]=i,-1!==i&&(this._halfedges[i]=t)}_addTriangle(t,i,s,e,n,h){const r=this.trianglesLen;return this._triangles[r]=t,this._triangles[r+1]=i,this._triangles[r+2]=s,this._link(r,e),this._link(r+1,n),this._link(r+2,h),this.trianglesLen+=3,r}}function y(t,i,s,e){const n=t-s,h=i-e;return n*n+h*h}function w(t,i,s,e,n,h,r,l){const o=t-r,a=i-l,f=s-r,c=e-l,u=n-r,_=h-l,d=f*f+c*c,g=u*u+_*_;return o*(c*g-d*_)-a*(f*g-d*u)+(o*o+a*a)*(f*_-c*u)<0}function b(t,i,s,e,n,h){const r=s-t,l=e-i,o=n-t,a=h-i,f=r*r+l*l,c=o*o+a*a,u=.5/(r*a-l*o),_=(a*f-l*c)*u,d=(r*c-o*f)*u;return _*_+d*d}function A(t,i,s,e){if(e-s<=20)for(let n=s+1;n<=e;n++){const e=t[n],h=i[e];let r=n-1;for(;r>=s&&i[t[r]]>h;)t[r+1]=t[r--];t[r+1]=e}else{let n=s+1,h=e;k(t,s+e>>1,n),i[t[s]]>i[t[e]]&&k(t,s,e),i[t[n]]>i[t[e]]&&k(t,n,e),i[t[s]]>i[t[n]]&&k(t,s,n);const r=t[n],l=i[r];for(;;){do{n++}while(i[t[n]]<l);do{h--}while(i[t[h]]>l);if(h<n)break;k(t,n,h)}t[s+1]=t[h],t[h]=r,e-n+1>=h-s?(A(t,i,n,e),A(t,i,s,h-1)):(A(t,i,s,h-1),A(t,i,n,e))}}function k(t,i,s){const e=t[i];t[i]=t[s],t[s]=e}function M(t){return t[0]}function p(t){return t[1]}return g}));
+</script>
+<script type="text/js-worker" id="knn-worker-src">
+"use strict";
+// Worker of the k-neighbour percolation lab: builds the graphs (Z^2, triangular lattice,
+// Poisson-Delaunay triangulation) with the random choices of every vertex, and runs the
+// sweeps that estimate P(o ~> boundary of the box) as a function of k.
+// Delaunator (ISC licence, Mapbox) is prepended to this script by the page.
+
+let rs = 1;
+function rnd() { rs ^= rs << 13; rs ^= rs >>> 17; rs ^= rs << 5; return (rs >>> 0) / 4294967296; }
+function gauss() { let u = 0; while (u === 0) u = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.283185307179586 * rnd()); }
+function poisson(mu) {
+  if (mu < 30) { const L = Math.exp(-mu); let k = 0, p = 1; do { k++; p *= rnd(); } while (p > L); return k - 1; }
+  return Math.max(0, Math.round(mu + Math.sqrt(mu) * gauss()));
+}
+const DEG = { z2: 4, tri: 6 };
+const SQ3 = Math.sqrt(3) / 2;
+
+// ---------------------------------------------------------------- graphs
+// Vertices are generated in [-R, R]^2 with R = n + margin; only the box [-n, n]^2 is drawn and the
+// event {o ~> boundary} is that the forward cluster contains a vertex with max(|x|, |y|) >= n.
+// CSR adjacency: the neighbours of v are nb[off[v] .. off[v+1]); -1 marks a lattice neighbour
+// outside the generated region (never needed: such vertices lie beyond the box).
+function buildZ2(n) {
+  const R = n + 1, W = 2 * R + 1, N = W * W;
+  const x = new Float32Array(N), y = new Float32Array(N), off = new Int32Array(N + 1), nb = new Int32Array(4 * N);
+  for (let j = 0; j < W; j++) for (let i = 0; i < W; i++) {
+    const v = j * W + i;
+    x[v] = i - R; y[v] = j - R; off[v + 1] = 4 * (v + 1);
+    nb[4 * v] = i + 1 < W ? v + 1 : -1; nb[4 * v + 1] = j + 1 < W ? v + W : -1;
+    nb[4 * v + 2] = i > 0 ? v - 1 : -1; nb[4 * v + 3] = j > 0 ? v - W : -1;
+  }
+  return { kind: "z2", n, N, x, y, off, nb, origin: R * W + R };
+}
+function buildTri(n) {
+  // triangular lattice with spacing 1: a (1, 0) + b (1/2, sqrt(3)/2)
+  const R = n + 1, B = Math.ceil(R / SQ3), rows = [];
+  let N = 0;
+  for (let b = -B; b <= B; b++) {
+    const a0 = Math.ceil(-R - b / 2), a1 = Math.floor(R - b / 2);
+    rows.push({ b, a0, a1, start: N }); N += a1 - a0 + 1;
+  }
+  const id = (a, b) => {
+    const r = rows[b + B]; if (!r || a < r.a0 || a > r.a1) return -1;
+    return r.start + a - r.a0;
+  };
+  const x = new Float32Array(N), y = new Float32Array(N), off = new Int32Array(N + 1), nb = new Int32Array(6 * N);
+  let origin = 0;
+  for (const r of rows) for (let a = r.a0; a <= r.a1; a++) {
+    const v = r.start + a - r.a0, b = r.b;
+    x[v] = a + b / 2; y[v] = b * SQ3; off[v + 1] = 6 * (v + 1);
+    nb[6 * v] = id(a + 1, b); nb[6 * v + 1] = id(a, b + 1); nb[6 * v + 2] = id(a - 1, b + 1);
+    nb[6 * v + 3] = id(a - 1, b); nb[6 * v + 4] = id(a, b - 1); nb[6 * v + 5] = id(a + 1, b - 1);
+    if (a === 0 && b === 0) origin = v;
+  }
+  return { kind: "tri", n, N, x, y, off, nb, origin };
+}
+function buildDel(n) {
+  // Poisson process of intensity 1 in [-R, R]^2 plus a point at the origin (Palm version)
+  const R = n + 3, M = poisson(4 * R * R), N = M + 1;
+  const coords = new Float64Array(2 * N);
+  for (let v = 1; v < N; v++) { coords[2 * v] = (2 * rnd() - 1) * R; coords[2 * v + 1] = (2 * rnd() - 1) * R; }
+  const d = new Delaunator(coords), t = d.triangles, h = d.halfedges;
+  const cnt = new Int32Array(N + 1);
+  for (let e = 0; e < t.length; e++) {
+    if (h[e] > e) continue;                       // every undirected edge once
+    const a = t[e], b = t[e % 3 === 2 ? e - 2 : e + 1];
+    cnt[a]++; cnt[b]++;
+  }
+  const off = new Int32Array(N + 1);
+  for (let v = 0; v < N; v++) off[v + 1] = off[v] + cnt[v];
+  const nb = new Int32Array(off[N]), fill = off.slice(0, N);
+  for (let e = 0; e < t.length; e++) {
+    if (h[e] > e) continue;
+    const a = t[e], b = t[e % 3 === 2 ? e - 2 : e + 1];
+    nb[fill[a]++] = b; nb[fill[b]++] = a;
+  }
+  const x = new Float32Array(N), y = new Float32Array(N);
+  for (let v = 0; v < N; v++) { x[v] = coords[2 * v]; y[v] = coords[2 * v + 1]; }
+  // neighbours sorted by distance (used by the "nearest" rule)
+  const tmp = [];
+  for (let v = 0; v < N; v++) {
+    tmp.length = 0;
+    for (let q = off[v]; q < off[v + 1]; q++) { const w = nb[q], dx = x[w] - x[v], dy = y[w] - y[v]; tmp.push([dx * dx + dy * dy, w]); }
+    tmp.sort((p, q) => p[0] - q[0]);
+    for (let q = 0; q < tmp.length; q++) nb[off[v] + q] = tmp[q][1];
+  }
+  return { kind: "del", n, N, x, y, off, nb, origin: 0 };
+}
+const build = (kind, n) => kind === "z2" ? buildZ2(n) : kind === "tri" ? buildTri(n) : buildDel(n);
+
+// The random choices of a sample in monotone form (the coupling of Lemma 2.1): every vertex gets a
+// uniformly random order of its neighbours ("uniform") or the order by distance ("nearest"), and a
+// uniform U. For parameter k it opens edges to the first floor(k) + 1{U < k - floor(k)} neighbours,
+// so increasing k only adds edges and the forward cluster can only grow.
+function randomise(g, rule) {
+  const U = new Float32Array(g.N);
+  for (let v = 0; v < g.N; v++) {
+    U[v] = rnd();
+    if (rule === "nearest" && g.kind === "del") continue;
+    const a = g.off[v], D = g.off[v + 1] - a;
+    for (let q = D - 1; q > 0; q--) { const r = (rnd() * (q + 1)) | 0, s = g.nb[a + q]; g.nb[a + q] = g.nb[a + r]; g.nb[a + r] = s; }
+  }
+  g.U = U;
+}
+
+// ---------------------------------------------------------------- sweeps
+// For every k on a grid, the fraction of samples in which the origin reaches the boundary of the
+// box. One round draws one sample per k (on a common graph for the Delaunay case, rebuilt every
+// round); the choices are drawn lazily while exploring, and the exploration stops at the boundary.
+let sweep = null;
+function exploreHit(g, K, rule, st) {
+  const kk = Math.floor(K), eps = K - kk, n = g.n, x = g.x, y = g.y, off = g.off, nb = g.nb;
+  const stamp = ++st.stamp, vis = st.vis, q = st.q;
+  let head = 0, tail = 0;
+  q[tail++] = g.origin; vis[g.origin] = stamp;
+  while (head < tail) {
+    const v = q[head++];
+    if (Math.max(Math.abs(x[v]), Math.abs(y[v])) >= n) return true;
+    const a = off[v], D = off[v + 1] - a;
+    let m = kk + (rnd() < eps ? 1 : 0); if (m > D) m = D;
+    if (!m) continue;
+    // choose m of the D neighbours: uniformly (partial Fisher-Yates) or the m nearest
+    const sc = st.sc;
+    for (let i = 0; i < D; i++) sc[i] = nb[a + i];
+    for (let i = 0; i < m; i++) {
+      if (!(rule === "nearest" && g.kind === "del")) { const r = i + ((rnd() * (D - i)) | 0), s = sc[i]; sc[i] = sc[r]; sc[r] = s; }
+      const w = sc[i];
+      if (w >= 0 && vis[w] !== stamp) { vis[w] = stamp; q[tail++] = w; }
+    }
+  }
+  return false;
+}
+function sweepChunk() {
+  if (!sweep) return;
+  const S = sweep, t0 = performance.now();
+  while (performance.now() - t0 < 60 && S.round < S.rounds) {
+    if (!S.g || S.kind === "del") {
+      S.g = build(S.kind, S.n);
+      S.st = { stamp: 0, vis: new Int32Array(S.g.N), q: new Int32Array(S.g.N), sc: new Int32Array(1024) };
+    }
+    for (let j = 0; j < S.Ks.length; j++) {
+      if (exploreHit(S.g, S.Ks[j], S.rule, S.st)) S.hits[j]++;
+      S.tot[j]++;
+    }
+    S.round++;
+  }
+  postMessage({ type: "sweep", id: S.id, hits: Array.from(S.hits), tot: Array.from(S.tot), done: S.round >= S.rounds });
+  if (S.round < S.rounds) setTimeout(sweepChunk, 0); else sweep = null;
+}
+
+onmessage = (e) => {
+  const m = e.data;
+  if (m.type === "sample") {
+    rs = (Math.random() * 4294967296) >>> 0 || 1;
+    const g = build(m.kind, m.n);
+    randomise(g, m.rule);
+    postMessage({ type: "sample", id: m.id, kind: g.kind, n: g.n, N: g.N, rule: m.rule, x: g.x, y: g.y, off: g.off, nb: g.nb, U: g.U, origin: g.origin },
+      [g.x.buffer, g.y.buffer, g.off.buffer, g.nb.buffer, g.U.buffer]);
+  } else if (m.type === "sweep") {
+    rs = (Math.random() * 4294967296) >>> 0 || 1;
+    sweep = { id: m.id, kind: m.kind, n: m.n, rule: m.rule, Ks: m.Ks, rounds: m.rounds, round: 0,
+              hits: new Int32Array(m.Ks.length), tot: new Int32Array(m.Ks.length), g: null, st: null };
+    setTimeout(sweepChunk, 0);
+  } else if (m.type === "stop") {
+    sweep = null;
+  }
+};
+
+</script>
+<script>
+"use strict";
+// Page script of the k-neighbour percolation lab: draws a sample (forward cluster of the origin,
+// coloured by graph distance, optionally with the open edges), keeps the sample fixed while k
+// changes (monotone coupling), and plots the crossing probabilities computed by the worker.
+(() => {
+  const $ = (id) => document.getElementById(id);
+  if (!$("pc-lab")) return;
+  const scope = () => $("pc-lab").closest("[data-plot-scope]") || document.documentElement;
+  const css = (n) => getComputedStyle(scope()).getPropertyValue(n).trim();
+  const MAXN = { z2: 300, tri: 250, del: 120 }, MAXK = { z2: 4, tri: 6, del: 6 }, DEGN = { z2: 4, tri: 6, del: 6 };
+  const NAMES = { z2: "ℤ²", tri: "triangular", del: "Poisson–Delaunay" };
+  // distance colours: rose near the origin, through gold, to cyan far away
+  const RAMP = [[142, 66, 87], [201, 151, 63], [74, 150, 180]];
+  const ramp = (t) => {
+    t = Math.max(0, Math.min(1, t)) * (RAMP.length - 1);
+    const i = Math.min(RAMP.length - 2, Math.floor(t)), u = t - i, a = RAMP[i], b = RAMP[i + 1];
+    return `rgb(${Math.round(a[0] + (b[0] - a[0]) * u)},${Math.round(a[1] + (b[1] - a[1]) * u)},${Math.round(a[2] + (b[2] - a[2]) * u)})`;
+  };
+  document.querySelectorAll(".pc-ramp").forEach((el) => { el.style.background = `linear-gradient(90deg, ${ramp(0)}, ${ramp(0.5)}, ${ramp(1)})`; });
+
+  const P = { kind: "z2", k: 2, n: 60, rule: "uniform", edges: true };
+  let worker = null, sid = 0, G = null, C = null, anim = null, started = false;
+
+  // ---------------------------------------------------------------- links
+  function encode() { return `knn-${P.kind}${P.kind === "del" ? (P.rule === "nearest" ? "-near" : "-uni") : ""}-k${Math.round(P.k * 100)}-n${P.n}`; }
+  function decode(h) {
+    const m = /^knn-(z2|tri|del)(?:-(uni|near))?-k(\d+)-n(\d+)$/.exec(h || "");
+    if (!m) return null;
+    const kind = m[1];
+    return { kind, rule: m[2] === "near" ? "nearest" : "uniform", k: Math.min(MAXK[kind], +m[3] / 100), n: Math.max(5, Math.min(MAXN[kind], +m[4])) };
+  }
+  function writeHash() { try { history.replaceState(null, "", "#" + encode()); } catch (e) { /* ignore */ } }
+
+  // ---------------------------------------------------------------- UI
+  function sync() {
+    for (const [id, k] of [["pc-g-z2", "z2"], ["pc-g-tri", "tri"], ["pc-g-del", "del"]]) $(id).setAttribute("aria-pressed", P.kind === k);
+    $("pc-rule-seg").hidden = P.kind !== "del";
+    $("pc-r-uni").setAttribute("aria-pressed", P.rule === "uniform"); $("pc-r-near").setAttribute("aria-pressed", P.rule === "nearest");
+    $("pc-k").max = MAXK[P.kind]; $("pc-k-n").max = MAXK[P.kind]; P.k = Math.min(P.k, MAXK[P.kind]);
+    $("pc-k").value = P.k; $("pc-k-n").value = P.k;
+    $("pc-n").max = MAXN[P.kind]; P.n = Math.min(P.n, MAXN[P.kind]); $("pc-n").value = P.n; $("pc-n-out").textContent = P.n;
+    $("pc-p-note").textContent = P.kind === "z2" ? "k = 2dp with d = 2: each directed edge is open with probability p = k/4."
+      : P.kind === "tri" ? "Six neighbours: k = 6p, each directed edge is open with probability p = k/6."
+      : "Delaunay neighbours, mean degree 6: an edge out of a vertex of degree D is open with probability min(k, D)/D.";
+    $("pc-s-k").textContent = P.k.toFixed(2);
+    $("pc-s-p").textContent = P.kind === "del" ? "≈ " + (P.k / 6).toFixed(3) : (P.k / DEGN[P.kind]).toFixed(3);
+    refNote();
+  }
+
+  // ---------------------------------------------------------------- samples
+  function newSample() {
+    if (!worker) return;
+    sid++; anim = null;
+    $("pc-s-hit").textContent = "…";
+    worker.postMessage({ type: "sample", id: sid, kind: P.kind, n: P.n, rule: P.rule });
+  }
+  function onSample(m) {
+    if (m.id !== sid) return;
+    const inBox = new Uint8Array(m.N);
+    let nb = 0;
+    for (let v = 0; v < m.N; v++) if (Math.max(Math.abs(m.x[v]), Math.abs(m.y[v])) <= m.n) { inBox[v] = 1; nb++; }
+    G = Object.assign(m, { inBox, inCount: nb, dist: new Int32Array(m.N), q: new Int32Array(m.N) });
+    $("pc-s-N").textContent = nb.toLocaleString("en");
+    explore(); draw(true);
+  }
+  // forward cluster for the current k: vertex v opens edges to the first m(v) entries of its
+  // (randomly ordered) neighbour list, m(v) = min(D, floor(k) + 1{U_v < k - floor(k)})
+  function explore() {
+    if (!G) return;
+    const kk = Math.floor(P.k), eps = P.k - kk, n = G.n, x = G.x, y = G.y, off = G.off, nbs = G.nb, U = G.U, dist = G.dist, q = G.q;
+    dist.fill(-1);
+    let head = 0, tail = 0, hit = false, size = 0, rad = 0;
+    q[tail++] = G.origin; dist[G.origin] = 0;
+    while (head < tail) {
+      const v = q[head++];
+      if (Math.max(Math.abs(x[v]), Math.abs(y[v])) >= n) { hit = true; continue; }   // reached the boundary
+      size++; if (dist[v] > rad) rad = dist[v];
+      const a = off[v], D = off[v + 1] - a;
+      let mm = kk + (U[v] < eps ? 1 : 0); if (mm > D) mm = D;
+      for (let i = 0; i < mm; i++) { const w = nbs[a + i]; if (w >= 0 && dist[w] < 0) { dist[w] = dist[v] + 1; q[tail++] = w; } }
+    }
+    C = { order: q.subarray(0, tail), size, rad, hit, maxd: Math.max(1, dist[q[tail - 1]]) };
+    $("pc-s-size").textContent = size.toLocaleString("en");
+    $("pc-s-rad").textContent = rad;
+    $("pc-s-hit").textContent = hit ? "yes" : "no";
+  }
+
+  // ---------------------------------------------------------------- drawing
+  let geo = null;
+  function frame(c) {
+    const dpr = window.devicePixelRatio || 1, w = Math.max(200, Math.round(c.getBoundingClientRect().width * dpr));
+    if (c.width !== w || c.height !== w) { c.width = w; c.height = w; }
+    const pad = 10 * dpr, n = G.n, s = (w - 2 * pad) / (2 * n + (G.kind === "z2" ? 1 : 0));
+    const X = (x) => pad + (x + n + (G.kind === "z2" ? 0.5 : 0)) * s, Y = (y) => w - pad - (y + n + (G.kind === "z2" ? 0.5 : 0)) * s;
+    return { w, dpr, s, X, Y, css: s / dpr };
+  }
+  function draw(animate) {
+    const c = $("pc-view");
+    if (!G || !C || !c.getBoundingClientRect().width) return;
+    const g = c.getContext("2d"), F = frame(c), { s, X, Y, w } = F;
+    geo = F;
+    g.fillStyle = css("--plot-bg"); g.fillRect(0, 0, w, w);
+    const edges = P.edges && F.css >= 7, dots = F.css >= 2.5, x = G.x, y = G.y, inBox = G.inBox;
+    const kk = Math.floor(P.k), eps = P.k - kk;
+    // base layer: all vertices (and open edges) of the box, faint
+    if (dots || edges) {
+      g.fillStyle = css("--line"); g.strokeStyle = css("--line"); g.lineWidth = Math.max(1, 0.06 * s);
+      const r = Math.max(1, Math.min(0.16 * s, 3 * F.dpr));
+      for (let v = 0; v < G.N; v++) {
+        if (!inBox[v] || G.dist[v] >= 0) continue;
+        if (edges) spikes(g, v, kk, eps, X, Y);
+        if (dots) g.fillRect(X(x[v]) - r, Y(y[v]) - r, 2 * r, 2 * r);
+      }
+    }
+    // the box
+    g.strokeStyle = C.hit ? css("--accent") : css("--muted"); g.lineWidth = (C.hit ? 2 : 1) * F.dpr;
+    const e = G.kind === "z2" ? G.n + 0.5 : G.n;           // ℤ²: the cells of the boundary vertices lie inside
+    g.strokeRect(X(-e), Y(e), X(e) - X(-e), Y(-e) - Y(e));
+    const order = C.order, total = order.length;
+    if (!animate || total < 50) { drawCluster(g, 0, total); origin(g); return; }
+    // grow the cluster by graph distance over about 1.4 s
+    const t0 = performance.now(), my = sid, kv = P.k;
+    let done = 0;
+    anim = () => {
+      if (sid !== my || P.k !== kv || anim === null) return;
+      const f = Math.min(1, (performance.now() - t0) / 1400), dmax = f * C.maxd;
+      let upto = done;
+      while (upto < total && G.dist[order[upto]] <= dmax) upto++;
+      drawCluster(g, done, upto); done = upto;
+      if (done < total) requestAnimationFrame(anim); else { origin(g); anim = null; }
+    };
+    requestAnimationFrame(anim);
+  }
+  function spikes(g, v, kk, eps, X, Y) {
+    const a = G.off[v], D = G.off[v + 1] - a;
+    let mm = kk + (G.U[v] < eps ? 1 : 0); if (mm > D) mm = D;
+    const x0 = X(G.x[v]), y0 = Y(G.y[v]);
+    g.beginPath();
+    for (let i = 0; i < mm; i++) {
+      const u = G.nb[a + i]; if (u < 0) continue;
+      const x1 = X(G.x[u]), y1 = Y(G.y[u]);
+      g.moveTo(x0, y0); g.lineTo(x0 + 0.78 * (x1 - x0), y0 + 0.78 * (y1 - y0));
+    }
+    g.stroke();
+  }
+  function drawCluster(g, a, b) {
+    const F = geo, s = F.s, x = G.x, y = G.y, dist = G.dist, order = C.order, maxd = C.maxd;
+    const edges = P.edges && F.css >= 7, kk = Math.floor(P.k), eps = P.k - kk;
+    // ℤ² without edges: filled cells; otherwise small squares at the vertices
+    const half = 0.5 * s, r = Math.max(0.8 * F.dpr, Math.min(0.32 * s, 3.5 * F.dpr));
+    for (let i = a; i < b; i++) {
+      const v = order[i];
+      if (!G.inBox[v]) continue;
+      const col = ramp(dist[v] / maxd);
+      if (edges) { g.strokeStyle = col; g.lineWidth = Math.max(1, 0.1 * s); spikes(g, v, kk, eps, F.X, F.Y); }
+      g.fillStyle = col;
+      if (G.kind === "z2" && !edges) g.fillRect(F.X(x[v]) - half, F.Y(y[v]) - half, 2 * half + 0.5, 2 * half + 0.5);
+      else g.fillRect(F.X(x[v]) - r, F.Y(y[v]) - r, 2 * r, 2 * r);
+    }
+  }
+  function origin(g) {
+    const F = geo, r = Math.max(5 * F.dpr, 0.6 * F.s);
+    g.strokeStyle = css("--ink"); g.lineWidth = 1.5 * F.dpr;
+    g.beginPath(); g.arc(F.X(G.x[G.origin]), F.Y(G.y[G.origin]), r, 0, 2 * Math.PI); g.stroke();
+  }
+
+  // ---------------------------------------------------------------- sweeps
+  const CURVES = [], COLS = ["--accent", "--ma", "--traj", "--muted"];
+  let runId = 0, running = null;
+  function startSweep() {
+    if (!worker) return;
+    if (running) { worker.postMessage({ type: "stop" }); running.done = true; running = null; $("pc-run").textContent = "Run sweep"; return; }
+    const Ks = []; for (let k = 0.1; k <= MAXK[P.kind] + 1e-9; k += 0.1) Ks.push(+k.toFixed(2));
+    // samples per k: about 4e8 vertex visits in total (a few tens of seconds), at least 100
+    const rounds = Math.max(100, Math.min(2000, Math.round(4e8 * (P.kind === "del" ? 0.15 : 1) / (Ks.length * (2 * P.n + 1) ** 2))));
+    runId++;
+    const cur = { id: runId, kind: P.kind, n: P.n, rule: P.rule, Ks, hits: [], tot: [], rounds, done: false };
+    CURVES.push(cur); if (CURVES.length > 4) CURVES.shift();
+    running = cur; $("pc-run").textContent = "Stop";
+    worker.postMessage({ type: "sweep", id: runId, kind: P.kind, n: P.n, rule: P.rule, Ks, rounds });
+    drawSweep();
+  }
+  function onSweep(m) {
+    const cur = CURVES.find((c) => c.id === m.id); if (!cur) return;
+    cur.hits = m.hits; cur.tot = m.tot; cur.done = m.done;
+    if (m.done && running === cur) { running = null; $("pc-run").textContent = "Run sweep"; }
+    $("pc-sweep-status").textContent = `${NAMES[cur.kind]}${cur.kind === "del" ? " (" + cur.rule + ")" : ""}, n = ${cur.n}: ${m.tot[0]} of ${cur.rounds} samples per k${m.done ? ", done." : "…"}`;
+    drawSweep();
+  }
+  function refNote() {
+    $("pc-ref-note").innerHTML = P.kind === "z2"
+      ? "Dashed lines (ℤ²): the rigorous bounds 4/c(2) ≈ 1.49 &lt; k<sub>c</sub> &lt; 2 (Lemma 2.2 and Theorem 2.3 of Coupier et al.); dotted: the simulation estimate k<sub>c</sub> ≈ 1.84."
+      : "No reference values are drawn for this graph. Vertical bars: 95 % confidence intervals.";
+  }
+  function drawSweep() {
+    const c = $("pc-sweep"), r0 = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    if (!r0.width) return;
+    const W = Math.round(r0.width * dpr), H = Math.round(280 * dpr);
+    if (c.width !== W || c.height !== H) { c.width = W; c.height = H; }
+    const g = c.getContext("2d"), kmax = CURVES.length ? Math.max(...CURVES.map((q) => MAXK[q.kind])) : MAXK[P.kind];
+    g.fillStyle = css("--plot-bg"); g.fillRect(0, 0, W, H);
+    const ml = 40 * dpr, mr = 12 * dpr, mt = 10 * dpr, mb = 30 * dpr;
+    const X = (k) => ml + k / kmax * (W - ml - mr), Y = (p) => mt + (1 - p) * (H - mt - mb);
+    g.strokeStyle = css("--grid"); g.lineWidth = 1; g.fillStyle = css("--muted");
+    g.font = `${11 * dpr}px ${css("--f-mono")}`; g.textAlign = "right"; g.textBaseline = "middle";
+    for (const p of [0, 0.25, 0.5, 0.75, 1]) { g.beginPath(); g.moveTo(ml, Y(p)); g.lineTo(W - mr, Y(p)); g.stroke(); g.fillText(p, ml - 5 * dpr, Y(p)); }
+    g.textAlign = "center"; g.textBaseline = "top";
+    for (let k = 0; k <= kmax; k++) { g.beginPath(); g.moveTo(X(k), mt); g.lineTo(X(k), H - mb); g.stroke(); g.fillText(k, X(k), H - mb + 4 * dpr); }
+    g.font = `italic ${13 * dpr}px ${css("--f-display")}`; g.fillStyle = css("--ink"); g.textAlign = "right";
+    g.fillText("k = 2dp", W - mr, H - mb + 15 * dpr);
+    if (CURVES.some((q) => q.kind === "z2")) {
+      g.strokeStyle = css("--muted"); g.lineWidth = 1 * dpr;
+      g.setLineDash([5 * dpr, 4 * dpr]); for (const k of [4 * 0.37324679, 2]) { g.beginPath(); g.moveTo(X(k), mt); g.lineTo(X(k), H - mb); g.stroke(); }
+      g.setLineDash([2 * dpr, 3 * dpr]); g.strokeStyle = css("--mb"); g.beginPath(); g.moveTo(X(1.84), mt); g.lineTo(X(1.84), H - mb); g.stroke();
+      g.setLineDash([]);
+    }
+    const leg = $("pc-legend"); leg.innerHTML = "";
+    CURVES.forEach((q, j) => {
+      const col = css(COLS[(CURVES.length - 1 - j) % 4]) || css("--accent");   // newest in the accent colour
+      g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 1.6 * dpr;
+      g.beginPath(); let on = false;
+      q.Ks.forEach((k, i) => {
+        if (!q.tot[i]) return;
+        const p = q.hits[i] / q.tot[i], e = 1.96 * Math.sqrt(Math.max(p * (1 - p), 0.25 / q.tot[i]) / q.tot[i]);
+        on ? g.lineTo(X(k), Y(p)) : g.moveTo(X(k), Y(p)); on = true;
+        if (q.hits[i] > 0 && q.hits[i] < q.tot[i]) g.fillRect(X(k) - 0.5 * dpr, Y(Math.min(1, p + e)), 1 * dpr, Y(Math.max(0, p - e)) - Y(Math.min(1, p + e)));
+      });
+      g.stroke();
+      const it = document.createElement("span");
+      it.innerHTML = `<span class="sw" style="background:${col}"></span>${NAMES[q.kind]}${q.kind === "del" ? " (" + q.rule + ")" : ""}, n = ${q.n}`;
+      leg.appendChild(it);
+    });
+  }
+
+  // ---------------------------------------------------------------- events
+  function setKind(k) { P.kind = k; sync(); writeHash(); newSample(); }
+  $("pc-g-z2").onclick = () => setKind("z2");
+  $("pc-g-tri").onclick = () => setKind("tri");
+  $("pc-g-del").onclick = () => setKind("del");
+  $("pc-r-uni").onclick = () => { P.rule = "uniform"; sync(); writeHash(); newSample(); };
+  $("pc-r-near").onclick = () => { P.rule = "nearest"; sync(); writeHash(); newSample(); };
+  const setK = (v) => {
+    if (!isFinite(v)) return;
+    P.k = Math.max(0, Math.min(MAXK[P.kind], v)); sync(); writeHash();
+    anim = null; explore(); draw(false);
+  };
+  $("pc-k").addEventListener("input", (e) => setK(+e.target.value));
+  $("pc-k-n").addEventListener("change", (e) => setK(+e.target.value));
+  $("pc-n").addEventListener("input", (e) => { $("pc-n-out").textContent = e.target.value; });
+  $("pc-n").addEventListener("change", (e) => { P.n = +e.target.value; sync(); writeHash(); newSample(); });
+  $("pc-edges").addEventListener("change", (e) => { P.edges = e.target.checked; draw(false); });
+  $("pc-new").onclick = () => newSample();
+  $("pc-run").onclick = () => startSweep();
+  $("pc-clear").onclick = () => { if (running) startSweep(); CURVES.length = 0; drawSweep(); $("pc-sweep-status").textContent = "Curves cleared."; };
+  $("pc-diag").addEventListener("toggle", () => drawSweep());
+  $("pc-copy").onclick = () => {
+    writeHash();
+    const done = () => { $("pc-copy-status").textContent = "Link copied."; };
+    try { navigator.clipboard.writeText(location.href).then(done, () => { $("pc-copy-status").textContent = location.href; }); }
+    catch (e) { $("pc-copy-status").textContent = location.href; }
+  };
+  let rt = null;
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { draw(false); drawSweep(); }, 120); });
+
+  // start lazily: the page calls KnnLab.start() when the section is opened
+  function start() {
+    if (started) return; started = true;
+    const src = ($("knn-delaunator") ? $("knn-delaunator").textContent : "") + "\n" + $("knn-worker-src").textContent;
+    try { worker = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" }))); }
+    catch (e) { $("pc-hint").textContent = "This browser could not start the simulation thread (Web Worker)."; return; }
+    worker.onmessage = (e) => { if (e.data.type === "sample") onSample(e.data); else if (e.data.type === "sweep") onSweep(e.data); };
+    const p = decode(location.hash.slice(1)); if (p) Object.assign(P, p);
+    sync(); newSample();
+  }
+  window.KnnLab = { start, decode, redraw: () => { draw(false); drawSweep(); } };
+  sync();
+  if (!window.KNN_LAB_DEFER) start();
+})();
+
+</script>
+<script>
+// open / close the labs: a lab starts when its section is opened and pauses when it is closed
+(() => {
+  const clock = document.getElementById("lab-clock"), knn = document.getElementById("lab-knn");
+  // Both labs start closed. Only a link that is followed to this page (not a reload, not back /
+  // forward) opens the lab its address names, e.g. #rotating-3d or #knn-z2-k200-n60; the labs
+  // write their setting into the address, so a reload would otherwise reopen them.
+  const nav = (performance.getEntriesByType && performance.getEntriesByType("navigation")[0]) || null;
+  const h = !nav || nav.type === "navigate" ? location.hash.slice(1) : "";
+  if (h === "lab-clock" || (window.ClockLab && ClockLab.decode(h))) clock.open = true;
+  else if (h === "lab-knn" || (window.KnnLab && KnnLab.decode(h))) knn.open = true;
+  if (!clock.open && !knn.open && location.hash) {
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* ignore */ }
+  }
+  const update = () => {
+    if (window.ClockLab) { if (clock.open) ClockLab.start(); ClockLab.show(clock.open); }
+    if (window.KnnLab && knn.open) { KnnLab.start(); KnnLab.redraw(); }
+  };
+  // closing both labs also removes the setting from the address
+  const tidy = () => {
+    update();
+    if (!clock.open && !knn.open && location.hash) {
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* ignore */ }
+    }
+  };
+  clock.addEventListener("toggle", tidy);
+  knn.addEventListener("toggle", tidy);
+  update();
+  const first = clock.open ? clock : knn.open ? knn : null;
+  if (first) requestAnimationFrame(() => first.scrollIntoView());
 })();
 </script>
 <script>
