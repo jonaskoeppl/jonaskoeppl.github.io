@@ -123,6 +123,19 @@ figcaption i { font-family: var(--f-display); font-size: 16px; color: var(--ink)
 .plots { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; }
 @media (max-width: 640px) { .plots { grid-template-columns: minmax(0, 1fr); } }
 .plot { width: 100%; max-width: 100%; display: block; }
+.diag { border-top: 1px solid var(--line); padding-top: 12px; }
+.diag > summary, .more > summary { cursor: pointer; list-style: none; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.diag > summary::-webkit-details-marker, .more > summary::-webkit-details-marker { display: none; }
+.diag > summary::before, .more > summary::before { content: "▸"; color: var(--muted); width: 1em; display: inline-block; }
+.diag[open] > summary::before, .more[open] > summary::before { content: "▾"; }
+.diag-title { font-weight: 600; font-size: 15px; }
+.diag > summary .sum-note { font-size: 13px; color: var(--muted); }
+.diag[open] > summary { margin-bottom: 14px; }
+.diag > .corrbox + .corrbox, .diag > .corrbox + .more { margin-top: 14px; }
+.more { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 14px; }
+.more > summary { font-size: 14px; font-weight: 600; }
+.more-body { display: grid; gap: 8px; margin-top: 10px; max-width: 80ch; }
+.more-body p { margin: 0; font-size: 13.5px; }
 .corrbox { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; border-top: 1px solid var(--line); padding-top: 14px; }
 @media (max-width: 640px) { .corrbox { grid-template-columns: minmax(0, 1fr); } }
 .corrtext { display: grid; gap: 8px; min-width: 0; }
@@ -385,6 +398,8 @@ window.CLOCK_LAB_THEME = { states: [[74, 74, 94], [142, 66, 87], [233, 217, 181]
         </div>
       </div>
 
+      <details class="diag" id="diagnostics">
+      <summary><span class="diag-title">Diagnostics</span><span class="sum-note" id="diag-note">truncated correlations in space and in time, compared with spin waves</span></summary>
       <div class="corrbox" id="corr-space">
         <canvas class="plot" id="corr" height="260"></canvas>
         <div class="corrtext">
@@ -434,6 +449,29 @@ window.CLOCK_LAB_THEME = { states: [[74, 74, 94], [142, 66, 87], [233, 217, 181]
           <p class="note" id="spec-fit"></p>
         </div>
       </div>
+
+      <details class="more" id="fv-notes">
+        <summary>How the finite-size corrections are computed</summary>
+        <div class="more-body">
+          <p><b>Spin waves on the torus.</b> In the ordered (rotating or oscillating) phase the large-scale fluctuations are those of a phase field φ<sub>x</sub>, the local deviation of the angle θ<sub>x</sub> (or of the phase of the population cycle) from its spatial mean. To leading order the phase is Gaussian with independent Fourier modes, whose variance is inversely proportional to the lattice Laplacian. On the L-torus the wave vectors are k ∈ (2π/L){0,…,L−1}<sup>d</sup> and</p>
+          <div class="formula">λ<sub>k</sub> = Σ<sub>i</sub> 2 (1 − cos k<sub>i</sub>),          ⟨|φ̂<sub>k</sub>|²⟩ ∝ 1/λ<sub>k</sub>  (k ≠ 0).</div>
+          <p>Subtracting the spatial mean of the configuration at time t (the magnetisation M(t), or the densities U(t) for the prey–predator model) removes exactly the k = 0 mode. The truncated correlation along a lattice axis is therefore, up to the amplitude A and a short-range part,</p>
+          <div class="formula">C<sub>t</sub>(r) ≈ A · G<sub>L</sub>(r),      G<sub>L</sub>(r) = L<sup>−d</sup> Σ<sub>k≠0</sub> cos(k<sub>1</sub> r) / λ<sub>k</sub>,</div>
+          <p>the Green's function of −Δ on the torus with the zero mode removed (dashed line). It is computed exactly: the sum over the d − 1 transverse components is done once for every k<sub>1</sub>, which leaves a single cosine sum over k<sub>1</sub> for every r. G<sub>L</sub> is negative near r = L/2, because the subtracted mode has to integrate to zero; this is why the measured curves bend down long before r = L/2 and why a plain log-log plot hides the 1/r decay.</p>
+          <p><b>The amplitude.</b> A is fitted by least squares, A = Σ<sub>r</sub> C(r) G<sub>L</sub>(r) / Σ<sub>r</sub> G<sub>L</sub>(r)², over 1 ≤ r ≤ L/4 (2 ≤ r ≤ L/4 for the prey–predator model, where the local state contributes a sizeable short-range part at r = 1). The fit uses the mean over the last 30 measurements, taken four times per second.</p>
+          <p><b>The correction.</b> In infinite volume the same spin waves give A·G<sub>∞</sub>(r), with the lattice Green's function of Z<sup>3</sup> along an axis,</p>
+          <div class="formula">G<sub>∞</sub>(r) = ∫<sub>0</sub><sup>∞</sup> e<sup>−6s</sup> I<sub>0</sub>(2s)² I<sub>r</sub>(2s) ds  → 1/(4πr)  as r → ∞  (I<sub>n</sub>: modified Bessel functions),</div>
+          <p>tabulated for r ≤ 48 (G<sub>∞</sub>(1) = 0.0861, G<sub>∞</sub>(3) = 0.0275 against 1/(12π) = 0.0265) and replaced by 1/(4πr) beyond, where the two agree to four digits. The rings are the measured mean with the torus spin-wave part exchanged for the infinite-volume one,</p>
+          <div class="formula">C<sub>corr</sub>(r) = C(r) + A · [G<sub>∞</sub>(r) − G<sub>L</sub>(r)].</div>
+          <p>This assumes that the finite size enters only through the long-wavelength spin waves, while the short-range part of C does not depend on L. If the spin-wave picture is right, the rings lie on the dotted line A/(4πr) ∝ |x|<sup>2−d</sup> out to r ≈ L/2; deviations at large r mean that the run has not relaxed yet, since the longest modes relax on a time scale L²/(4π²D). In d = 2 there is no correction: G<sub>∞</sub> diverges and the spin-wave decay is only logarithmic.</p>
+          <p><b>In time.</b> Every spin-wave mode relaxes independently, ∂<sub>t</sub>φ̂<sub>k</sub> = −D λ<sub>k</sub> φ̂<sub>k</sub> + noise, so in the co-moving frame (which removes the oscillation of the lab-frame S) the autocorrelation is</p>
+          <div class="formula">S<sub>rot</sub>(τ) ≈ B · H<sub>L</sub>(D τ),      H<sub>L</sub>(u) = L<sup>−d</sup> Σ<sub>k≠0</sub> e<sup>−u λ<sub>k</sub></sup> / λ<sub>k</sub> = ∫<sub>u</sub><sup>∞</sup> [h<sub>L</sub>(s)<sup>d</sup> − L<sup>−d</sup>] ds,
+h<sub>L</sub>(s) = L<sup>−1</sup> Σ<sub>a</sub> e<sup>−s λ<sub>a</sub></sup>  (the one-dimensional return probability on the torus).</div>
+          <p>H<sub>L</sub> is computed from this product formula by quadrature on a logarithmic grid. In infinite volume h(s)<sup>3</sup> ≈ (4πs)<sup>−3/2</sup>, which gives H<sub>∞</sub>(u) ≈ 2(4π)<sup>−3/2</sup> u<sup>−1/2</sup>: the envelope τ<sup>−1/2</sup> (dotted line). On the torus the smallest λ<sub>k</sub> is about 4π²/L², so the curve leaves the power law near τ ≈ L²/(4π²D) and then decays exponentially. B and D are fitted to S<sub>rot</sub> by least squares in the relative error (D on a logarithmic grid, refined by golden-section search, then smoothed over successive fits).</p>
+          <p><b>Limitations.</b> The Gaussian spin-wave description ignores the nonlinear (KPZ-type) terms in the phase dynamics of Grinstein, Mukamel, Seidin and Bennett. In d = 3 they renormalise A, B and D but keep the |x|<sup>2−d</sup> and τ<sup>−(d−2)/2</sup> laws; vortex lines and other defects are not part of the description at all.</p>
+        </div>
+      </details>
+      </details>
     </main>
   </div>
 
@@ -1214,6 +1252,8 @@ step();
     document.querySelectorAll(".pp-only").forEach((el) => { el.hidden = !pp; });
     document.querySelectorAll(".clock-only").forEach((el) => { el.hidden = pp; });
     $("auto-burn").textContent = pp ? 600 : 200;
+    $("diag-note").textContent = pp ? "truncated correlations in space and in time, power spectrum of the prey density"
+                                    : "truncated correlations in space and in time, compared with spin waves";
     for (const id of ["r-row", "pp-box"]) $(id).hidden = !pp;
     const lab = STATLAB[pp ? "pp" : "clock"], cap = CAPS[pp ? "pp" : "clock"];
     $("lab-m").innerHTML = lab[0]; $("lab-w").innerHTML = lab[1]; $("lab-def").innerHTML = lab[2];
@@ -1618,6 +1658,7 @@ step();
       `peak at ω = ${om.toFixed(3)} (period ${(spec.n / spec.kmax).toFixed(1)}), carrying ${(100 * spec.share).toFixed(0)} % of the variance.`;
   }
 
+  const diagOpen = () => $("diagnostics").open;   // the diagnostics are only drawn while open
   function draw() {
     if (latest && latest.L === S.L && latest.dim === S.dim) {
       if (S.dim === 2) draw2d(latest); else { drawVolume(latest, "vA", 0); drawVolume(latest, "vB", 1); }
@@ -1627,9 +1668,9 @@ step();
     if (isPP()) {
       const now = performance.now();
       if (now - specWall > 500) { specWall = now; spec = computeSpec(); }
-      drawSpec();
+      if (diagOpen()) drawSpec();
     }
-    drawCorr(); drawAuto();
+    if (diagOpen()) { drawCorr(); drawAuto(); }
   }
   function frame() {
     if (needDraw) { needDraw = false; draw(); send({ type: "ack" }); }
@@ -1703,6 +1744,7 @@ step();
   $("play").onclick = () => { S.running = !S.running; $("play").textContent = S.running ? "Pause" : "Run"; send({ type: "run", on: S.running }); };
   $("reset").onclick = () => restart();
   $("clear").onclick = () => { hist = hist.slice(-1); full = full.slice(-1); send({ type: "clear" }); };
+  $("diagnostics").addEventListener("toggle", () => { needDraw = true; });
   $("showdef").addEventListener("change", (e) => { S.showdef = e.target.checked; needDraw = true; });
   window.addEventListener("resize", () => { needDraw = true; });
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
