@@ -257,6 +257,7 @@ a:hover { text-decoration-color: currentColor; }
 .lab-body { display: grid; gap: 22px; padding: 0 0 3rem; }
 .lab-intro { margin: 0; max-width: 46rem; }
 .lab-body > .quiet.lab-intro { color: var(--muted); font-size: 0.95rem; }
+#lab-knn .lab-thumb { image-rendering: auto; }    /* drawn with smooth lines, not pixels */
 @media (max-width: 40rem) { .lab-thumb { width: 4.5rem; } }
 .pc-view { width: 100%; max-width: 760px; aspect-ratio: 1; display: block; }
 .pc-fig figcaption { align-items: center; }
@@ -313,7 +314,7 @@ window.CLOCK_LAB_THEME = { states: [[74, 74, 94], [142, 66, 87], [233, 217, 181]
       <span class="lab-desc">Driven clock and XY models in 2D and 3D: rotating states, spiral defects and long-range
       correlations, and Lipowski's oscillating prey–predator lattice.</span>
       <span class="lab-cta"></span></span>
-      <img class="lab-thumb" src="media/onset_poster.png" width="300" height="300" alt="">
+      <video class="lab-thumb" autoplay muted loop playsinline preload="auto" poster="media/onset_poster.png" width="300" height="300" aria-hidden="true"><source src="media/onset.mp4" type="video/mp4"></video>
     </summary>
     <div class="lab-body">
     <p class="lab-intro">Every spin is a clock hand that interacts with its neighbours like an XY spin and is pushed
@@ -656,7 +657,7 @@ predator  no prey on its site: the predator dies;
       <span class="lab-desc">Directed k-neighbour graphs on ℤ², the triangular lattice and the Poisson–Delaunay
       triangulation, with a continuous out-degree k = 2dp and adjustable box size.</span>
       <span class="lab-cta"></span></span>
-      <img class="lab-thumb" src="media/knn_thumb.png" width="300" height="300" alt="">
+      <video class="lab-thumb" autoplay muted loop playsinline preload="auto" poster="media/knn_thumb_poster.png" width="300" height="300" aria-hidden="true"><source src="media/knn_thumb.mp4" type="video/mp4"></video>
     </summary>
     <div class="lab-body">
     <p class="lab-intro">Every vertex of ℤ², of the triangular lattice or of a Poisson–Delaunay triangulation picks k of
@@ -677,10 +678,6 @@ predator  no prey on its site: the predator dies;
           <button id="pc-g-z2" aria-pressed="true">ℤ²</button>
           <button id="pc-g-tri" aria-pressed="false">Triangular</button>
           <button id="pc-g-del" aria-pressed="false">Poisson–Delaunay</button>
-        </div>
-        <div class="seg" role="group" aria-label="Choice of the neighbours" id="pc-rule-seg" hidden>
-          <button id="pc-r-uni" aria-pressed="true">Uniform choice</button>
-          <button id="pc-r-near" aria-pressed="false">Nearest first</button>
         </div>
       </div>
       <div class="group">
@@ -746,7 +743,7 @@ predator  no prey on its site: the predator dies;
     <div>
       <h2>What is known</h2>
       <p><b>ℤ².</b> The 1-neighbour graph does not percolate and the 3-neighbour graph does. The main theorem of the paper is that the 2-neighbour graph percolates: p<sub>c</sub>(2) &lt; 1/2, so k<sub>c</sub> &lt; 2. A union bound over self-avoiding paths gives p<sub>c</sub>(2) ≥ 1/c(2) &gt; 0.373, with c(2) the connective constant, so 1.49 &lt; k<sub>c</sub> &lt; 2; simulations put k<sub>c</sub> near 1.84. For comparison, independent directed percolation on ℤ², with the same probability p for every edge but a random out-degree, has p<sub>c</sub> = 1/2: a fixed degree helps percolation.</p>
-      <p><b>Triangular lattice and Poisson–Delaunay triangulation.</b> The same construction with the 6 neighbours of the triangular lattice (k = 6p), or with the Delaunay neighbours of a Poisson point process of intensity 1 together with a point at the origin (mean degree 6). For the Delaunay graph the lab offers two rules: a uniform choice among the Delaunay neighbours, or the nearest ones first, a discrete version of the continuum k-nearest-neighbour graph of <a href="https://doi.org/10.1002/(SICI)1098-2418(199610)9:3%3C295::AID-RSA3%3E3.0.CO;2-S">Häggström and Meester</a>. Vertices with fewer than k neighbours choose all of them.</p>
+      <p><b>Triangular lattice and Poisson–Delaunay triangulation.</b> The same model on a different underlying graph: every vertex chooses uniformly among its 6 neighbours on the triangular lattice (k = 6p), or among its neighbours in the Delaunay triangulation of a Poisson point process of intensity 1 together with a point at the origin (mean degree 6). Only the graph changes, not the rule. Vertices with fewer than k neighbours choose all of them. The k-neighbour graphs were introduced as a discrete counterpart of the continuum k-nearest-neighbour graph of <a href="https://doi.org/10.1002/(SICI)1098-2418(199610)9:3%3C295::AID-RSA3%3E3.0.CO;2-S">Häggström and Meester</a>.</p>
     </div>
     <div class="wide refs">
       <h2>References</h2>
@@ -2018,27 +2015,17 @@ function buildDel(n) {
   }
   const x = new Float32Array(N), y = new Float32Array(N);
   for (let v = 0; v < N; v++) { x[v] = coords[2 * v]; y[v] = coords[2 * v + 1]; }
-  // neighbours sorted by distance (used by the "nearest" rule)
-  const tmp = [];
-  for (let v = 0; v < N; v++) {
-    tmp.length = 0;
-    for (let q = off[v]; q < off[v + 1]; q++) { const w = nb[q], dx = x[w] - x[v], dy = y[w] - y[v]; tmp.push([dx * dx + dy * dy, w]); }
-    tmp.sort((p, q) => p[0] - q[0]);
-    for (let q = 0; q < tmp.length; q++) nb[off[v] + q] = tmp[q][1];
-  }
   return { kind: "del", n, N, x, y, off, nb, origin: 0 };
 }
 const build = (kind, n) => kind === "z2" ? buildZ2(n) : kind === "tri" ? buildTri(n) : buildDel(n);
 
 // The random choices of a sample in monotone form (the coupling of Lemma 2.1): every vertex gets a
-// uniformly random order of its neighbours ("uniform") or the order by distance ("nearest"), and a
-// uniform U. For parameter k it opens edges to the first floor(k) + 1{U < k - floor(k)} neighbours,
+// uniformly random order of its neighbours and a uniform U. For parameter k it opens edges to the first floor(k) + 1{U < k - floor(k)} neighbours,
 // so increasing k only adds edges and the forward cluster can only grow.
-function randomise(g, rule) {
+function randomise(g) {
   const U = new Float32Array(g.N);
   for (let v = 0; v < g.N; v++) {
     U[v] = rnd();
-    if (rule === "nearest" && g.kind === "del") continue;
     const a = g.off[v], D = g.off[v + 1] - a;
     for (let q = D - 1; q > 0; q--) { const r = (rnd() * (q + 1)) | 0, s = g.nb[a + q]; g.nb[a + q] = g.nb[a + r]; g.nb[a + r] = s; }
   }
@@ -2050,7 +2037,7 @@ function randomise(g, rule) {
 // box. One round draws one sample per k (on a common graph for the Delaunay case, rebuilt every
 // round); the choices are drawn lazily while exploring, and the exploration stops at the boundary.
 let sweep = null;
-function exploreHit(g, K, rule, st) {
+function exploreHit(g, K, st) {
   const kk = Math.floor(K), eps = K - kk, n = g.n, x = g.x, y = g.y, off = g.off, nb = g.nb;
   const stamp = ++st.stamp, vis = st.vis, q = st.q;
   let head = 0, tail = 0;
@@ -2061,11 +2048,11 @@ function exploreHit(g, K, rule, st) {
     const a = off[v], D = off[v + 1] - a;
     let m = kk + (rnd() < eps ? 1 : 0); if (m > D) m = D;
     if (!m) continue;
-    // choose m of the D neighbours: uniformly (partial Fisher-Yates) or the m nearest
+    // choose m of the D neighbours uniformly (partial Fisher-Yates)
     const sc = st.sc;
     for (let i = 0; i < D; i++) sc[i] = nb[a + i];
     for (let i = 0; i < m; i++) {
-      if (!(rule === "nearest" && g.kind === "del")) { const r = i + ((rnd() * (D - i)) | 0), s = sc[i]; sc[i] = sc[r]; sc[r] = s; }
+      const r = i + ((rnd() * (D - i)) | 0), s = sc[i]; sc[i] = sc[r]; sc[r] = s;
       const w = sc[i];
       if (w >= 0 && vis[w] !== stamp) { vis[w] = stamp; q[tail++] = w; }
     }
@@ -2081,7 +2068,7 @@ function sweepChunk() {
       S.st = { stamp: 0, vis: new Int32Array(S.g.N), q: new Int32Array(S.g.N), sc: new Int32Array(1024) };
     }
     for (let j = 0; j < S.Ks.length; j++) {
-      if (exploreHit(S.g, S.Ks[j], S.rule, S.st)) S.hits[j]++;
+      if (exploreHit(S.g, S.Ks[j], S.st)) S.hits[j]++;
       S.tot[j]++;
     }
     S.round++;
@@ -2095,12 +2082,12 @@ onmessage = (e) => {
   if (m.type === "sample") {
     rs = (Math.random() * 4294967296) >>> 0 || 1;
     const g = build(m.kind, m.n);
-    randomise(g, m.rule);
-    postMessage({ type: "sample", id: m.id, kind: g.kind, n: g.n, N: g.N, rule: m.rule, x: g.x, y: g.y, off: g.off, nb: g.nb, U: g.U, origin: g.origin },
+    randomise(g);
+    postMessage({ type: "sample", id: m.id, kind: g.kind, n: g.n, N: g.N, x: g.x, y: g.y, off: g.off, nb: g.nb, U: g.U, origin: g.origin },
       [g.x.buffer, g.y.buffer, g.off.buffer, g.nb.buffer, g.U.buffer]);
   } else if (m.type === "sweep") {
     rs = (Math.random() * 4294967296) >>> 0 || 1;
-    sweep = { id: m.id, kind: m.kind, n: m.n, rule: m.rule, Ks: m.Ks, rounds: m.rounds, round: 0,
+    sweep = { id: m.id, kind: m.kind, n: m.n, Ks: m.Ks, rounds: m.rounds, round: 0,
               hits: new Int32Array(m.Ks.length), tot: new Int32Array(m.Ks.length), g: null, st: null };
     setTimeout(sweepChunk, 0);
   } else if (m.type === "stop") {
@@ -2130,30 +2117,28 @@ onmessage = (e) => {
   };
   document.querySelectorAll(".pc-ramp").forEach((el) => { el.style.background = `linear-gradient(90deg, ${ramp(0)}, ${ramp(0.5)}, ${ramp(1)})`; });
 
-  const P = { kind: "z2", k: 2, n: 60, rule: "uniform", edges: true };
+  const P = { kind: "z2", k: 2, n: 60, edges: true };
   let worker = null, sid = 0, G = null, C = null, anim = null, started = false;
 
   // ---------------------------------------------------------------- links
-  function encode() { return `knn-${P.kind}${P.kind === "del" ? (P.rule === "nearest" ? "-near" : "-uni") : ""}-k${Math.round(P.k * 100)}-n${P.n}`; }
+  function encode() { return `knn-${P.kind}-k${Math.round(P.k * 100)}-n${P.n}`; }
   function decode(h) {
-    const m = /^knn-(z2|tri|del)(?:-(uni|near))?-k(\d+)-n(\d+)$/.exec(h || "");
+    const m = /^knn-(z2|tri|del)(?:-[a-z]+)?-k(\d+)-n(\d+)$/.exec(h || "");
     if (!m) return null;
     const kind = m[1];
-    return { kind, rule: m[2] === "near" ? "nearest" : "uniform", k: Math.min(MAXK[kind], +m[3] / 100), n: Math.max(5, Math.min(MAXN[kind], +m[4])) };
+    return { kind, k: Math.min(MAXK[kind], +m[2] / 100), n: Math.max(5, Math.min(MAXN[kind], +m[3])) };
   }
   function writeHash() { try { history.replaceState(null, "", "#" + encode()); } catch (e) { /* ignore */ } }
 
   // ---------------------------------------------------------------- UI
   function sync() {
     for (const [id, k] of [["pc-g-z2", "z2"], ["pc-g-tri", "tri"], ["pc-g-del", "del"]]) $(id).setAttribute("aria-pressed", P.kind === k);
-    $("pc-rule-seg").hidden = P.kind !== "del";
-    $("pc-r-uni").setAttribute("aria-pressed", P.rule === "uniform"); $("pc-r-near").setAttribute("aria-pressed", P.rule === "nearest");
     $("pc-k").max = MAXK[P.kind]; $("pc-k-n").max = MAXK[P.kind]; P.k = Math.min(P.k, MAXK[P.kind]);
     $("pc-k").value = P.k; $("pc-k-n").value = P.k;
     $("pc-n").max = MAXN[P.kind]; P.n = Math.min(P.n, MAXN[P.kind]); $("pc-n").value = P.n; $("pc-n-out").textContent = P.n;
     $("pc-p-note").textContent = P.kind === "z2" ? "k = 2dp with d = 2: each directed edge is open with probability p = k/4."
       : P.kind === "tri" ? "Six neighbours: k = 6p, each directed edge is open with probability p = k/6."
-      : "Delaunay neighbours, mean degree 6: an edge out of a vertex of degree D is open with probability min(k, D)/D.";
+      : "The same model on the Delaunay neighbours (mean degree 6): an edge out of a vertex of degree D is open with probability min(k, D)/D.";
     $("pc-s-k").textContent = P.k.toFixed(2);
     $("pc-s-p").textContent = P.kind === "del" ? "≈ " + (P.k / 6).toFixed(3) : (P.k / DEGN[P.kind]).toFixed(3);
     refNote();
@@ -2164,7 +2149,7 @@ onmessage = (e) => {
     if (!worker) return;
     sid++; anim = null;
     $("pc-s-hit").textContent = "…";
-    worker.postMessage({ type: "sample", id: sid, kind: P.kind, n: P.n, rule: P.rule });
+    worker.postMessage({ type: "sample", id: sid, kind: P.kind, n: P.n });
   }
   function onSample(m) {
     if (m.id !== sid) return;
@@ -2286,17 +2271,17 @@ onmessage = (e) => {
     // samples per k: about 4e8 vertex visits in total (a few tens of seconds), at least 100
     const rounds = Math.max(100, Math.min(2000, Math.round(4e8 * (P.kind === "del" ? 0.15 : 1) / (Ks.length * (2 * P.n + 1) ** 2))));
     runId++;
-    const cur = { id: runId, kind: P.kind, n: P.n, rule: P.rule, Ks, hits: [], tot: [], rounds, done: false };
+    const cur = { id: runId, kind: P.kind, n: P.n, Ks, hits: [], tot: [], rounds, done: false };
     CURVES.push(cur); if (CURVES.length > 4) CURVES.shift();
     running = cur; $("pc-run").textContent = "Stop";
-    worker.postMessage({ type: "sweep", id: runId, kind: P.kind, n: P.n, rule: P.rule, Ks, rounds });
+    worker.postMessage({ type: "sweep", id: runId, kind: P.kind, n: P.n, Ks, rounds });
     drawSweep();
   }
   function onSweep(m) {
     const cur = CURVES.find((c) => c.id === m.id); if (!cur) return;
     cur.hits = m.hits; cur.tot = m.tot; cur.done = m.done;
     if (m.done && running === cur) { running = null; $("pc-run").textContent = "Run sweep"; }
-    $("pc-sweep-status").textContent = `${NAMES[cur.kind]}${cur.kind === "del" ? " (" + cur.rule + ")" : ""}, n = ${cur.n}: ${m.tot[0]} of ${cur.rounds} samples per k${m.done ? ", done." : "…"}`;
+    $("pc-sweep-status").textContent = `${NAMES[cur.kind]}, n = ${cur.n}: ${m.tot[0]} of ${cur.rounds} samples per k${m.done ? ", done." : "…"}`;
     drawSweep();
   }
   function refNote() {
@@ -2339,7 +2324,7 @@ onmessage = (e) => {
       });
       g.stroke();
       const it = document.createElement("span");
-      it.innerHTML = `<span class="sw" style="background:${col}"></span>${NAMES[q.kind]}${q.kind === "del" ? " (" + q.rule + ")" : ""}, n = ${q.n}`;
+      it.innerHTML = `<span class="sw" style="background:${col}"></span>${NAMES[q.kind]}, n = ${q.n}`;
       leg.appendChild(it);
     });
   }
@@ -2349,8 +2334,6 @@ onmessage = (e) => {
   $("pc-g-z2").onclick = () => setKind("z2");
   $("pc-g-tri").onclick = () => setKind("tri");
   $("pc-g-del").onclick = () => setKind("del");
-  $("pc-r-uni").onclick = () => { P.rule = "uniform"; sync(); writeHash(); newSample(); };
-  $("pc-r-near").onclick = () => { P.rule = "nearest"; sync(); writeHash(); newSample(); };
   const setK = (v) => {
     if (!isFinite(v)) return;
     P.k = Math.max(0, Math.min(MAXK[P.kind], v)); sync(); writeHash();
@@ -2418,6 +2401,9 @@ onmessage = (e) => {
   clock.addEventListener("toggle", tidy);
   knn.addEventListener("toggle", tidy);
   update();
+  // the animated thumbnails stand still for visitors who prefer reduced motion
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches)
+    document.querySelectorAll("video.lab-thumb").forEach((v) => { v.removeAttribute("autoplay"); v.pause(); });
   const first = clock.open ? clock : knn.open ? knn : null;
   if (first) requestAnimationFrame(() => first.scrollIntoView());
 })();
