@@ -10,11 +10,12 @@
 <meta property="og:description" content="Live simulations in your browser: rotating states in driven clock models and percolation in k-neighbour graphs.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jonaskoeppl.github.io/simulations/">
-<meta property="og:image" content="https://jonaskoeppl.github.io/simulations/media/preview.png">
+<meta property="og:image" content="https://jonaskoeppl.github.io/simulations/media/og_spirals.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Spiral defects in the angle field of the two-dimensional driven clock model">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://jonaskoeppl.github.io/simulations/media/preview.png">
+<meta name="twitter:image" content="https://jonaskoeppl.github.io/simulations/media/og_spirals.png">
 <script>
 // apply a saved theme choice before the page is drawn
 try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) { /* storage unavailable */ }
@@ -314,7 +315,7 @@ window.CLOCK_LAB_THEME = { states: [[74, 74, 94], [142, 66, 87], [233, 217, 181]
       <span class="lab-desc">Driven clock and XY models in 2D and 3D: rotating states, spiral defects and long-range
       correlations, and Lipowski's oscillating prey–predator lattice.</span>
       <span class="lab-cta"></span></span>
-      <video class="lab-thumb" autoplay muted loop playsinline preload="auto" poster="media/onset_poster.png" width="300" height="300" aria-hidden="true"><source src="media/onset.mp4" type="video/mp4"></video>
+      <video class="lab-thumb" autoplay muted loop playsinline preload="auto" poster="media/clock_thumb_poster.png" width="300" height="300" aria-hidden="true"><source src="media/clock_thumb.mp4" type="video/mp4"></video>
     </summary>
     <div class="lab-body">
     <p class="lab-intro">Every spin is a clock hand that interacts with its neighbours like an XY spin and is pushed
@@ -2402,8 +2403,11 @@ onmessage = (e) => {
   knn.addEventListener("toggle", tidy);
   update();
   // the animated thumbnails stand still for visitors who prefer reduced motion
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches)
-    document.querySelectorAll("video.lab-thumb").forEach((v) => { v.removeAttribute("autoplay"); v.pause(); });
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll("video.lab-thumb").forEach((v) => {
+    if (still) { v.removeAttribute("autoplay"); v.pause(); }
+    else { v.muted = true; const p = v.play(); if (p && p.catch) p.catch(() => {}); }   // some browsers need the nudge
+  });
   const first = clock.open ? clock : knn.open ? knn : null;
   if (first) requestAnimationFrame(() => first.scrollIntoView());
 })();
